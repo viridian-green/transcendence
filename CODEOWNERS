@@ -1,6 +1,6 @@
 #############################################
 # 🚫🛠️ HIGHLY PROTECTED FILES – DO NOT TOUCH 🛠️🚫 #
-#       Property of @panndabea 👑            #
+#       Property of @viridian-green 👑            #
 #############################################
 
 # ┌────────────────────────────────────┐
@@ -9,15 +9,12 @@
 #
 # Unauthorized changes will trigger:
 # 🔊 Alarm sirens across the cloud
-# 📟 PagerDuty waking you up at 3AM
-# 🐻 Panndabea unleashing the bear-mode
-# ☕ And probably a very annoyed Slack message
 
-# 🔥 Critical Docker Setup (Don’t. Just... don’t.)
-/docker-compose.yml @panndabea
+# 🔥 Critical Docker Setup
+/docker-compose.yml @viridian-green
 
-# 🧠 The Sacred Django Settings (aka “The Brain”)
-/src/ft_transcendence_backend/backend/settings.py @panndabea
+# 🧠 The Sacred Settings
+/src/ft_transcendence_backend/backend/settings.py @viridian-green
 
 # 🛑 Proceed with extreme caution.
 # Changes here might cause:
