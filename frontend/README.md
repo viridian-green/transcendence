@@ -59,6 +59,10 @@ Building for Production
 
 Preview the production build locally:
 `npm run preview`
+Or:
+`npm install serve -g`
+`serve -s dist`
+![serve](./readme/serve.png)
 
 ## TailwindCSS
 
@@ -95,3 +99,8 @@ During commits, you should see something like:
 ```
 
 -> Commits will fail if linting or formatting cannot succeed.
+
+## Resources
+
+- [How to Dockerize a React + Vite app?](https://thedkpatel.medium.com/dockerizing-react-application-built-with-vite-a-simple-guide-4c41eb09defa)
+-
