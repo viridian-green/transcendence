@@ -26,7 +26,12 @@ frontend/
 │   ├── pages/          # Route-based pages
 │   ├── App.tsx
 │   ├── main.tsx
-│   └── index.css
+│   ├── index.css
+|   ├── Dockerfile.dev  # Dockerfile for development
+|   ├── Dockerfile      # Dockerfile for production
+|   ├──docker-compose.yml
+|   |__ nginx/
+|       |__ nginx.conf
 │
 ├── public/             # Static files
 ├── tsconfig.json
@@ -63,6 +68,17 @@ Or:
 `npm install serve -g`
 `serve -s dist`
 ![serve](./readme/serve.png)
+
+5. Dockerization
+   To run the dockerized local dev server, run:
+   `docker compose up frontend-dev`
+   Open:
+   `http://localhost:5173/`
+
+To build for production, run:
+`docker compose up frontend-prod`
+Open:
+`http://localhost:8080`
 
 ## TailwindCSS
 
@@ -102,5 +118,6 @@ During commits, you should see something like:
 
 ## Resources
 
-- [How to Dockerize a React + Vite app?](https://thedkpatel.medium.com/dockerizing-react-application-built-with-vite-a-simple-guide-4c41eb09defa)
--
+- [How to Dockerize a React + Vite app? – Medium Article](https://thedkpatel.medium.com/dockerizing-react-application-built-with-vite-a-simple-guide-4c41eb09defa)
+- [How to Dockerize a React + Vite app? – Official Docs](https://docs.docker.com/guides/reactjs/containerize/)
+- [Docker.dev](https://docs.docker.com/guides/reactjs/containerize/)
