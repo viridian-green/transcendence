@@ -1,7 +1,7 @@
 import './App.css';
 
 function App() {
-	return <div className='text-2xl font-bold text-center'>Welcome to Transcendence! 🏓</div>;
+	return <div className='text-center text-2xl font-bold'>Welcome to Transcendence! 🏓</div>;
 }
 
 export default App;
