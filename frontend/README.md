@@ -3,6 +3,8 @@
 This project is a single-page application built with modern, lightweight tooling.
 It uses **React**, **TypeScript**, **Vite**, and **TailwindCSS**, with **Husky** + **lint-staged** to ensure clean commits and consistent code quality.
 
+> **Note**: The project title "Retroscendence" in the HTML reflects the retro gaming theme, while "Transcendence" is the main project name.
+
 ## Tech Stack
 
 | Tool                  | Purpose                                  |
