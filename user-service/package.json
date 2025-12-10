@@ -1,0 +1,30 @@
+{
+  "name": "transcendence",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viridian-green/transcendence.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/viridian-green/transcendence/issues"
+  },
+  "homepage": "https://github.com/viridian-green/transcendence#readme",
+  "description": "",
+  "dependencies": {
+    "@fastify/jwt": "^10.0.0",
+    "bcrypt": "^6.0.0",
+    "better-sqlite3": "^12.5.0",
+    "dotenv": "^17.2.3",
+    "fastify": "^5.6.2",
+    "fastify-plugin": "^5.1.0"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
+}
+}
