@@ -1,0 +1,38 @@
+services:
+  # nginx:
+  #   image: nginx:alpine
+  #   ports:
+  #     - "80:80"      # HTTP
+  #     - "443:443"    # HTTPS
+  #   depends_on:
+  #     - gateway
+  #     - frontend
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    working_dir: /app
+
+  game:
+    build:
+      context: ./services/game
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3002:3002"
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+
+  # # user:
+  #   build:
+  #     context: ./user_management
+  #     dockerfile: Dockerfile.dev
+  #   ports:
+  #     - "3003:3003"
