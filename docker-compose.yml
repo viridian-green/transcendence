@@ -1,12 +1,17 @@
 services:
-  # nginx:
-  #   image: nginx:alpine
-  #   ports:
-  #     - "80:80"      # HTTP
-  #     - "443:443"    # HTTPS
-  #   depends_on:
-  #     - gateway
-  #     - frontend
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - gateway
+      - frontend
+    networks:
+      - transcendence-network
 
   frontend:
     build:
@@ -15,6 +20,8 @@ services:
     ports:
       - "5173:5173"
     working_dir: /app
+    networks:
+      - transcendence-network
 
   game:
     build:
@@ -22,6 +29,8 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "3002:3002"
+    networks:
+      - transcendence-network
 
   gateway:
     build:
@@ -29,6 +38,12 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
+    networks:
+      - transcendence-network
+
+networks:
+  transcendence-network:
+    driver: bridge
 
   # # user:
   #   build:
