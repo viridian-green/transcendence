@@ -1,9 +1,4 @@
 const registerGameModule = async (fastify) => {
-  // Root route - redirect to game
-  fastify.get("/", async (request, reply) => {
-    reply.redirect("/game");
-  });
-
   // Serve the game HTML page
   fastify.get("/game", async (request, reply) => {
     try {

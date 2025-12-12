@@ -6,7 +6,7 @@ function App() {
 			Welcome to Transcendence! 🏓
 			<div className='mt-8 flex justify-center'>
 				<iframe
-					src='http://localhost:3000/game'
+					src='/game'
 					title='Pong Game'
 					width='800'
 					height='600'
