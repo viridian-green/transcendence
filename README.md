@@ -16,3 +16,8 @@ make up
 # Subsequent starts
 make up  # or just: docker compose up -d
 ```
+
+# Docker daemon
+systemctl --user start docker.service
+systemctl --user stop docker.service
+systemctl --user status docker
