@@ -6,7 +6,7 @@ const Landing = () => {
 	const navigate = useNavigate();
 
 	return (
-		<div className='powerOn mb-2 flex min-h-screen flex-col items-center justify-center text-pink-600'>
+		<div className='mb-2 flex min-h-screen flex-col items-center justify-center text-pink-600'>
 			<h1 className='font-retro pink-shadow mb-2 text-4xl'>Retroscendence</h1>
 			<p className='mb-8 text-sm'>A retro pong experience</p>
 

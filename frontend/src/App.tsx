@@ -11,7 +11,7 @@ function App() {
 	return (
 		<div className='flex min-h-screen flex-col bg-black p-6 text-pink-600'>
 			{!isLanding && (
-				<nav className='font-retro-slim flex justify-end'>
+				<nav className='font-bit-slim flex justify-end'>
 					{/* <Link to='/'>Home</Link>
 				<Link to='/about'>About</Link>
 				<Link to='/game'>Pong</Link> */}

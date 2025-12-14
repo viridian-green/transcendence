@@ -17,20 +17,20 @@ const Home: FC = () => {
 					fill='#e60076'
 					version='1.1'
 					xmlns='http://www.w3.org/2000/svg'
-					xmlns:xlink='http://www.w3.org/1999/xlink'
+					xmlnsXlink='http://www.w3.org/1999/xlink'
 					width='64px'
 					height='64px'
 					viewBox='0 0 21 30'
-					xml:space='preserve'
+					xmlSpace='preserve'
 					transform='rotate(45)matrix(1, 0, 0, 1, 0, 0)'
 				>
-					<g id='SVGRepo_bgCarrier' stroke-width='0'></g>
+					<g id='SVGRepo_bgCarrier' strokeWidth='0'></g>
 					<g
 						id='SVGRepo_tracerCarrier'
-						stroke-linecap='round'
-						stroke-linejoin='round'
+						strokeLinecap='round'
+						strokeLinejoin='round'
 						stroke='#CCCCCC'
-						stroke-width='0.126'
+						strokeWidth='0.126'
 					></g>
 					<g id='SVGRepo_iconCarrier'>
 						{' '}
@@ -45,7 +45,7 @@ const Home: FC = () => {
 				</svg>
 			</section>
 			<p className='text-xs text-slate-400'>Choose your game mode:</p>
-			<div className='space-around mt-4 flex flex-row justify-center gap-20 text-center text-xl'>
+			<div className='mt-4 flex flex-row justify-center gap-20 text-center text-xl'>
 				<PinkButton text='2 Players' onClick={handleTwoPlayersClick} />
 				<PinkButton
 					text='4 Players'

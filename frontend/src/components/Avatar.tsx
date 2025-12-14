@@ -16,7 +16,7 @@ const Avatar = ({ url, size = 48, name = '?' }: AvatarProps) => {
 				src={
 					url
 						? url
-						: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=${size ? size * 2 : 96}`
+						: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=${size * 2}`
 				}
 				alt={alt}
 			/>
