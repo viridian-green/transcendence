@@ -1,23 +1,29 @@
 import { Suspense } from 'react';
-import { Link, Routes, Route } from 'react-router-dom';
+import { Link, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
-import { Home, About, NotFound, Loading, Game } from '@/src/pages/index';
+import { Home, About, NotFound, Loading, Game, Landing } from '@/src/pages/index';
 import { Avatar } from './components';
 
 function App() {
+	const location = useLocation();
+	const isLanding = location.pathname === '/';
+
 	return (
-		<div className='min-h-screen bg-black p-6 text-pink-600'>
-			<nav className='font-retro-slim flex justify-end'>
-				{/* <Link to='/'>Home</Link>
+		<div className='flex min-h-screen flex-col bg-black p-6 text-pink-600'>
+			{!isLanding && (
+				<nav className='font-retro-slim flex justify-end'>
+					{/* <Link to='/'>Home</Link>
 				<Link to='/about'>About</Link>
 				<Link to='/game'>Pong</Link> */}
-				<Link to='/profile'>{<Avatar />}</Link>
-			</nav>
+					<Link to='/profile'>{<Avatar />}</Link>
+				</nav>
+			)}
 
-			<main className='mt-6'>
+			<main className='flex-1'>
 				<Suspense fallback={<Loading />}>
 					<Routes>
-						<Route path='/' element={<Home />} />
+						<Route path='/' element={<Landing />} />
+						<Route path='/home' element={<Home />} />
 						<Route path='/about' element={<About />} />
 						<Route path='/game/*' element={<Game />} />
 						<Route path='*' element={<NotFound />} />

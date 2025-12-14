@@ -1,3 +1,4 @@
 import Avatar from './Avatar';
+import PinkButton from './PinkButton';
 
-export { Avatar };
+export { Avatar, PinkButton };
