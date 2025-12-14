@@ -5,8 +5,9 @@ export default {
 		extend: {
 			fontFamily: {
 				retro: ['Retro', 'sans-serif'],
-				'retro-large': ['Retro Large', 'sans-serif'],
-				'retro-slim': ['Retro Slim', 'sans-serif'],
+				bit: ['Bit', 'sans-serif'],
+				'bit-large': ['Bit Large', 'sans-serif'],
+				'bit-slim': ['Bit Slim', 'sans-serif'],
 			},
 		},
 	},
