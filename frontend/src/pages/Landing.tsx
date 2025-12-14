@@ -7,7 +7,7 @@ const Landing = () => {
 
 	return (
 		<div className='mb-2 flex min-h-screen flex-col items-center justify-center text-pink-600'>
-			<h1 className='font-retro pink-shadow mb-2 text-4xl'>Retroscendence</h1>
+			<h1 className='font-retro mb-2 text-4xl'>Retroscendence</h1>
 			<p className='mb-8 text-sm'>A retro pong experience</p>
 
 			<div className='flex flex-col gap-4'>
