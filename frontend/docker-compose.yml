@@ -18,3 +18,5 @@ services:
         - action: sync
           path: .
           target: /app
+    environment:
+      - DOCKER=true
