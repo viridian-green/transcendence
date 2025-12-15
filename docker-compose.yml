@@ -32,6 +32,15 @@ services:
     networks:
       - transcendence-network
 
+  user:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3003:3003"
+    networks:
+      - transcendence-network
+
   gateway:
     build:
       context: ./gateway
@@ -45,9 +54,3 @@ networks:
   transcendence-network:
     driver: bridge
 
-  # # user:
-  #   build:
-  #     context: ./user_management
-  #     dockerfile: Dockerfile.dev
-  #   ports:
-  #     - "3003:3003"
