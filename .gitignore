@@ -5,4 +5,35 @@ nginx/ssl/*.key
 nginx/ssl/*.crt
 
 # Keep the directory structure
-!nginx/ssl/.gitkeep
+!nginx/ssl/.gitkeep# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+logs/
+*.log
+log.txt
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+
+# Optional: VSCode
+.vscode/
+
+# Optional: build output
+dist/
+build/
