@@ -1,0 +1,22 @@
+services:
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: frontend-prod
+    ports:
+      - "8080:8080"
+
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+    environment:
+      - DOCKER=true

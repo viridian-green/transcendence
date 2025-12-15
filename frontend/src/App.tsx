@@ -1,18 +1,35 @@
+import { Suspense } from 'react';
+import { Link, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
+import { Home, About, NotFound, Loading, Game, Landing } from '@/src/pages/index';
+import { Avatar } from './components';
 
 function App() {
+	const location = useLocation();
+	const isLanding = location.pathname === '/';
+
 	return (
-		<div className='text-center text-2xl font-bold mt-8'>
-			Welcome to Transcendence! 🏓
-			<div className='mt-8 flex justify-center'>
-				<iframe
-					src='/game'
-					title='Pong Game'
-					width='800'
-					height='600'
-					style={{ border: 'none' }}
-				/>
-			</div>
+		<div className='flex min-h-screen flex-col bg-black p-6 text-pink-600'>
+			{!isLanding && (
+				<nav className='font-bit-slim flex justify-end'>
+					{/* <Link to='/'>Home</Link>
+				<Link to='/about'>About</Link>
+				<Link to='/game'>Pong</Link> */}
+					<Link to='/profile'>{<Avatar />}</Link>
+				</nav>
+			)}
+
+			<main className='flex-1'>
+				<Suspense fallback={<Loading />}>
+					<Routes>
+						<Route path='/' element={<Landing />} />
+						<Route path='/home' element={<Home />} />
+						<Route path='/about' element={<About />} />
+						<Route path='/game/*' element={<Game />} />
+						<Route path='*' element={<NotFound />} />
+					</Routes>
+				</Suspense>
+			</main>
 		</div>
 	);
 }
