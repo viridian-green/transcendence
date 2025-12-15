@@ -16,6 +16,7 @@ export default defineConfig({
 		port: 5173,
 		strictPort: true,
 		// this is crucial, because Docker can not bind to localhost
-		host: isDocker ? '0.0.0.0' : '127.0.0.1',
+		//host: isDocker ? '0.0.0.0' : '127.0.0.1',
+		host: true
 	},
 });
