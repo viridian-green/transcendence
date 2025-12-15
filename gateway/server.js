@@ -1,5 +1,5 @@
 //const { registerUserModule } = require("./services/user");
-const { registerGameModule } = require("./services/game");
+const { registerGameModule } = require("./routes/game");
 
 const fastify = require("fastify")({ logger: true });
 PORT = 3000;
