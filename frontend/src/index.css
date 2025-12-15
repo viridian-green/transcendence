@@ -1,0 +1,49 @@
+@import 'tailwindcss';
+
+@font-face {
+	font-family: 'Retro';
+	src: url('/fonts/kongtext.ttf') format('trueType');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Bit';
+	src: url('/fonts/bit5x3-fixed.ttf') format('trueType');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Bit Large';
+	src: url('/fonts/bit5x5-fixed.ttf') format('trueType');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Bit Slim';
+	src: url('/fonts/bit9x9-fixed.ttf') format('trueType');
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+}
+
+@theme {
+	--font-retro: 'Retro', sans-serif;
+	--font-bit: 'Bit', sans-serif;
+	--font-bit-slim: 'Bit Slim', sans-serif;
+	--font-bit-large: 'Bit Large', sans-serif;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: var(--font-retro);
+	background-color: #f0f0f0;
+}
+
+@tailwind utilities;

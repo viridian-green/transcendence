@@ -1,19 +1,56 @@
-version: "3.9"
-
 services:
-  api-gateway:
-    build: ./api-gateway
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - gateway
+      - frontend
+    networks:
+      - transcendence-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    working_dir: /app
+    networks:
+      - transcendence-network
+
+  game:
+    build:
+      context: ./services/game-service
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3002:3002"
+    networks:
+      - transcendence-network
+
+  user:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3003:3003"
+    networks:
+      - transcendence-network
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
-    environment:
-      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
-    depends_on:
-      - user-service
+    networks:
+      - transcendence-network
 
-  user-service:
-    build: ./user-service
-    ports:
-      - "4000:4000"
-    environment:
-      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
-      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+networks:
+  transcendence-network:
+    driver: bridge
+
