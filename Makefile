@@ -34,3 +34,6 @@ clean:
 # Rebuild from scratch
 rebuild: clean setup
 	docker compose up --build -d
+
+open:
+	open https://localhost:8443
