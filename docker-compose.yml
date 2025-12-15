@@ -25,7 +25,7 @@ services:
 
   game:
     build:
-      context: ./services/game
+      context: ./services/game-service
       dockerfile: Dockerfile.dev
     ports:
       - "3002:3002"
