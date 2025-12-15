@@ -1,6 +1,6 @@
 const registerGameModule = async (fastify) => {
   // Serve the game HTML page
-  fastify.get("/game", async (request, reply) => {
+  fastify.get("/game-service", async (request, reply) => {
     try {
       const response = await fetch("http://game:3002/");
       const data = await response.text();
