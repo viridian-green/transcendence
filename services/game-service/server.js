@@ -1,8 +1,14 @@
-const express = require("express");
-const app = express();
+const path = require('path');
+const fastify = require('fastify')({ logger: true });
 
-app.use(express.static("public"));
+const start = async () => {
+  try {
+    const address = await fastify.listen({ port: 3002, host: '0.0.0.0' });
+    fastify.log.info(`Pong running at ${address}`);
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
+};
 
-app.listen(3002, () => {
-  console.log("Pong running at http://localhost:3002");
-});
+start();
