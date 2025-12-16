@@ -22,6 +22,8 @@ services:
     working_dir: /app
     networks:
       - transcendence-network
+    environment:
+      - DOCKER=true
 
   game:
     build:
