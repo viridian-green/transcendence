@@ -1,12 +1,20 @@
-const path = require('path');
-const fastify = require('fastify')({ logger: true });
+const fastify = require("fastify")({ logger: true });
+const path = require("path");
+
+const PORT = 3002;
+const HOST = "0.0.0.0";
+
+// Register static file plugin
+fastify.register(require("@fastify/static"), {
+  root: path.join(__dirname, "public"),
+  prefix: "/",
+});
 
 const start = async () => {
   try {
-    const address = await fastify.listen({ port: 3002, host: '0.0.0.0' });
-    fastify.log.info(`Pong running at ${address}`);
-  } catch (err) {
-    fastify.log.error(err);
+    await fastify.listen({ port: PORT, host: HOST });
+  } catch (error) {
+    fastify.log.error(error);
     process.exit(1);
   }
 };
