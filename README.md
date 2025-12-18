@@ -49,6 +49,7 @@ make rebuild   # Clean rebuild (build images from scratch)
 - Gateway (Fastify): http://localhost:3000
 - Frontend (Vite dev): http://localhost:5173
 - Game service: http://localhost:3002
+- User Service: http://localhost:3003
 
 Notes:
 - SSL uses self‑signed certs generated into `nginx/ssl` by `make setup` (run implicitly by `make up`). Your browser may warn on first visit to https://localhost:8443.

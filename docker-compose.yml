@@ -29,7 +29,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
-      - gateway
+      - api-gateway
       - frontend
     networks:
       - transcendence-network
@@ -60,30 +60,23 @@ services:
     networks:
       - transcendence-network
   
-  #user:
-  #  build:
-  #    context: ./services/user-service
-  #    dockerfile: Dockerfile.dev
-  #  depends_on:
-  #   database:
-  #     condition: service_healthy
-  #  environment:
-  #    DATABASE_URL: postgres://myuser:mypassword@database:5432/user_db
-  #  ports:
-  #    - "3003:3003"
-  #  networks:
-  #    - transcendence-network
+  user:
+   build:
+     context: ./services/user-service
+     dockerfile: Dockerfile.dev
+   depends_on:
+    database:
+      condition: service_healthy
+   environment:
+     DATABASE_URL: postgres://myuser:mypassword@database:5432/user_db
+   ports:
+     - "3003:3003"
+   networks:
+     - transcendence-network
 
-  # # user:
-  #   build:
-  #     context: ./user_management
-  #     dockerfile: Dockerfile.dev
-  #   ports:
-  #     - "3003:3003"
-  
-  gateway:
+  api-gateway:
     build:
-      context: ./gateway
+      context: ./api-gateway
       dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
