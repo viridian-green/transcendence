@@ -2,12 +2,12 @@ const fp = require("fastify-plugin");
 
 async function userRoutes(fastify) {
   fastify.register(require("@fastify/http-proxy"), {
-    upstream: "http://user-service:3003",
+    upstream: "http://user:3003",
     prefix: "/api/auth",
   });
 
   fastify.register(require("@fastify/http-proxy"), {
-    upstream: "http://user-service:3003",
+    upstream: "http://user:3003",
     prefix: "/api/users",
   });
 }

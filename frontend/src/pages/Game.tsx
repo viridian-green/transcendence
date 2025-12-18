@@ -6,7 +6,7 @@ const Game: FC = () => {
 			<div className='text-center text-2xl font-bold'>Pong</div>
 			<div className='flex justify-center'>
 				<iframe
-					src='/game-service'
+					src='/api/game/'
 					title='Pong Game'
 					width='800'
 					height='600'
