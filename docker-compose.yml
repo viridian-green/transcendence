@@ -1,4 +1,25 @@
 services:
+  database:
+    image: postgres:16-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432" # container port to laptop port - to connect with dbeaver
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - transcendence-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d game_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   nginx:
     image: nginx:alpine
     ports:
@@ -29,11 +50,37 @@ services:
     build:
       context: ./services/game-service
       dockerfile: Dockerfile.dev
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://myuser:mypassword@database:5432/game_db
     ports:
       - "3002:3002"
     networks:
       - transcendence-network
+  
+  #user:
+  #  build:
+  #    context: ./services/user-service
+  #    dockerfile: Dockerfile.dev
+  #  depends_on:
+  #   database:
+  #     condition: service_healthy
+  #  environment:
+  #    DATABASE_URL: postgres://myuser:mypassword@database:5432/user_db
+  #  ports:
+  #    - "3003:3003"
+  #  networks:
+  #    - transcendence-network
 
+  # # user:
+  #   build:
+  #     context: ./user_management
+  #     dockerfile: Dockerfile.dev
+  #   ports:
+  #     - "3003:3003"
+  
   gateway:
     build:
       context: ./gateway
@@ -47,9 +94,6 @@ networks:
   transcendence-network:
     driver: bridge
 
-  # # user:
-  #   build:
-  #     context: ./user_management
-  #     dockerfile: Dockerfile.dev
-  #   ports:
-  #     - "3003:3003"
+volumes:
+  postgres_data:
+
