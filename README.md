@@ -76,6 +76,34 @@ make clean && make up
 
 ---
 
+## Running Tests
+
+The project includes basic test suites for all services. Tests verify the structure and configuration of each service.
+
+Run all tests from the project root:
+
+```bash
+npm test
+```
+
+Or run tests for individual services:
+
+```bash
+npm run test:gateway    # Test the gateway service
+npm run test:game       # Test the game service
+npm run test:user       # Test the user service
+```
+
+You can also run tests directly in each service directory:
+
+```bash
+cd gateway && npm test
+cd services/game-service && npm test
+cd services/user-service && npm test
+```
+
+---
+
 ## Gateway routes folder
 The gateway modules now live in `gateway/routes` (previously `gateway/services`). Ensure imports/registrations use `./routes/...`. Example in `gateway/server.js`:
 

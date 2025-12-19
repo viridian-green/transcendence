@@ -1,4 +1,10 @@
 {
+  "scripts": {
+    "test": "npm test --prefix gateway && npm test --prefix services/game-service && npm test --prefix services/user-service",
+    "test:gateway": "npm test --prefix gateway",
+    "test:game": "npm test --prefix services/game-service",
+    "test:user": "npm test --prefix services/user-service"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.5.0",
