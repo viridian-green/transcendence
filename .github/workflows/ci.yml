@@ -1,0 +1,23 @@
+name: Build Pong App
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+    
+    - name: Build and run containers
+      run: make up
+    
+    # TODO
+    # - name: Run Tests
+    #   run: make test
+
