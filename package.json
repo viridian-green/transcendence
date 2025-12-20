@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@fastify/multipart": "^9.3.0",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.5.0",
     "dotenv": "^17.2.3",
