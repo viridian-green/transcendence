@@ -5,7 +5,7 @@ import { PinkButton } from '@components/index';
 const Home: FC = () => {
 	const navigate = useNavigate();
 
-	const handleTwoPlayersClick = () => {
+	const handleLocalGameStart = () => {
 		navigate('/game');
 	};
 
@@ -46,11 +46,17 @@ const Home: FC = () => {
 			</section>
 			<p className='text-xs text-slate-400'>Choose your game mode:</p>
 			<div className='mt-4 flex flex-row justify-center gap-20 text-center text-xl'>
-				<PinkButton text='2 Players' onClick={handleTwoPlayersClick} />
 				<PinkButton
-					text='4 Players'
+					text='AI Opponent'
 					onClick={() => {
-						alert('tournamnet TBD');
+						alert('TBD');
+					}}
+				/>
+				<PinkButton text='Local' onClick={handleLocalGameStart} />
+				<PinkButton
+					text='Remote'
+					onClick={() => {
+						alert('TBD');
 					}}
 				/>
 			</div>
