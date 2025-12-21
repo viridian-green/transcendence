@@ -148,3 +148,4 @@ console.log(logInSchema.safeParse({ username: 'test', email: 'test@example.com',
 - [How to Dockerize a React + Vite app? – Medium Article](https://thedkpatel.medium.com/dockerizing-react-application-built-with-vite-a-simple-guide-4c41eb09defa)
 - [How to Dockerize a React + Vite app? – Official Docs](https://docs.docker.com/guides/reactjs/containerize/)
 - [Docker.dev](https://docs.docker.com/guides/reactjs/containerize/)
+- [Login & Signup](https://clerk.com/blog/building-a-react-login-page-template)
