@@ -3,7 +3,9 @@ const ctx = canvas.getContext("2d");
 
 let p1 = { x: 20,  y: canvas.height / 2 - 40, w: 10, h: 80, dy: 0 };
 let p2 = { x: canvas.width - 30, y: canvas.height / 2 - 40, w: 10, h: 80, dy: 0 };
-let ball = { x: canvas.width/2, y: canvas.height/2, r: 8, dx: 4, dy: 4 };
+let speed = 4;
+let serveRight = true;
+let ball = { x: canvas.width/2, y: canvas.height/2, r: 8, dx: speed, dy: 4 }; 
 
 document.addEventListener("keydown", e => {
   if (e.key === "ArrowUp") p2.dy = -6;
@@ -50,9 +52,12 @@ function update() {
   }
 
   // Reset if ball passes left or right
-  if (ball.x < 0 || ball.x > canvas.width) {
+if (ball.x < 0 || ball.x > canvas.width) {
     ball.x = canvas.width/2;
     ball.y = canvas.height/2;
+    // alternate serve direction each reset
+    ball.dx = serveRight ? Math.abs(speed) : -Math.abs(speed);
+    serveRight = !serveRight;
   }
 }
 
