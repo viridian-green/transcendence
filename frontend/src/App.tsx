@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 import { Link, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
-import { Home, About, NotFound, Loading, Game, Landing, Login, Signup } from '@/src/pages/index';
-import { Avatar } from './components';
+import { Home, About, NotFound, Loading, Game, Landing, Login, Signup } from '@pages/index';
+import { Avatar } from '@components/index';
 
 function App() {
 	const location = useLocation();

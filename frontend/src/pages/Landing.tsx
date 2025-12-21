@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { PinkButton } from '../components';
+import { PinkButton } from '@components/index';
 import './index.css';
 
 const Landing = () => {

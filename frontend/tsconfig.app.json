@@ -28,8 +28,8 @@
 
 		"paths": {
 			"@/*": ["*"],
-			"@pages/*": ["src/pages/*"],
-			"@components/*": ["src/components/*"]
+			"@pages/*": ["./src/pages/*"],
+			"@components/*": ["./src/components/*"]
 		}
 	},
 	"include": ["src"],

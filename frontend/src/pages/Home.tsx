@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PinkButton } from '../components';
+import { PinkButton } from '@components/index';
 
 const Home: FC = () => {
 	const navigate = useNavigate();

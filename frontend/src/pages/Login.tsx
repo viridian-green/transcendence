@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z, ZodError } from 'zod';
-import ExclamationCircleOutline from '../components/ExclamationCircleOutline';
+import { ExclamationCircleOutline } from '@components/index';
 
 const logInSchema = z.object({
 	email: z.email('Invalid email address'),
