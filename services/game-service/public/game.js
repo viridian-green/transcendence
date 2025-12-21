@@ -3,8 +3,7 @@ const ctx = canvas.getContext("2d");
 
 let p1 = { x: 20,  y: canvas.height / 2 - 40, w: 10, h: 80, dy: 0 };
 let p2 = { x: canvas.width - 30, y: canvas.height / 2 - 40, w: 10, h: 80, dy: 0 };
-let ball = { x: 0, y: 0, r: 8, dx: 0, dy: 0 };
-serveBall(Math.random() < 0.5 ? 1 : -1);
+let ball = { x: canvas.width/2, y: canvas.height/2, r: 8, dx: 4, dy: 4 };
 
 document.addEventListener("keydown", e => {
   if (e.key === "ArrowUp") p2.dy = -6;
@@ -18,18 +17,6 @@ document.addEventListener("keyup", e => {
   if (["ArrowUp","ArrowDown"].includes(e.key)) p2.dy = 0;
   if (["w","s"].includes(e.key)) p1.dy = 0;
 });
-
-function serveBall(direction = 1) {
-  ball.x = canvas.width / 2;
-  ball.y = canvas.height / 2;
-
-  const speed = 4;
-  const angle = (Math.random() * Math.PI / 3) - Math.PI / 6; // -30° to +30°
-
-  ball.dx = direction * speed * Math.cos(angle);
-  ball.dy = speed * Math.sin(angle);
-}
-
 
 function update() {
   // Move paddles
@@ -62,22 +49,11 @@ function update() {
     ball.x = p2.x - ball.r;
   }
 
-  let serving = false;
-
-
   // Reset if ball passes left or right
-if (ball.x < 0 || ball.x > canvas.width) {
-  serving = true;
-  ball.dx = 0;
-  ball.dy = 0;
-
-  setTimeout(() => {
-    const dir = ball.x < 0 ? 1 : -1; // serve toward scoring player
-    serveBall(dir);
-    serving = false;
-  }, 700);
-}
-
+  if (ball.x < 0 || ball.x > canvas.width) {
+    ball.x = canvas.width/2;
+    ball.y = canvas.height/2;
+  }
 }
 
 function draw() {
