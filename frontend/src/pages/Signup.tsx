@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z, ZodError } from 'zod';
+import ExclamationCircleOutline from '../components/ExclamationCircleOutline';
 
 const signupSchema = z
 	.object({
@@ -25,6 +26,13 @@ const signupSchema = z
 	});
 
 type User = z.infer<typeof signupSchema>;
+
+const ErrorMessage = ({ message }: { message: string }) => (
+	<div className='flex text-pink-600'>
+		<ExclamationCircleOutline className='mr-1 h-4 w-4' />
+		<p className='text-sm text-pink-600'>{message}</p>
+	</div>
+);
 
 export default function Signup() {
 	const [formData, setFormData] = useState({
@@ -117,9 +125,7 @@ export default function Signup() {
 								placeholder='Enter your email'
 								className='rounded-md border-2 border-slate-700 p-2 text-sm'
 							/>
-							{errors.email && (
-								<p className='text-sm text-pink-600'>{errors.email}</p>
-							)}
+							{errors.email && <ErrorMessage message={errors.email} />}
 						</div>
 						<div className='flex flex-col space-y-2'>
 							<label
@@ -138,9 +144,7 @@ export default function Signup() {
 								placeholder='Enter your username'
 								className='rounded-md border-2 border-slate-700 p-2 text-sm'
 							/>
-							{errors.username && (
-								<p className='text-sm text-pink-600'>{errors.username}</p>
-							)}
+							{errors.username && <ErrorMessage message={errors.username} />}
 						</div>
 						<div className='flex flex-col space-y-2'>
 							<label
@@ -159,9 +163,7 @@ export default function Signup() {
 								placeholder='Enter your password'
 								className='rounded-md border-2 border-slate-700 p-2 text-sm'
 							/>
-							{errors.password && (
-								<p className='text-sm text-pink-600'>{errors.password}</p>
-							)}
+							{errors.password && <ErrorMessage message={errors.password} />}
 						</div>
 						<div className='flex flex-col space-y-2'>
 							<label
@@ -181,14 +183,11 @@ export default function Signup() {
 								className='rounded-md border-2 border-slate-700 p-2 text-sm'
 							/>
 							{errors.confirmPassword && (
-								<p className='text-sm text-pink-600'>{errors.confirmPassword}</p>
+								<ErrorMessage message={errors.confirmPassword} />
 							)}
 						</div>
-						{errors.submit && (
-							<p className='text-center text-sm text-red-500'>{errors.submit}</p>
-						)}
 						<div>
-							<input type='checkbox' id='terms' name='terms' value='terms' checked />
+							<input type='checkbox' id='terms' name='terms' value='terms' />
 							<label htmlFor='terms' className='ml-2 text-sm text-slate-300'>
 								I agree to the{' '}
 								<a href='/terms' className='text-purple-600 hover:text-purple-500'>
@@ -196,11 +195,11 @@ export default function Signup() {
 								</a>
 							</label>
 						</div>
+						{errors.submit && <ErrorMessage message={errors.submit} />}
 						<button
 							type='submit'
 							className='w-full rounded-lg border-2 border-pink-600 bg-pink-600 py-2 text-black'
 							disabled={isSubmitting}
-							onClick={handleSubmit}
 						>
 							{isSubmitting ? 'Creating account...' : 'Create Account'}
 						</button>

@@ -1,13 +1,21 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z, ZodError } from 'zod';
+import ExclamationCircleOutline from '../components/ExclamationCircleOutline';
 
 const logInSchema = z.object({
 	email: z.email('Invalid email address'),
-	password: z.string().min(1, 'Password must be at least 8 characters'),
+	password: z.string().min(1, 'Password required'),
 });
 
 type User = z.infer<typeof logInSchema>;
+
+const ErrorMessage = ({ message }: { message: string }) => (
+	<div className='flex text-pink-600'>
+		<ExclamationCircleOutline className='mr-1 h-4 w-4' />
+		<p className='text-sm text-pink-600'>{message}</p>
+	</div>
+);
 
 export default function Login() {
 	const [formData, setFormData] = useState({
@@ -63,10 +71,10 @@ export default function Login() {
 	};
 
 	return (
-		<div className='flex min-h-screen items-center justify-center p-4'>
+		<div className='flex min-h-screen items-center justify-center p-4 text-white'>
 			<div className='w-full max-w-md'>
 				<div>
-					<h1 className='text-center text-2xl'>Login</h1>
+					<h1 className='mb-6 text-center text-5xl font-bold text-pink-600'>Login</h1>
 				</div>
 				<div>
 					<form
@@ -76,8 +84,8 @@ export default function Login() {
 						}}
 						className='space-y-4'
 					>
-						<div className='space-y-2'>
-							<label htmlFor='email' className='text-sm font-medium'>
+						<div className='flex flex-col space-y-2'>
+							<label htmlFor='email' className='text-md font-medium text-slate-300'>
 								Email
 							</label>
 							<input
@@ -88,12 +96,15 @@ export default function Login() {
 								onChange={handleChange}
 								required
 								placeholder='Enter your email'
-								className={errors.email ? 'border-red-500' : ''}
+								className='rounded-md border-2 border-slate-700 p-2 text-sm'
 							/>
-							{errors.email && <p className='text-sm text-red-500'>{errors.email}</p>}
+							{errors.email && <ErrorMessage message={errors.email} />}
 						</div>
-						<div className='space-y-2'>
-							<label htmlFor='password' className='text-sm font-medium'>
+						<div className='flex flex-col space-y-2'>
+							<label
+								htmlFor='password'
+								className='text-md font-medium text-slate-300'
+							>
 								Password
 							</label>
 							<input
@@ -104,22 +115,24 @@ export default function Login() {
 								onChange={handleChange}
 								required
 								placeholder='Enter your password'
-								className={errors.password ? 'border-red-500' : ''}
+								className='rounded-md border-2 border-slate-700 p-2 text-sm'
 							/>
-							{errors.password && (
-								<p className='text-sm text-red-500'>{errors.password}</p>
-							)}
+							{errors.password && <ErrorMessage message={errors.password} />}
 						</div>
 						{errors.submit && (
-							<p className='text-center text-sm text-red-500'>{errors.submit}</p>
+							<p className='text-center text-sm text-pink-600'>{errors.submit}</p>
 						)}
-						<button type='submit' className='w-full' disabled={isSubmitting}>
-							{isSubmitting ? 'Signing In...' : 'Sign In'}
+						<button
+							type='submit'
+							className='w-full rounded-lg border-2 border-pink-600 bg-pink-600 py-2 text-black'
+							disabled={isSubmitting}
+						>
+							{isSubmitting ? 'Logging In...' : 'Log In'}
 						</button>
-						<div className='text-center text-sm'>
+						<div className='text-center text-sm text-slate-300'>
 							Don't have an account?{' '}
 							<a href='/signup' className='text-purple-600 hover:text-purple-500'>
-								Sign up
+								Register
 							</a>
 						</div>
 					</form>
