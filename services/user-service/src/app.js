@@ -23,6 +23,7 @@ import healthRoute from './routes/health.js';
 app.register(healthRoute);
 
 import userRoutes from './routes/users/index.js';
-app.register(userRoutes, { prefix: '/users' });
+app.register(userRoutes);
+//{ prefix: '/users'
 
 export default app;
