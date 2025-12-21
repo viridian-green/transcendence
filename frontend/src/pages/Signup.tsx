@@ -49,6 +49,12 @@ export default function Signup() {
 			setIsSubmitting(true);
 			setErrors({});
 
+			const termsAccepted = (document.getElementById('terms') as HTMLInputElement)?.checked; // Replace with actual checkbox state
+			if (!termsAccepted) {
+				setErrors({ submit: 'You must agree to the Terms and Policy.' });
+				return;
+			}
+
 			// Validate the form data
 			const validUser: User = signupSchema.parse(data);
 			console.log('Validated Data:', validUser);
@@ -84,10 +90,10 @@ export default function Signup() {
 	};
 
 	return (
-		<div className='flex min-h-screen items-center justify-center p-4'>
+		<div className='flex min-h-screen items-center justify-center p-4 text-white'>
 			<div className='w-full max-w-md'>
 				<div>
-					<h1 className='text-center text-2xl'>Login</h1>
+					<h1 className='mb-6 text-center text-5xl font-bold text-pink-600'>Register</h1>
 				</div>
 				<div>
 					<form
@@ -97,8 +103,8 @@ export default function Signup() {
 						}}
 						className='space-y-4'
 					>
-						<div className='space-y-2'>
-							<label htmlFor='email' className='text-sm font-medium'>
+						<div className='flex flex-col space-y-2'>
+							<label htmlFor='email' className='text-md font-medium text-slate-300'>
 								Email
 							</label>
 							<input
@@ -109,12 +115,17 @@ export default function Signup() {
 								onChange={handleChange}
 								required
 								placeholder='Enter your email'
-								className={errors.email ? 'border-red-500' : ''}
+								className='rounded-md border-2 border-slate-700 p-2 text-sm'
 							/>
-							{errors.email && <p className='text-sm text-red-500'>{errors.email}</p>}
+							{errors.email && (
+								<p className='text-sm text-pink-600'>{errors.email}</p>
+							)}
 						</div>
-						<div className='space-y-2'>
-							<label htmlFor='username' className='text-sm font-medium'>
+						<div className='flex flex-col space-y-2'>
+							<label
+								htmlFor='username'
+								className='text-md font-medium text-slate-300'
+							>
 								Username
 							</label>
 							<input
@@ -125,14 +136,17 @@ export default function Signup() {
 								onChange={handleChange}
 								required
 								placeholder='Enter your username'
-								className={errors.email ? 'border-red-500' : ''}
+								className='rounded-md border-2 border-slate-700 p-2 text-sm'
 							/>
 							{errors.username && (
-								<p className='text-sm text-red-500'>{errors.username}</p>
+								<p className='text-sm text-pink-600'>{errors.username}</p>
 							)}
 						</div>
-						<div className='space-y-2'>
-							<label htmlFor='password' className='text-sm font-medium'>
+						<div className='flex flex-col space-y-2'>
+							<label
+								htmlFor='password'
+								className='text-md font-medium text-slate-300'
+							>
 								Password
 							</label>
 							<input
@@ -143,14 +157,17 @@ export default function Signup() {
 								onChange={handleChange}
 								required
 								placeholder='Enter your password'
-								className={errors.password ? 'border-red-500' : ''}
+								className='rounded-md border-2 border-slate-700 p-2 text-sm'
 							/>
 							{errors.password && (
-								<p className='text-sm text-red-500'>{errors.password}</p>
+								<p className='text-sm text-pink-600'>{errors.password}</p>
 							)}
 						</div>
-						<div className='space-y-2'>
-							<label htmlFor='confirmPassword' className='text-sm font-medium'>
+						<div className='flex flex-col space-y-2'>
+							<label
+								htmlFor='confirmPassword'
+								className='text-md font-medium text-slate-300'
+							>
 								Confirm Password
 							</label>
 							<input
@@ -161,22 +178,36 @@ export default function Signup() {
 								onChange={handleChange}
 								required
 								placeholder='Confirm your password'
-								className={errors.confirmPassword ? 'border-red-500' : ''}
+								className='rounded-md border-2 border-slate-700 p-2 text-sm'
 							/>
 							{errors.confirmPassword && (
-								<p className='text-sm text-red-500'>{errors.confirmPassword}</p>
+								<p className='text-sm text-pink-600'>{errors.confirmPassword}</p>
 							)}
 						</div>
 						{errors.submit && (
 							<p className='text-center text-sm text-red-500'>{errors.submit}</p>
 						)}
-						<button type='submit' className='w-full' disabled={isSubmitting}>
-							{isSubmitting ? 'Creating account...' : 'Sign Up'}
+						<div>
+							<input type='checkbox' id='terms' name='terms' value='terms' checked />
+							<label htmlFor='terms' className='ml-2 text-sm text-slate-300'>
+								I agree to the{' '}
+								<a href='/terms' className='text-purple-600 hover:text-purple-500'>
+									Terms and Policy
+								</a>
+							</label>
+						</div>
+						<button
+							type='submit'
+							className='w-full rounded-lg border-2 border-pink-600 bg-pink-600 py-2 text-black'
+							disabled={isSubmitting}
+							onClick={handleSubmit}
+						>
+							{isSubmitting ? 'Creating account...' : 'Create Account'}
 						</button>
-						<div className='text-center text-sm'>
+						<div className='text-center text-sm text-slate-300'>
 							Already have an account?{' '}
 							<a href='/login' className='text-purple-600 hover:text-purple-500'>
-								Log in
+								Login
 							</a>
 						</div>
 					</form>
