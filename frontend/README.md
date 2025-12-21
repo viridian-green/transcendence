@@ -118,6 +118,31 @@ During commits, you should see something like:
 
 -> Commits will fail if linting or formatting cannot succeed.
 
+## Zod
+
+Zod is used for schema validation, e.g. for login and signup.
+
+```javascript
+const logInSchema = z.object({
+	email: z.email('Invalid email address'),
+	username: z.string().min(1, 'Username is required'),
+	password: z.string().min(1, 'Password is required'),
+	age: z.number().min(13, 'You must be at least 13 years old').optional(), // optional field
+});
+.partial(); // make all fields optional
+.pick() // select specific fields
+.extend() // add new fields
+.omit() // remove specific fields
+
+// infer type based on schema
+type User = z.infer<typeof logInSchema>;
+
+// parse throws if invalid
+console.log(logInSchema.parse({ username: 'test', email: 'test@example.com', password: 'password' }));
+// safeParse does not throw, returns an object with success boolean
+console.log(logInSchema.safeParse({ username: 'test', email: 'test@example.com', password: 'password' }));
+```
+
 ## Resources
 
 - [How to Dockerize a React + Vite app? – Medium Article](https://thedkpatel.medium.com/dockerizing-react-application-built-with-vite-a-simple-guide-4c41eb09defa)
