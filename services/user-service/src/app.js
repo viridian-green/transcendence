@@ -1,11 +1,20 @@
 import Fastify from 'fastify';
 import dotenv from 'dotenv';
+import jwt from '@fastify/jwt';
 
 dotenv.config();
 
 const app = Fastify({
     logger: true
 });
+
+app.register(jwt, {
+    secret: process.env.JWT_SECRET
+});
+
+// app.addHook('onRoute', (route) => {
+//     console.log('ROUTE:', route.method, route.url);
+// });
 
 import dbPlugin from './plugins/db.js';
 app.register(dbPlugin);
