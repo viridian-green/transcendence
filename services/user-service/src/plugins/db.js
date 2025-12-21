@@ -1,18 +1,29 @@
-//This was created by Natália in order to test user management service. It's not the official database Vanessa's going to create
-import fp from 'fastify-plugin'
-import Database from 'better-sqlite3'
+import fastifyPlugin from 'fastify-plugin'
+import fastifyPostgres from '@fastify/postgres'
 
-export default fp(async (app) => {
-    const db = new Database('./database.db');
+async function dbConnector(fastify, options) {
 
-    db.exec(`
+  // REGISTER THE DATABASE
+  fastify.register(fastifyPostgres, {
+    connectionString: process.env.DATABASE_URL
+  })
+
+  // CREATE TABLE
+  fastify.addHook('onReady', async () => {
+    try {
+      await fastify.pg.query(`
         CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             username TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
             email TEXT NOT NULL
-        )`
-    );
+        );
+      `)
+      fastify.log.info('User Table created (or already existed).')
+    } catch (err) {
+      fastify.log.error(err, 'Error creating User table')
+    }
+  })
+}
 
-    app.decorate('db', db);
-})
+export default fastifyPlugin(dbConnector)

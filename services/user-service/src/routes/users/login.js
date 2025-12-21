@@ -1,4 +1,4 @@
-import db from "../../plugins/db.js";
+import bcrypt from "bcryptjs";
 
 export default async function loginRoute(app) {
     app.post('/', async (req, reply) => {
@@ -7,7 +7,13 @@ export default async function loginRoute(app) {
             return reply.code(400).send({ error: "Missing username or password"});
         }
 
-        const user = await db.prepare("SELECT * FROM users WHERE username = ?").get(username);
+        const res = await app.pg.query(
+            "SELECT * FROM users WHERE username = $1",
+            [username]
+        );
+        
+        const user = res.rows[0];
+
         if (!user) {
             return reply.code(401).send({ error: "Invalid credentials"});
         }

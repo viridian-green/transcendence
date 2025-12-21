@@ -5,10 +5,10 @@ FROM node:${NODE_VERSION} AS dev
 WORKDIR /app
 
 COPY package.json ./
-RUN npm install && npm install fastify
+RUN npm install
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 3003
 
-CMD ["node", "server.js"]
+CMD ["node", "src/server.js"]
