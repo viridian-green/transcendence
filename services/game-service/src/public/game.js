@@ -21,15 +21,12 @@ document.addEventListener("keyup", e => {
 });
 
 function update() {
-  // Move paddles
   p1.y += p1.dy;
   p2.y += p2.dy;
 
-  // Clamp paddles inside screen
   p1.y = Math.max(0, Math.min(canvas.height - p1.h, p1.y));
   p2.y = Math.max(0, Math.min(canvas.height - p2.h, p2.y));
 
-  // Move ball
   ball.x += ball.dx;
   ball.y += ball.dy;
 
@@ -51,13 +48,19 @@ function update() {
     ball.x = p2.x - ball.r;
   }
 
-  // Reset if ball passes left or right
+  // Reset if ball is out of bounds of canvas
 if (ball.x < 0 || ball.x > canvas.width) {
     ball.x = canvas.width/2;
-    ball.y = canvas.height/2;
-    // alternate serve direction each reset
-    ball.dx = serveRight ? Math.abs(speed) : -Math.abs(speed);
+    //Serving is at random on y axis
+    ball.y = ball.y = ball.r + Math.random() * (canvas.height - 2 * ball.r);
+
+    //ball either serves right or left,
+    ball.dx = serveRight ? Math.abs(ball.dx) : -Math.abs(ball.dx);
     serveRight = !serveRight;
+
+    //OPTIONAL: randomizing the serving speed 
+    // ball.dy = (Math.random() * 4) - 2;
+    // if (ball.dy === 0) ball.dy = 1;
   }
 }
 
