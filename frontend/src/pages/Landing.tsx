@@ -8,11 +8,11 @@ const Landing = () => {
 	return (
 		<div className='mb-2 flex min-h-screen flex-col items-center justify-center text-pink-600'>
 			<h1 className='font-retro mb-2 text-4xl'>Retroscendence</h1>
-			<p className='mb-8 text-sm'>A retro pong experience</p>
+			<p className='mb-8 text-xl'>A retro pong experience</p>
 
-			<div className='flex flex-col gap-4'>
+			<div className='flex flex-col gap-4 text-xl'>
 				<PinkButton text='Login' onClick={() => navigate('/login')} />
-				<PinkButton text='Signup' onClick={() => navigate('/signup')} />
+				<PinkButton text='Register' onClick={() => navigate('/signup')} />
 			</div>
 		</div>
 	);
