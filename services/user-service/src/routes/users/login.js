@@ -11,16 +11,16 @@ export default async function loginRoute(app) {
             "SELECT * FROM users WHERE username = $1",
             [username]
         );
-        
+
         const user = res.rows[0];
 
         if (!user) {
-            return reply.code(401).send({ error: "Invalid credentials"});
+            return reply.code(400).send({ error: "Invalid credentials"});
         }
 
         const isValid = await bcrypt.compare(password, user.password); //can i use bcrypt or does that violate the exercise?
         if (!isValid) {
-            return reply.code(401).send({ error: "Invalid credentials"});
+            return reply.code(400).send({ error: "Invalid credentials"});
         }
 
         //later add check for 2fa

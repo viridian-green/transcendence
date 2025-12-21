@@ -34,6 +34,6 @@ export default async function registerRoute(app) {
             [username, hashedPassword, email]
         );
 
-        return reply.send({ message: "User registered successfully" });
+        return reply.code(201).send({ message: "User registered successfully" });
     });
 }
