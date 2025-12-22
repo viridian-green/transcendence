@@ -1,6 +1,16 @@
 import { Suspense } from 'react';
 import { Link, Routes, Route, useLocation } from 'react-router-dom';
-import { Home, About, NotFound, Loading, Game, Landing, Login, Registration } from '@pages/index';
+import {
+	Home,
+	About,
+	NotFound,
+	Loading,
+	Game,
+	Landing,
+	Login,
+	Registration,
+	ProtectedRoute,
+} from '@pages/index';
 import { Avatar } from '@components/index';
 
 function App() {
@@ -27,9 +37,24 @@ function App() {
 						<Route path='/' element={<Landing />} />
 						<Route path='/login' element={<Login />} />
 						<Route path='/register' element={<Registration />} />
-						<Route path='/home' element={<Home />} />
+						<Route
+							path='/home'
+							element={
+								<ProtectedRoute>
+									<Home />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path='/game/*'
+							element={
+								<ProtectedRoute>
+									<Game />
+								</ProtectedRoute>
+							}
+						/>
+						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
-						<Route path='/game/*' element={<Game />} />
 						<Route path='*' element={<NotFound />} />
 					</Routes>
 				</Suspense>

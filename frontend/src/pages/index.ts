@@ -6,3 +6,4 @@ export { default as Loading } from './Loading';
 export { default as Landing } from './Landing';
 export { default as Registration } from './Registration';
 export { default as Login } from './Login';
+export { default as ProtectedRoute } from './ProtectedRoute';
