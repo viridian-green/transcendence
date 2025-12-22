@@ -1,15 +1,16 @@
 import fp from "fastify-plugin";
+import httpProxy from "@fastify/http-proxy";
 
 async function userRoutes(fastify) {
-//   fastify.register(require("@fastify/http-proxy"), {
+//   fastify.register(httpProxy, {
 //     upstream: "http://user:3003",
 //     prefix: "/api/auth",
 //   });
 
-  fastify.register(require("@fastify/http-proxy"), {
-    upstream: "http://user:3003",
-    prefix: "/api/users",
-  });
+    fastify.register(httpProxy, {
+        upstream: "http://user:3003",
+        prefix: "/api/users",
+    });
 }
 
 export default fp(userRoutes);
