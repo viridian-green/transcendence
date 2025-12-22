@@ -15,6 +15,13 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
+    - name: Prepare env files
+      run: |
+        cp .env.example .env
+        cp api-gateway/.env.example api-gateway/.env
+        cp services/game-service/.env.example services/game-service/.env
+        cp services/user-service/.env.example services/user-service/.env
+
     - name: Build and run containers
       run: make up
 
@@ -34,8 +41,13 @@ jobs:
 
     - name: Run user-service register tests
       run: |
-        chmod +x init-scripts/test-scripts/user_service/register.sh
-        ./init-scripts/test-scripts/user_service/register.sh
+        chmod +x init-scripts/test-scripts/user-service/register.sh
+        ./init-scripts/test-scripts/user-service/register.sh
+
+    - name: Run user-service login tests
+      run: |
+        chmod +x init-scripts/test-scripts/user-service/login.sh
+        ./init-scripts/test-scripts/user-service/login.sh
 
     - name: Dump logs on failure
       if: failure()
