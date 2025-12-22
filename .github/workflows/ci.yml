@@ -20,9 +20,15 @@ jobs:
       NGINX_HTTP_PORT: ${{ secrets.NGINX_HTTP_PORT }}
       NGINX_HTTPS_PORT: ${{ secrets.NGINX_HTTPS_PORT }}
 
-
     steps:
     - uses: actions/checkout@v6
+
+    - name: Prepare env files
+      run: |
+        cp .env.example .env
+        cp api-gateway/.env.example api-gateway/.env
+        cp services/game-service/.env.example services/game-service/.env
+        cp services/user-service/.env.example services/user-service/.env
     
     - name: Build and run containers
       run: make up
