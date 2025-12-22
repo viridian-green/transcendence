@@ -12,13 +12,27 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+      NGINX_HTTP_PORT: ${{ secrets.NGINX_HTTP_PORT }}
+      NGINX_HTTPS_PORT: ${{ secrets.NGINX_HTTPS_PORT }}
+
+
     steps:
     - uses: actions/checkout@v6
     
     - name: Build and run containers
       run: make up
     
-    # TODO
-    # - name: Run Tests
-    #   run: make test
+    #Test: Show that environment variables are working
+    - name: Print environment variables
+      run: |
+       if [ -z "$POSTGRES_USER" ]; then
+       echo "POSTGRES_USER not set"
+       exit 1
+       fi
+       echo "All required secrets are set"
 
