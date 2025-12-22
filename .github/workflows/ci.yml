@@ -66,6 +66,11 @@ jobs:
         chmod +x init-scripts/test-scripts/user-service/login.sh
         ./init-scripts/test-scripts/user-service/login.sh
 
+    - name: Run user-service update tests
+      run: |
+        chmod +x init-scripts/test-scripts/user-service/update.sh
+        ./init-scripts/test-scripts/user-service/login.sh
+
     - name: Dump logs on failure
       if: failure()
       run: docker compose logs
