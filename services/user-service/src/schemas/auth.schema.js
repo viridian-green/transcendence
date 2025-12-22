@@ -29,3 +29,28 @@ export const loginSchema = z.object({
         .string()
         .min(1, "Password is required"),
 });
+
+export const updateUserSchema = z.object({
+    username: z
+        .string()
+        .min(1)
+        .max(15)
+        .optional(),
+
+    email: z
+        .string()
+        .email()
+        .optional(),
+    password: z
+        .string()
+        .min(8)
+        .max(15)
+        .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+        .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+        .regex(/[0-9]/, "Password must contain at least one number")
+        .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character")
+        .optional(),
+}).refine(
+        data => Object.keys(data).length > 0,
+        { message: "At least one field must be provided" }
+);

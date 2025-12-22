@@ -12,9 +12,13 @@ app.register(jwt, {
     secret: process.env.JWT_SECRET
 });
 
-// app.addHook('onRoute', (route) => {
-//     console.log('ROUTE:', route.method, route.url);
-// });
+app.decorate("authenticate", async function (request, reply) {
+    try {
+        await request.jwtVerify();
+    } catch (err) {
+        reply.code(401).send({ error: "Unauthorized" });
+    }
+});
 
 import dbPlugin from './plugins/db.js';
 app.register(dbPlugin);
