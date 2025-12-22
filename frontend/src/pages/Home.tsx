@@ -1,9 +1,11 @@
 import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PinkButton } from '@components/index';
+import { useAuth } from '@/hooks/useAuth';
 
 const Home: FC = () => {
 	const navigate = useNavigate();
+	const { user } = useAuth();
 
 	const handleLocalGameStart = () => {
 		navigate('/game');
@@ -12,7 +14,7 @@ const Home: FC = () => {
 	return (
 		<div className='flex flex-col items-center justify-center gap-6'>
 			<section className='flex items-center justify-center gap-4'>
-				<h1 className='text-center text-2xl font-bold'>Welcome, User!</h1>
+				<h1 className='text-center text-2xl font-bold'>Welcome, {user?.username}!</h1>
 				<svg
 					fill='#e60076'
 					version='1.1'

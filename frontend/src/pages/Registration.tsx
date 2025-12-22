@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z, ZodError } from 'zod';
 import { ExclamationCircleOutline } from '@components/index';
+import { useAuth } from '../hooks/useAuth.tsx';
 
 const registrationSchema = z
 	.object({
@@ -25,7 +26,7 @@ const registrationSchema = z
 		path: ['confirmPassword'],
 	});
 
-type User = z.infer<typeof registrationSchema>;
+type RegistrationUser = z.infer<typeof registrationSchema>;
 
 const ErrorMessage = ({ message }: { message: string }) => (
 	<div className='flex text-pink-600'>
@@ -50,9 +51,9 @@ export default function Registration() {
 	}>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const navigate = useNavigate();
-	//   const { register } = useAuth()
+	const { register } = useAuth();
 
-	const handleSubmit = async (data: User) => {
+	const handleSubmit = async (data: RegistrationUser) => {
 		try {
 			setIsSubmitting(true);
 			setErrors({});
@@ -63,13 +64,9 @@ export default function Registration() {
 				return;
 			}
 
-			// Validate the form data
-			const validUser: User = registrationSchema.parse(data);
-			// TODO Remove console log
-			console.log('Validated Data:', validUser);
+			const validUser: RegistrationUser = registrationSchema.parse(data);
 
-			// TODO Attempt register
-			// await register(validUser.email, validUser.password, validUser.username)
+			await register(validUser.username, validUser.password, validUser.email);
 			navigate('/home');
 		} catch (error) {
 			if (error instanceof ZodError) {

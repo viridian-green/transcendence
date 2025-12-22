@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z, ZodError } from 'zod';
 import { ExclamationCircleOutline } from '@components/index';
+import { useAuth } from '../hooks/useAuth.tsx';
 
 const logInSchema = z.object({
 	username: z.string('Invalid username').min(1, 'Username required'),
 	password: z.string('Invalid password').min(1, 'Password required'),
 });
 
-type User = z.infer<typeof logInSchema>;
+type LoginUser = z.infer<typeof logInSchema>;
 
 const ErrorMessage = ({ message }: { message: string }) => (
 	<div className='flex text-pink-600'>
@@ -29,20 +30,16 @@ export default function Login() {
 	}>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const navigate = useNavigate();
-	//   const { login } = useAuth()
+	const { login } = useAuth();
 
-	const handleSubmit = async (data: User) => {
+	const handleSubmit = async (data: LoginUser) => {
 		try {
 			setIsSubmitting(true);
 			setErrors({});
 
-			// Validate the form data
-			const validUser: User = logInSchema.parse(data);
-			// TODO Remove console log
-			console.log('Validated Data:', validUser);
+			const validUser: LoginUser = logInSchema.parse(data);
 
-			// TODO Attempt sign in
-			// await logIn(validUser.username, validUser.password)
+			await login(validUser.username, validUser.password);
 			navigate('/home');
 		} catch (error) {
 			if (error instanceof ZodError) {

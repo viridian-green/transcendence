@@ -1,10 +1,13 @@
+import { useAuth } from '../hooks/useAuth.tsx';
+
 interface AvatarProps {
 	url?: string;
 	size?: number;
-	name?: string;
 }
 
-const Avatar = ({ url, size = 48, name = '?' }: AvatarProps) => {
+const Avatar = ({ url, size = 48 }: AvatarProps) => {
+	const { user } = useAuth();
+	const name = user?.username || '?';
 	const alt = `Avatar of ${name}`;
 	// const randomuserImage = 'https://randomuser.me/api/portraits/men/75.jpg';
 	return (
