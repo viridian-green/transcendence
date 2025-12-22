@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PinkButton } from '@components/index';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@hooks/useAuth';
 
 const Home: FC = () => {
 	const navigate = useNavigate();

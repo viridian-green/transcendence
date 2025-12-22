@@ -1,4 +1,4 @@
-import { useAuth } from '../hooks/useAuth.tsx';
+import { useAuth } from '@hooks/useAuth.tsx';
 
 interface AvatarProps {
 	url?: string;

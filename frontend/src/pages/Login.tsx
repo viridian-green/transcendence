@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z, ZodError } from 'zod';
 import { ExclamationCircleOutline } from '@components/index';
-import { useAuth } from '../hooks/useAuth.tsx';
+import { useAuth } from '@hooks/useAuth.tsx';
 
 const logInSchema = z.object({
 	username: z.string('Invalid username').min(1, 'Username required'),
