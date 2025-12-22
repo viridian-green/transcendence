@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { z, ZodError } from 'zod';
 import { ExclamationCircleOutline } from '@components/index';
 
-const signupSchema = z
+const registrationSchema = z
 	.object({
 		email: z.email('Invalid email address'),
 		username: z
@@ -25,7 +25,7 @@ const signupSchema = z
 		path: ['confirmPassword'],
 	});
 
-type User = z.infer<typeof signupSchema>;
+type User = z.infer<typeof registrationSchema>;
 
 const ErrorMessage = ({ message }: { message: string }) => (
 	<div className='flex text-pink-600'>
@@ -34,7 +34,7 @@ const ErrorMessage = ({ message }: { message: string }) => (
 	</div>
 );
 
-export default function Signup() {
+export default function Registration() {
 	const [formData, setFormData] = useState({
 		email: '',
 		password: '',
@@ -50,7 +50,7 @@ export default function Signup() {
 	}>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const navigate = useNavigate();
-	//   const { signIn } = useAuth()
+	//   const { register } = useAuth()
 
 	const handleSubmit = async (data: User) => {
 		try {
@@ -64,11 +64,12 @@ export default function Signup() {
 			}
 
 			// Validate the form data
-			const validUser: User = signupSchema.parse(data);
+			const validUser: User = registrationSchema.parse(data);
+			// TODO Remove console log
 			console.log('Validated Data:', validUser);
 
-			// TODO Attempt sign in
-			// await signUp(validUser.email, validUser.password)
+			// TODO Attempt register
+			// await register(validUser.email, validUser.password, validUser.username)
 			navigate('/home');
 		} catch (error) {
 			if (error instanceof ZodError) {

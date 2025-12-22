@@ -48,7 +48,7 @@ const Landing = () => {
 
 				<div className='flex flex-col gap-4 text-xl font-medium'>
 					<PinkButton text='Login' onClick={() => navigate('/login')} />
-					<PinkButton text='Register' onClick={() => navigate('/signup')} />
+					<PinkButton text='Register' onClick={() => navigate('/register')} />
 				</div>
 			</div>
 		</div>

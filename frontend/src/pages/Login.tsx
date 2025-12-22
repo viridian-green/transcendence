@@ -4,8 +4,8 @@ import { z, ZodError } from 'zod';
 import { ExclamationCircleOutline } from '@components/index';
 
 const logInSchema = z.object({
-	email: z.email('Invalid email address'),
-	password: z.string().min(1, 'Password required'),
+	username: z.string('Invalid username').min(1, 'Username required'),
+	password: z.string('Invalid password').min(1, 'Password required'),
 });
 
 type User = z.infer<typeof logInSchema>;
@@ -19,17 +19,17 @@ const ErrorMessage = ({ message }: { message: string }) => (
 
 export default function Login() {
 	const [formData, setFormData] = useState({
-		email: '',
+		username: '',
 		password: '',
 	});
 	const [errors, setErrors] = useState<{
-		email?: string;
+		username?: string;
 		password?: string;
 		submit?: string;
 	}>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const navigate = useNavigate();
-	//   const { signIn } = useAuth()
+	//   const { login } = useAuth()
 
 	const handleSubmit = async (data: User) => {
 		try {
@@ -38,10 +38,11 @@ export default function Login() {
 
 			// Validate the form data
 			const validUser: User = logInSchema.parse(data);
+			// TODO Remove console log
 			console.log('Validated Data:', validUser);
 
 			// TODO Attempt sign in
-			// await signIn(validUser.email, validUser.password)
+			// await logIn(validUser.username, validUser.password)
 			navigate('/home');
 		} catch (error) {
 			if (error instanceof ZodError) {
@@ -85,20 +86,23 @@ export default function Login() {
 						className='space-y-4'
 					>
 						<div className='flex flex-col space-y-2'>
-							<label htmlFor='email' className='text-md font-medium text-slate-300'>
-								Email
+							<label
+								htmlFor='username'
+								className='text-md font-medium text-slate-300'
+							>
+								Username
 							</label>
 							<input
-								id='email'
-								name='email'
-								type='email'
-								value={formData.email}
+								id='username'
+								name='username'
+								type='text'
+								value={formData.username}
 								onChange={handleChange}
 								required
-								placeholder='Enter your email'
+								placeholder='Enter your username'
 								className='rounded-md border-2 border-slate-700 p-2 text-sm'
 							/>
-							{errors.email && <ErrorMessage message={errors.email} />}
+							{errors.username && <ErrorMessage message={errors.username} />}
 						</div>
 						<div className='flex flex-col space-y-2'>
 							<label
@@ -131,7 +135,7 @@ export default function Login() {
 						</button>
 						<div className='text-center text-sm text-slate-300'>
 							Don't have an account?{' '}
-							<a href='/signup' className='text-purple-600 hover:text-purple-500'>
+							<a href='/register' className='text-purple-600 hover:text-purple-500'>
 								Register
 							</a>
 						</div>
