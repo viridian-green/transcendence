@@ -21,7 +21,7 @@ export default async function registerRoute(app) {
         );
 
         if (existingUser.rows.length > 0) {
-            return reply.code(400).send({ error: "Username already taken" });
+            return reply.code(409).send({ error: "Username already taken" });
         }
 
         const existingEmail = await app.pg.query(
@@ -30,7 +30,7 @@ export default async function registerRoute(app) {
         );
 
         if (existingEmail.rows.length > 0) {
-            return reply.code(400).send({ error: "Email already registered" });
+            return reply.code(409).send({ error: "Email already registered" });
         }
 
         const hashedPassword = bcrypt.hashSync(password, 10);
