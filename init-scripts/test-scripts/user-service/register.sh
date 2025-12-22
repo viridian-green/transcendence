@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-API_URL="http://localhost:3000/api/users/register"
+API_URL="http://127.0.0.1:3000/api/users/register"
 
 echo "▶ Running user-service register route tests"
 
@@ -14,15 +14,25 @@ assert_status() {
   local payload=$1
   local expected=$2
 
-  status=$(curl -s -o /dev/null -w "%{http_code}" \
+  echo
+  echo "▶ Payload:"
+  echo "$payload"
+  echo "▶ Response:"
+
+  response=$(curl -i \
     -H "Content-Type: application/json" \
     -d "$payload" \
     "$API_URL")
 
+  status=$(echo "$response" | head -n 1 | awk '{print $2}')
+
+  echo "$response"
+
   if [ "$status" != "$expected" ]; then
-    fail "Expected HTTP $expected, got $status for payload: $payload"
+    fail "Expected HTTP $expected, got $status"
   fi
 }
+
 
 # -------------------------
 # ❌ Validation failures
