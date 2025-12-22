@@ -25,14 +25,26 @@ export default async function loginRoute(app) {
             return reply.code(400).send({ error: "Invalid credentials"});
         }
 
-        const isValid = await bcrypt.compare(password, user.password); //can i use bcrypt or does that violate the exercise?
+        const isValid = await bcrypt.compare(password, user.password);
         if (!isValid) {
             return reply.code(400).send({ error: "Invalid credentials"});
         }
 
         //later add check for 2fa
 
-        const token = app.jwt.sign({ id: user.id, username: user.username }); //check this also
-        return reply.send({ accessToken: token });
+        const token = app.jwt.sign({ id: user.id, username: user.username });
+
+        reply.setCookie("auth", token, {
+            httpOnly: true,
+            sameSIte: "lax",
+            secure: process.env.NODE_ENV === "production",
+            path: "/",
+        });
+
+        return reply.send({
+            id: user.id,
+            username: user.username,
+            email: user.email,
+         });
     });
 }

@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import dotenv from 'dotenv';
+import cookie from '@fastify/cookie';
 import jwt from '@fastify/jwt';
 
 dotenv.config();
