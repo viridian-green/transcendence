@@ -42,24 +42,6 @@ jobs:
        fi
        echo "All required secrets are set"
 
-    - name: Wait for API Gateway
-      run: |
-        echo "Waiting for API Gateway and user-service..."
-        for i in {1..60}; do
-          response=$(curl -s http://localhost:3000/api/users/register)
-          status=$?
-
-          echo "Response:"
-          echo "$response"
-          if [ $status -eq 0 ]; then
-            echo "API Gateway and user-service are ready"
-            exit 0
-          fi
-          sleep 2
-        done
-        echo "Services did not become ready in time"
-        docker compose logs
-        exit 1
 
     - name: Run user-service register tests
       run: |

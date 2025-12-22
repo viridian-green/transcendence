@@ -103,6 +103,11 @@ services:
     depends_on:
       user:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://api-gateway:3000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
 
 networks:

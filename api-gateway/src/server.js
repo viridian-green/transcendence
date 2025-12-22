@@ -2,6 +2,7 @@ import Fastify from "fastify";
 
 //import gameRoutes from "./routes/game.js";
 import userRoutes from "./routes/user.js";
+import healthRoute from "./health.js";
 
 const fastify = Fastify({ logger: true });
 
@@ -11,7 +12,7 @@ const start = async () => {
 
         //await fastify.register(gameRoutes); // Temporarily disabled until game routes are fully migrated to ESM
         await fastify.register(userRoutes);
-
+        await fastify.register(healthRoute);
         await fastify.listen({ port: 3000, host: "0.0.0.0" });
     } catch (error) {
         fastify.log.error(error);
