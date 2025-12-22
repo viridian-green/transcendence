@@ -80,7 +80,9 @@ If registration is successful, the user is persisted in the database and can sub
 ```
 
 ### Behavior
-- Validates required fields
+- Validates request body using a schema-based validator
+- Rejects missing or empty fields
+- Enforces format and length constraints, not relying solely on frontend
 - Hashes the password using **bcrypt**
 - Stores the user in the database
 - Rejects duplicate users (if already present)
@@ -101,9 +103,29 @@ For this, are rule was created on the Makefile
 make nocache
 ```
 
-### Running Locally
+## Testing & CI
 
-The user-service listens on port 3003.
+### Automated API Tests
+
+The user-service includes black-box API tests that verify backend validation
+and registration behavior.
+
+These tests ensure:
+- Missing fields are rejected
+- Empty fields are rejected
+- Invalid payloads return `400 Bad Request`
+- Valid payloads return `201 Created`
+
+Tests are executed against the running stack via the API Gateway.
+
+### Running tests locally
+
+From the repository root:
+
+```bash
+make up
+./init-scripts/test-scripts/user_service/register.sh
+```
 
 ### Testing
 Example register test (direct service access):
@@ -117,9 +139,23 @@ curl -X POST http://localhost:3000/api/users/register \
 Then, login:
 
 ```bash
-curl -X POST http://localhost:3003/login \
+curl -X POST http://localhost:3003/api/users/login \
   -H "Content-Type: application/json" \
   -d '{"username":"test","password":"1234"}'
 ```
 
 Naturally, user must be registered prior to having a sucessfull login.
+
+## Validation
+
+All user input is validated on the backend using shared schemas.
+
+The service enforces:
+- Required fields (`email`, `username`, `password`)
+- Non-empty values
+- Email format validation
+- Username length limits
+- Password complexity rules
+
+This ensures the API remains secure even if requests bypass the frontend
+(e.g. via curl or direct HTTP calls).
