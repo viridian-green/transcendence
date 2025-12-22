@@ -45,8 +45,8 @@ jobs:
     - name: Wait for API Gateway
       run: |
         echo "Waiting for API Gateway and user-service..."
-        for i in {1..300}; do
-          if curl -sf -X OPTIONS http://localhost:3000/api/users/register >/dev/null; then
+        for i in {1..60}; do
+          if curl -X http://localhost:3000/api/users/register >/dev/null; then
             echo "API Gateway and user-service are ready"
             exit 0
           fi
