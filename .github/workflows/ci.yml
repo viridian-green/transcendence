@@ -14,11 +14,30 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
-    
+
     - name: Build and run containers
       run: make up
-    
-    # TODO
-    # - name: Run Tests
-    #   run: make test
+
+    - name: Wait for API Gateway #without this tests might run before services are ready
+      run: |
+        echo "Waiting for API Gateway..."
+        for i in {1..30}; do
+          if curl -s http://localhost:3000 >/dev/null; then
+            echo "API Gateway is up"
+            exit 0
+          fi
+          sleep 2
+        done
+        echo "API Gateway did not start"
+        docker compose logs
+        exit 1
+
+    - name: Run user-service register tests
+      run: |
+        chmod +x init-scripts/test-scripts/user_service/register.sh
+        ./init-scripts/test-scripts/user_service/register.sh
+
+    - name: Dump logs on failure
+      if: failure()
+      run: docker compose logs
 
