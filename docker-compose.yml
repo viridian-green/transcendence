@@ -57,8 +57,11 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    env_file:
-      - ./services/game-service/.env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
     ports:
       - "3002:3002"
     networks:
@@ -71,8 +74,11 @@ services:
    depends_on:
     database:
       condition: service_healthy
-   env_file:
-      - ./services/user-service/.env
+   environment:
+    POSTGRES_USER: ${POSTGRES_USER}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    POSTGRES_DB: ${POSTGRES_DB}
+
    ports:
      - "3003:3003"
    networks:
@@ -82,8 +88,10 @@ services:
     build:
       context: ./api-gateway
       dockerfile: Dockerfile.dev
-    env_file:
-      - ./api-gateway/.env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "3000:3000"
     networks:
