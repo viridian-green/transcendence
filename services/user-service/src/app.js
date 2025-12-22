@@ -13,6 +13,10 @@ app.register(jwt, {
     secret: process.env.JWT_SECRET
 });
 
+app.register(cookie, {
+    secret: process.env.COOKIE_SECRET,
+});
+
 app.decorate("authenticate", async function (request, reply) {
     try {
         await request.jwtVerify();

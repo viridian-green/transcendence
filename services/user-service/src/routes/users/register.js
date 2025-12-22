@@ -40,6 +40,12 @@ export default async function registerRoute(app) {
             [username, hashedPassword, email]
         );
 
-        return reply.code(201).send({ message: "User registered successfully" });
+        return reply
+            .code(201)
+            .send({
+                id: user.id,
+                username: user.username,
+                email: user.email,
+            });
     });
 }
