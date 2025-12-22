@@ -1,13 +1,19 @@
 import bcrypt from "bcryptjs";
+import { registerSchema } from "../../schemas/auth.schema.js"
 
 export default async function registerRoute(app) {
     app.post('/', async (req, reply) => {
 
-        const { username, password, email } = req.body;
+        const result = registerSchema.safeParse(req.body);
 
-        if (!username || !password || !email) {
-            return reply.code(400).send({ error: "Username, password and email required" });
+        if (!result.success) {
+            return reply.code(400).send({
+                error: "Validation error",
+                details: result.error.flatten().fieldErrors,
+            });
         }
+
+        const { username, password, email } = result.data;
 
         const existingUser = await app.pg.query(
             "SELECT * FROM users WHERE username = $1",
