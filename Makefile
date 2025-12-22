@@ -27,7 +27,8 @@ down:
 	docker compose down
 
 
-restart: down up
+restart: down
+	docker compose up -d --build
 
 # No cache rebuild. Used on user service development.
 nocache:
