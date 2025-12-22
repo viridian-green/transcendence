@@ -32,7 +32,7 @@ jobs:
 
     - name: Build and run containers
       run: make up
-      
+
    #Test: Show that environment variables are working
     - name: Print environment variables
       run: |
@@ -42,17 +42,17 @@ jobs:
        fi
        echo "All required secrets are set"
 
-    - name: Wait for API Gateway #without this tests might run before services are ready
+    - name: Wait for API Gateway
       run: |
-        echo "Waiting for API Gateway..."
+        echo "Waiting for API Gateway and user-service..."
         for i in {1..30}; do
-          if curl -s http://localhost:3000 >/dev/null; then
-            echo "API Gateway is up"
+          if curl -sf -X OPTIONS http://localhost:3000/api/users/register >/dev/null; then
+            echo "API Gateway and user-service are ready"
             exit 0
           fi
           sleep 2
         done
-        echo "API Gateway did not start"
+        echo "Services did not become ready in time"
         docker compose logs
         exit 1
 
@@ -74,6 +74,6 @@ jobs:
     - name: Dump logs on failure
       if: failure()
       run: docker compose logs
-    
+
 
 
