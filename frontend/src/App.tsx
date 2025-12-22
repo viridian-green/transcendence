@@ -1,6 +1,5 @@
 import { Suspense } from 'react';
 import { Link, Routes, Route, useLocation } from 'react-router-dom';
-import './App.css';
 import { Home, About, NotFound, Loading, Game, Landing, Login, Registration } from '@pages/index';
 import { Avatar } from '@components/index';
 
