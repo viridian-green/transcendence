@@ -6,6 +6,7 @@ import { useAuth } from '@hooks/useAuth';
 const Home: FC = () => {
 	const navigate = useNavigate();
 	const { user } = useAuth();
+	const welcomeMessage = user ? `Welcome, ${user.username}!` : 'Welcome!';
 
 	const handleLocalGameStart = () => {
 		navigate('/game');
@@ -14,7 +15,7 @@ const Home: FC = () => {
 	return (
 		<div className='flex flex-col items-center justify-center gap-6'>
 			<section className='flex items-center justify-center gap-4'>
-				<h1 className='text-center text-2xl font-bold'>Welcome, {user?.username}!</h1>
+				<h1 className='text-center text-2xl font-bold'>{welcomeMessage}</h1>
 				<svg
 					fill='#e60076'
 					version='1.1'
