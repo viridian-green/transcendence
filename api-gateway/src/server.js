@@ -1,6 +1,6 @@
 import Fastify from "fastify";
 
-import gameRoutes from "./routes/game.js";
+//import gameRoutes from "./routes/game.js";
 import userRoutes from "./routes/user.js";
 
 const fastify = Fastify({ logger: true });
@@ -8,7 +8,6 @@ const fastify = Fastify({ logger: true });
 const start = async () => {
     try {
         // await fastify.register(authPlugin);
-
 
         //await fastify.register(gameRoutes); // Temporarily disabled until game routes are fully migrated to ESM
         await fastify.register(userRoutes);
