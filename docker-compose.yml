@@ -33,9 +33,9 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
-      - api-gateway:
+      api-gateway:
         condition: service_healthy
-      - frontend
+      #frontend add a healthcheck
     networks:
       - transcendence-network
 
