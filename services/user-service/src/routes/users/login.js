@@ -1,11 +1,18 @@
 import bcrypt from "bcryptjs";
+import { loginSchema } from "../../schemas/auth.schema.js";
 
 export default async function loginRoute(app) {
     app.post('/', async (req, reply) => {
-        const { username, password } = req.body;
-        if (!username || !password) {
-            return reply.code(400).send({ error: "Missing username or password"});
+        const result = loginSchema.safeParse(req.body);
+
+        if (!result.success) {
+            return reply.code(400).send({
+                error: "Validation error",
+                details: result.error.flatten().fieldErrors,
+            });
         }
+
+        const { username, password } = result.data;
 
         const res = await app.pg.query(
             "SELECT * FROM users WHERE username = $1",

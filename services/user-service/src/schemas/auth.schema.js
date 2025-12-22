@@ -19,3 +19,13 @@ export const registerSchema = z.object ({
         .regex(/[0-9]/, "Password must contain at least one number")
         .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
 });
+
+export const loginSchema = z.object({
+    username: z
+        .string()
+        .min(1, "Username is required"),
+
+    password: z
+        .string()
+        .min(1, "Password is required"),
+});
