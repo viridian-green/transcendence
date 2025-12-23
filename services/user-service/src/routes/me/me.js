@@ -53,7 +53,7 @@ export default async function updateUserRoute(app) {
 
             const { rows } = await app.pg.query(
                 `
-                SELECT id, username, email
+                SELECT id, username, email, avatar
                 FROM users
                 WHERE id = $1
                 `,
@@ -67,6 +67,27 @@ export default async function updateUserRoute(app) {
             return reply.send(rows[0]);
         }
     );
-}
+
+    app.post('/me/avatar', { preHandler: app.authenticate }, async (req, reply) => {
+        const data = await req.file();
+
+        if (!data) {
+            return reply.code(400).send({ error: 'No file uploaded' });
+        }
+
+        const ext = path.extname(data.filename);
+        const filename = `user-${req.user.id}${ext}`;
+        const filepath = path.join('uploads/avatars', filename);
+
+        await pump(data.file, fs.createWriteStream(filepath));
+
+        await app.pq.query(
+            'UPDATE users SET avatar = $1 WHERE id = $2',
+            [filename, req.user.id]
+        );
+        reply.send({ avatar: filename });
+    }
+    )
+};
 
 
