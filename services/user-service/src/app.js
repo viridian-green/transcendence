@@ -9,20 +9,30 @@ const app = Fastify({
     logger: true
 });
 
-app.register(jwt, {
-    secret: process.env.JWT_SECRET
-});
-
 app.register(cookie, {
     secret: process.env.COOKIE_SECRET,
+    cookie: {
+        cookieName: 'access_token',
+        signed: false
+    }
+});
+
+app.register(jwt, {
+    secret: process.env.JWT_SECRET,
+    cookie: {
+        cookieName: 'access_token',
+        signed: false
+    }
+});
+
+// ✅ SAFE
+app.after(() => {
+    console.log(app.jwt);           // exists
+    console.log(app.jwt.options);   // exists
 });
 
 app.decorate("authenticate", async function (request, reply) {
-    try {
-        await request.jwtVerify();
-    } catch (err) {
-        reply.code(401).send({ error: "Unauthorized" });
-    }
+    await request.jwtVerify();
 });
 
 import dbPlugin from './plugins/db.js';
@@ -34,5 +44,8 @@ app.register(healthRoute);
 import userRoutes from './routes/users/index.js';
 app.register(userRoutes);
 //{ prefix: '/users'
+
+await app.ready();
+console.log(app.printRoutes());
 
 export default app;

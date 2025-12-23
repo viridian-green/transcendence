@@ -56,7 +56,12 @@ jobs:
     - name: Run user-service update tests
       run: |
         chmod +x init-scripts/test-scripts/user-service/update.sh
-        ./init-scripts/test-scripts/user-service/login.sh
+        ./init-scripts/test-scripts/user-service/update.sh
+
+    - name: Run user-service signout tests
+      run: |
+        chmod +x init-scripts/test-scripts/user-service/signout.sh
+        ./init-scripts/test-scripts/user-service/signout.sh
 
     - name: Dump logs on failure
       if: failure()

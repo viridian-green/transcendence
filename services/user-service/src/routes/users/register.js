@@ -47,7 +47,7 @@ export default async function registerRoute(app) {
         });
 
         return reply
-            .setCookie('token', token, {
+            .setCookie('access_token', token, {
                 httpOnly: true,
                 sameSite: 'lax',
                 secure: process.env.NODE_ENV === 'production',

@@ -34,7 +34,7 @@ export default async function loginRoute(app) {
 
         const token = app.jwt.sign({ id: user.id, username: user.username });
 
-        reply.setCookie("auth", token, {
+        reply.setCookie("access_token", token, {
             httpOnly: true,
             sameSIte: "lax",
             secure: process.env.NODE_ENV === "production",
