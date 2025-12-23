@@ -1,10 +1,8 @@
 import bcrypt from "bcryptjs";
 import { updateUserSchema } from "../../schemas/auth.schema.js";
 
-export default async function updateRoute(app) {
-    app.put('/me', { preHandler: app.authenticate }, async (req, reply) => {
-        //await request.jwtVerify(); //check into preHandler later
-
+export default async function updateUserRoute(app) {
+    app.put('/', { preHandler: app.authenticate }, async (req, reply) => {
         const userId = req.user.id;
 
         const parsed = updateUserSchema.safeParse(req.body);

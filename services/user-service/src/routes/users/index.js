@@ -2,7 +2,8 @@
 import registerRoute from './register.js';
 import loginRoute from './login.js';
 import getByIdRoute from './getById.js';
-import updateRoute from './update.js';
+import updateUserRoute from './update.js';
+import signoutRoute from './signout.js';
 
 export default async function userRoutes(app) {
     // /users/register
@@ -11,7 +12,9 @@ export default async function userRoutes(app) {
     // /users/login
     app.register(loginRoute, { prefix: '/login'});
 
+    app.register(signoutRoute, { prefix: '/signout' });
+
     // /users/:id
     app.register(getByIdRoute);
-    app.register(updateRoute);
+    app.register(updateUserRoute, { prefix: '/me'});
 }
