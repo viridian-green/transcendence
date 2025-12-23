@@ -10,8 +10,9 @@ It manages user credentials, authentication logic, and JWT issuance.
 - User registration
 - User authentication (login)
 - Password hashing and validation
-- JWT issuance
-- User data retrieval and update
+- JWT issuance and verification
+- Authenticated user data retrieval and update
+- User sign out (cookie invalidation)
 
 ---
 
@@ -26,35 +27,18 @@ All routes are prefixed with:
 |-------:|-------------|------------------------------------------|---------------|
 | POST   | `/register` | Register a new user                      | ✅ Implemented |
 | POST   | `/login`    | Authenticate user and issue JWT          | ✅ Implemented |
-| GET    | `/:id`      | Get user by ID                           | 🚧 Planned    |
-| PATCH  | `/:id`      | Update user                              | 🚧 Planned    |
-
+| GET    | `/me`       | Get current authenticated us             | ✅ Implemented |
+| PUT    | `/me`       | Update current authenticated user        | ✅ Implemented |
+| POST   | `/signout`  | Clear authentication cookie              | ✅ Implemented |
 
 ---
 
 ## Authentication
 
-### Login
-
-**Request**
-```json
-{
-  "username": "test",
-  "password": "1234"
-}
-```
-
-**Response**
-```json
-{
-  "accessToken": "<jwt>"
-}
-```
-
-- Passwords are validated using bcrypt
-- On success, a JWT is returned
-- Invalid credentials return 400
-- The service does not return user records during login.
+This service uses cookie bases authentication:
+- JWTs are issued on login
+- Tokens are store in an http only cookie
+- Authenticated routes require a valid cookie
 
 
 ## Registration
@@ -86,15 +70,83 @@ If registration is successful, the user is persisted in the database and can sub
 - Hashes the password using **bcrypt**
 - Stores the user in the database
 - Rejects duplicate users (if already present)
-- Does not issue a JWT (authentication is handled by /login)
+- Does not authenticate user (authentication is handled by /login)
 
 ### Responses
 
 `201 Created` — user successfully registered
 `400 Bad Request` — missing or invalid fields
 
+## Login
 
-### Docker Cache
+### Endpoint
+
+```bash
+POST /api/users/login
+```
+
+**Request**
+```json
+{
+  "username": "test",
+  "password": "1234"
+}
+```
+
+**Response**
+
+`200 OK` - authenticated
+`400 Bad Request` - invalid credentials
+
+- Passwords are validated using bcrypt
+- On success, a JWT is returned
+
+## Sign out
+
+### Endpoint
+
+```bash
+POST /api/users/signout
+```
+
+### Behavior
+
+- Clears the auth cookie
+
+### Request
+
+```json
+{ "message": "Logged out" }
+```
+
+## Authenticated User /me
+
+### Get current user
+
+```bash
+GET /api/users/me
+```
+
+Requires authentication via cookie.
+
+### Update current user
+
+```bash
+PUT /api/users/me
+```
+
+#### Example payload
+
+```json
+{
+  "username": "new_username",
+  "password": "newStrongPassword123"
+}
+```
+
+Only provided fields are updated, password are rehashed before storage.
+
+## Docker Cache
 
 Changes to routes or plugins require rebuilding the service image.
 For this, are rule was created on the Makefile
@@ -125,9 +177,12 @@ From the repository root:
 ```bash
 make up
 ./init-scripts/test-scripts/user_service/register.sh
+./init-scripts/test-scripts/user-service/login.sh
+./init-scripts/test-scripts/user-service/me.sh
 ```
 
 ### Testing
+
 Example register test (direct service access):
 
 ```bash
