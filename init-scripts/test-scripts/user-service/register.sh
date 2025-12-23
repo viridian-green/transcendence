@@ -3,7 +3,7 @@ set -e
 
 API_URL="http://127.0.0.1:3000/api/users/register"
 
-echo "▶ Running user-service register route tests"
+#echo "▶ Running user-service register route tests"
 
 fail() {
   echo "❌ $1"
@@ -14,10 +14,10 @@ assert_status() {
   local payload=$1
   local expected=$2
 
-  echo
-  echo "▶ Payload:"
-  echo "$payload"
-  echo "▶ Response:"
+#   echo
+#   echo "▶ Payload:"
+#   echo "$payload"
+#   echo "▶ Response:"
 
   response=$(curl -i \
     -H "Content-Type: application/json" \
@@ -26,7 +26,7 @@ assert_status() {
 
   status=$(echo "$response" | head -n 1 | awk '{print $2}')
 
-  echo "$response"
+#   echo "$response"
 
   if [ "$status" != "$expected" ]; then
     fail "Expected HTTP $expected, got $status"
@@ -69,4 +69,4 @@ assert_status "{
   \"email\":\"valid_$UNIQ@test.com\"
 }" 201
 
-echo "✅ Register route tests passed"
+# echo "✅ Register route tests passed"
