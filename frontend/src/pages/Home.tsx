@@ -1,18 +1,21 @@
 import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PinkButton } from '../components';
+import { PinkButton } from '@components/index';
+import { useAuth } from '@hooks/useAuth';
 
 const Home: FC = () => {
 	const navigate = useNavigate();
+	const { user } = useAuth();
+	const welcomeMessage = user ? `Welcome, ${user.username}!` : 'Welcome!';
 
-	const handleTwoPlayersClick = () => {
+	const handleLocalGameStart = () => {
 		navigate('/game');
 	};
 
 	return (
 		<div className='flex flex-col items-center justify-center gap-6'>
 			<section className='flex items-center justify-center gap-4'>
-				<h1 className='text-center text-2xl font-bold'>Welcome, User!</h1>
+				<h1 className='text-center text-2xl font-bold'>{welcomeMessage}</h1>
 				<svg
 					fill='#e60076'
 					version='1.1'
@@ -46,11 +49,17 @@ const Home: FC = () => {
 			</section>
 			<p className='text-xs text-slate-400'>Choose your game mode:</p>
 			<div className='mt-4 flex flex-row justify-center gap-20 text-center text-xl'>
-				<PinkButton text='2 Players' onClick={handleTwoPlayersClick} />
 				<PinkButton
-					text='4 Players'
+					text='AI Opponent'
 					onClick={() => {
-						alert('tournamnet TBD');
+						alert('TBD');
+					}}
+				/>
+				<PinkButton text='Local' onClick={handleLocalGameStart} />
+				<PinkButton
+					text='Remote'
+					onClick={() => {
+						alert('TBD');
 					}}
 				/>
 			</div>
