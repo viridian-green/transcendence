@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { registerSchema } from "../../schemas/auth.schema.js"
 
+
 export default async function registerRoute(app) {
     app.post('/', async (req, reply) => {
 
