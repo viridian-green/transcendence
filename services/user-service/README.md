@@ -13,6 +13,7 @@ It manages user credentials, authentication logic, and JWT issuance.
 - JWT issuance and verification
 - Authenticated user data retrieval and update
 - User sign out (cookie invalidation)
+- Friend system (_in progress_)
 
 ---
 
@@ -25,11 +26,14 @@ All routes are prefixed with:
 
 | Method | Path        | Description                              | Status        |
 |-------:|-------------|------------------------------------------|---------------|
-| POST   | `/register` | Register a new user                      | ✅ Implemented |
-| POST   | `/login`    | Authenticate user and issue JWT          | ✅ Implemented |
-| GET    | `/me`       | Get current authenticated us             | ✅ Implemented |
-| PUT    | `/me`       | Update current authenticated user        | ✅ Implemented |
-| POST   | `/signout`  | Clear authentication cookie              | ✅ Implemented |
+| POST   | `/register`     | Register a new user                      | ✅ Implemented |
+| POST   | `/login`        | Authenticate user and issue JWT          | ✅ Implemented |
+| GET    | `/me`           | Get current authenticated us             | ✅ Implemented |
+| PUT    | `/me`           | Update current authenticated user        | ✅ Implemented |
+| POST   | `/signout`      | Clear authentication cookie              | ✅ Implemented |
+| POST   | `/friends/:id`  | Send a friend request                    | 🚧 In progress |
+| DELETE | `/friends/:id`  | Remove an existing friend                | 🚧 Planned     |
+| GET    | `/friends`      | See friends list.                        | 🚧 Planned     |
 
 ---
 
@@ -52,6 +56,7 @@ POST /api/users/register
 
 Creates a new user account with a hashed password.
 If registration is successful, the user is persisted in the database and can subsequently authenticate via the login endpoint.
+Authentication is not automatic: user must login first.
 
 ### Request Body
 
@@ -145,6 +150,10 @@ PUT /api/users/me
 ```
 
 Only provided fields are updated, password are rehashed before storage.
+
+## Database migrations
+
+The service uses *Postgrator migrations*.
 
 ## Docker Cache
 
