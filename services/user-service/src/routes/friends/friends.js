@@ -1,30 +1,50 @@
+import {
+    ensureUserExists,
+    ensureNoExistingFriendship,
+    ensureNotSelf,
+    createFriendRequest,
+    deleteFriendship,
+    getFriendsList
+} from '../../services/friends.service.js'
+
 export default async function friendsRoute(app) {
     //add friend
     //POST /friends/:id
     app.post('/:id', { preHandler: app.authenticate }, async (req, reply) => {
         const userId = req.user.id;
-        const friendId = req.params.id;
+        const friendId = Number(req.params.id);
 
-        // check if other user exists in db?
-        // check if friendship already exists
-        // check if userid == friendid
-        // check if friendship was already requested and its pending
+        ensureNotSelf(userId, friendId);
+        ensureUserExists(app, friendId);
+        ensureNoExistingFriendship(app, userId, friendId);
 
-        const { rows } = await app.pg.query(`INSERT INTO friends (user_one, user_two)
-            VALUES ($1, $2)
-            RETURNING *`,
-        [userId, friendId]
-        );
+        const friendshipId = await createFriendRequest(userId, friendId);
 
-        const friendship = rows;
-        console.log(friendship);
-
-        return reply.code(200).send(rows[0]);
+        return reply.code(200).send(friendshipId);
     })
 
     //remove friend
     //DELETE /friends/:id
+    app.delete('/:id', { preHandler: app.authenticate }, async (req, reply) => {
+        const userId = req.user.id;
+        const friendId = Number(req.params.id);
+
+        ensureNotSelf(userId, friendId);
+        ensureUserExists(app, friendId);
+
+        const rows = await deleteFriendship(app, userId, friendId);
+        return reply.code(200).send({
+            message: 'Friend removed',
+            friendship: rows[0]
+        });
+    });
 
     //get friends list
     //GET /friends
+    app.get('/', { preHandler: app.authenticate }, async (req, reply) => {
+        const userId = req.user.id;
+        const rows = await getFriendsList(app, userId);
+
+        return reply.code(200).send(rows);
+    })
 }
