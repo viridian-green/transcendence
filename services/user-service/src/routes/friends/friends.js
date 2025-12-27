@@ -15,12 +15,12 @@ export default async function friendsRoute(app) {
         const friendId = Number(req.params.id);
 
         ensureNotSelf(userId, friendId);
-        ensureUserExists(app, friendId);
-        ensureNoExistingFriendship(app, userId, friendId);
+        await ensureUserExists(app, friendId);
+        await ensureNoExistingFriendship(app, userId, friendId);
 
-        const friendshipId = await createFriendRequest(userId, friendId);
+        const friendshipId = await createFriendRequest(app, userId, friendId);
 
-        return reply.code(200).send(friendshipId);
+        return reply.code(201).send(friendshipId);
     })
 
     //remove friend
@@ -30,7 +30,7 @@ export default async function friendsRoute(app) {
         const friendId = Number(req.params.id);
 
         ensureNotSelf(userId, friendId);
-        ensureUserExists(app, friendId);
+        await ensureUserExists(app, friendId);
 
         const rows = await deleteFriendship(app, userId, friendId);
         return reply.code(200).send({

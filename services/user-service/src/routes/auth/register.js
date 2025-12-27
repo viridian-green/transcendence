@@ -1,51 +1,23 @@
-import bcrypt from "bcryptjs";
-import { registerSchema } from "../../schemas/auth.schema.js"
-
+import {
+    parseRegisterBody,
+    ensureNotExistingEmail,
+    ensureNotExistingUsername,
+    hashPassword,
+    insertUserInDb,
+    signToken
+} from "../../services/auth.service.js"
 
 export default async function registerRoute(app) {
-    app.post('/', async (req, reply) => {
+app.post('/', async (req, reply) => {
 
-        const result = registerSchema.safeParse(req.body);
-        if (!result.success) {
-            return reply.code(400).send({
-                error: "Validation error",
-                details: result.error.flatten().fieldErrors,
-            });
-        }
+    const { username, password, email } = await parseRegisterBody(req);
 
-        const { username, password, email } = result.data;
+        await ensureNotExistingEmail(app, email);
+        await ensureNotExistingUsername(app, username);
 
-        const existingUser = await app.pg.query(
-            "SELECT * FROM users WHERE username = $1",
-            [username]
-        );
-        if (existingUser.rows.length > 0) {
-            return reply.code(409).send({ error: "Username already taken" });
-        }
-
-        const existingEmail = await app.pg.query(
-            "SELECT * FROM users WHERE email = $1",
-            [email]
-        );
-        if (existingEmail.rows.length > 0) {
-            return reply.code(409).send({ error: "Email already registered" });
-        }
-
-        const hashedPassword = bcrypt.hashSync(password, 10);
-
-        const { rows } = await app.pg.query(
-            `INSERT INTO users (username, password, email)
-            VALUES ($1, $2, $3)
-            RETURNING id, username, email`,
-            [username, hashedPassword, email]
-        );
-
-        const user = rows[0];
-
-        const token = app.jwt.sign({
-            id: user.id,
-            username: user.username,
-        });
+        const hashedPassword = await hashPassword(password);
+        const user = await insertUserInDb(app, username, hashedPassword, email);
+        const token = await signToken(app, user);
 
         return reply
             .setCookie('access_token', token, {

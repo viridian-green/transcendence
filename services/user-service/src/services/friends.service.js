@@ -27,24 +27,27 @@ export async function ensureNoExistingFriendship(app, userId, friendId) {
     }
 }
 
-export async function ensureNotSelf(userId, friendId) {
+export function ensureNotSelf(userId, friendId) {
     if (userId === friendId) {
         const err = new Error('Friend id must be different than user id');
-        err.StatusCode = 400;
+        err.statusCode = 400;
+        throw err;
     }
 }
 
 export async function createFriendRequest(app, userId, friendId) {
+    const userOne = Math.min(userId, friendId);
+    const userTwo = Math.max(userId, friendId);
     const { rows } = await app.pg.query(`INSERT INTO friends (user_one, user_two)
             VALUES ($1, $2)
             RETURNING *`,
-        [userId, friendId]
+        [userOne, userTwo]
     );
     return rows[0];
 }
 
 export async function deleteFriendship(app, userId, friendId) {
-    const { rows } = await app.pg.query(
+    const { rows, rowCount } = await app.pg.query(
         `
         DELETE FROM friends
         WHERE (user_one = $1 AND user_two = $2)

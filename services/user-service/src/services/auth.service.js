@@ -1,0 +1,95 @@
+import { registerSchema } from "../schemas/auth.schema.js"
+import { loginSchema } from "../schemas/auth.schema.js";
+
+import bcrypt from "bcryptjs";
+
+export function parseRegisterBody(req) {
+    const result = registerSchema.safeParse(req.body);
+    if (!result.success) {
+        const err = new Error('Validation error');
+        err.statusCode = 400;
+        err.details = result.error.format();
+        throw err;
+    };
+    return result.data;
+}
+
+export async function ensureNotExistingUsername(app, username) {
+    const existingUser = await app.pg.query(
+        "SELECT * FROM users WHERE username = $1",
+        [username]
+    );
+    if (existingUser.rows.length > 0) {
+        const err = new Error('Username taken');
+        err.statusCode = 409;
+        throw err;
+    }
+}
+
+export async function ensureNotExistingEmail(app, email) {
+    const existingEmail = await app.pg.query(
+        "SELECT * FROM users WHERE email = $1",
+        [email]
+    );
+    if (existingEmail.rows.length > 0) {
+        const err = new Error('Email already registered');
+        err.statusCode = 409;
+        throw err;
+    }
+}
+
+export async function hashPassword(password) {
+    return await bcrypt.hash(password, 10);
+}
+
+export async function insertUserInDb(app, username, hashedPassword, email) {
+    const { rows } = await app.pg.query(
+        `INSERT INTO users (username, password, email)
+            VALUES ($1, $2, $3)
+            RETURNING id, username, email`,
+        [username, hashedPassword, email]
+    );
+    return rows[0];
+}
+
+export function signToken(app, user) {
+    return app.jwt.sign({
+        id: user.id,
+        username: user.username,
+    });
+}
+
+export function parseLoginBody(req) {
+    const result = loginSchema.safeParse(req.body);
+
+    if (!result.success) {
+        const err = new Error('Validation error');
+        err.statusCode = 400;
+        err.details = result.error.format();
+        throw err;
+    };
+
+    return result.data;
+}
+
+export async function ensureExistingUsername(app, username) {
+    const { rows } = await app.pg.query(
+        "SELECT * FROM users WHERE username = $1",
+        [username]
+    );
+    if (rows.length === 0) {
+        const err = new Error("Invalid credentials");
+        err.statusCode = 401;
+        throw err;
+    }
+    return rows[0];
+}
+
+export async function ensureValidPassword(password, user) {
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
+        const err = new Error("Invalid credentials");
+        err.statusCode = 401;
+        throw err;
+    }
+}
