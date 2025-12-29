@@ -1,8 +1,10 @@
 import { FastifyInstance } from "fastify";
-import type { WebSocket } from "ws";
+import { WebSocket } from "ws";
 
 // Store all connected clients
 const clients = new Set<WebSocket>();
+const clientIds = new Map<WebSocket, string>();
+let nextId = 0;
 
 export default async function websocketHandler(fastify: FastifyInstance) {
   fastify.get(
@@ -15,7 +17,16 @@ export default async function websocketHandler(fastify: FastifyInstance) {
       clients.add(connection);
 
       // Send welcome message to this client
-      connection.send("Connected to chat server!");
+      connection.send("Welcome!");
+
+      // Notify clients
+      let id = `${nextId++}`;
+      clientIds.set(connection, id);
+      clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN && client !== connection) {
+          client.send(`Client ${id} is online!`);
+        }
+      });
 
       // Handle incoming messages
       connection.on("message", (message: Buffer) => {
@@ -25,7 +36,7 @@ export default async function websocketHandler(fastify: FastifyInstance) {
         // Broadcast to all connected clients
         clients.forEach((client) => {
           if (client.readyState === WebSocket.OPEN) {
-            client.send(`${text}`);
+            client.send(`${id}: ${text}`);
           }
         });
       });
@@ -34,6 +45,11 @@ export default async function websocketHandler(fastify: FastifyInstance) {
       connection.on("close", () => {
         clients.delete(connection);
         console.log("Client disconnected. Total clients:", clients.size);
+        clients.forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(`Client ${id} is now offline.`);
+          }
+        });
       });
     }
   );
