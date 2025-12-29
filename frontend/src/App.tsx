@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { Link, Routes, Route, useLocation } from 'react-router-dom';
 import './App.css';
-import { Home, About, NotFound, Loading, Game, Landing } from '@/src/pages/index';
+import { Home, About, NotFound, Loading, Game, Landing, Chat } from '@/src/pages/index';
 import { Avatar } from './components';
 
 function App() {
@@ -26,6 +26,7 @@ function App() {
 						<Route path='/home' element={<Home />} />
 						<Route path='/about' element={<About />} />
 						<Route path='/game/*' element={<Game />} />
+						<Route path='/chat/*' element={<Chat />} />
 						<Route path='*' element={<NotFound />} />
 					</Routes>
 				</Suspense>
