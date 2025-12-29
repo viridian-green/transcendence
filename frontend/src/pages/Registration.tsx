@@ -38,14 +38,14 @@ const ErrorMessage = ({ message }: { message: string }) => (
 export default function Registration() {
 	const [formData, setFormData] = useState({
 		email: '',
-		password: '',
 		username: '',
+		password: '',
 		confirmPassword: '',
 	});
 	const [errors, setErrors] = useState<{
 		email?: string;
-		password?: string;
 		username?: string;
+		password?: string;
 		confirmPassword?: string;
 		submit?: string;
 	}>({});
@@ -66,7 +66,7 @@ export default function Registration() {
 
 			const validUser: RegistrationUser = registrationSchema.parse(data);
 
-			await register(validUser.username, validUser.password, validUser.email);
+			await register(validUser.email, validUser.username, validUser.password);
 			navigate('/home');
 		} catch (error) {
 			if (error instanceof ZodError) {

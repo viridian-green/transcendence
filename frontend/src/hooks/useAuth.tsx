@@ -5,7 +5,7 @@ import type { User } from '@/shared.types';
 interface AuthContextType {
 	user: User | null;
 	login: (username: string, password: string) => Promise<void>;
-	register: (email: string, password: string, username: string) => Promise<void>;
+	register: (email: string, username: string, password: string) => Promise<void>;
 	signout: () => Promise<void>;
 	isLoading: boolean;
 }
@@ -57,15 +57,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	};
 
 	// Used to register a new user, create a session, and store the user data in the context
-	const register = async (email: string, password: string, username: string) => {
+	const register = async (email: string, username: string, password: string) => {
 		const response = await fetch('/api/users/register', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			credentials: 'include',
-			body: JSON.stringify({ username, password, email }),
+			body: JSON.stringify({ email, username, password }),
 		});
+
+		console.log(response.body);
 
 		if (!response.ok) {
 			const error = await response.json();
