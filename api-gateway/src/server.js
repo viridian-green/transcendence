@@ -5,6 +5,7 @@ const start = async () => {
     //await fastify.register(require("./plugins/auth"));
     await fastify.register(require("./routes/game"));
     await fastify.register(require("./routes/user"));
+    await fastify.register(require("./routes/chat"));
 
     await fastify.listen({ port: 3000, host: "0.0.0.0" });
   } catch (error) {
