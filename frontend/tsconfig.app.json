@@ -17,7 +17,7 @@
 		"jsx": "react-jsx",
 
 		/* Linting */
-		"strict": true,
+		"strict": true, // we need stric for zod to work properly
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"erasableSyntaxOnly": true,
@@ -27,9 +27,10 @@
 		"baseUrl": ".",
 
 		"paths": {
-			"@/*": ["*"],
-			"@pages/*": ["src/pages/*"],
-			"@components/*": ["src/components/*"]
+			"@/*": ["./src/*"],
+			"@pages/*": ["./src/pages/*"],
+			"@components/*": ["./src/components/*"],
+			"@hooks/*": ["./src/hooks/*"]
 		}
 	},
 	"include": ["src"],

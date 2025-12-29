@@ -1,20 +1,33 @@
 import { Suspense } from 'react';
 import { Link, Routes, Route, useLocation } from 'react-router-dom';
-import './App.css';
-import { Home, About, NotFound, Loading, Game, Landing, Chat } from '@/src/pages/index';
-import { Avatar } from './components';
+import {
+	Home,
+	About,
+	NotFound,
+	Loading,
+	Game,
+	Landing,
+	Login,
+	Registration,
+	ProtectedRoute,
+	Chat,
+} from '@pages/index';
+import { Avatar } from '@components/index';
 
 function App() {
 	const location = useLocation();
-	const isLanding = location.pathname === '/';
+	const hasAvatar =
+		location.pathname !== '/' &&
+		location.pathname !== '/login' &&
+		location.pathname !== '/register';
 
 	return (
-		<div className='flex min-h-screen flex-col bg-black p-6 text-pink-600'>
-			{!isLanding && (
-				<nav className='font-bit-slim flex justify-end'>
+		<div className='flex min-h-screen flex-col bg-black text-pink-600'>
+			{hasAvatar && (
+				<nav className='font-bit-slim flex justify-end p-6'>
 					{/* <Link to='/'>Home</Link>
-				<Link to='/about'>About</Link>
-				<Link to='/game'>Pong</Link> */}
+						<Link to='/about'>About</Link>
+						<Link to='/game'>Pong</Link> */}
 					<Link to='/profile'>{<Avatar />}</Link>
 				</nav>
 			)}
@@ -23,10 +36,27 @@ function App() {
 				<Suspense fallback={<Loading />}>
 					<Routes>
 						<Route path='/' element={<Landing />} />
-						<Route path='/home' element={<Home />} />
+						<Route path='/login' element={<Login />} />
+						<Route path='/register' element={<Registration />} />
+						<Route
+							path='/home'
+							element={
+								<ProtectedRoute>
+									<Home />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path='/game/*'
+							element={
+								<ProtectedRoute>
+									<Game />
+								</ProtectedRoute>
+							}
+						/>
+						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
-						<Route path='/game/*' element={<Game />} />
-						<Route path='/chat/*' element={<Chat />} />
+						<Route path='/chat' element={<Chat />} />
 						<Route path='*' element={<NotFound />} />
 					</Routes>
 				</Suspense>

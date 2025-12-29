@@ -1,4 +1,4 @@
-.PHONY: setup up down logs clean rebuild
+.PHONY: setup up down logs clean rebuild restart nocache
 
 # Generate SSL certificates if they don't exist
 setup:
@@ -25,6 +25,17 @@ logs: setup
 # Stop services
 down:
 	docker compose down
+
+
+restart: down
+	docker compose up -d --build
+
+# No cache rebuild. Used on user service development.
+nocache:
+	docker compose down
+	docker compose build --no-cache user
+	docker compose up
+
 
 # Clean everything including volumes
 clean:

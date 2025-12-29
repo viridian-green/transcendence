@@ -1,12 +1,20 @@
-const fastify = require("fastify")({ logger: true });
+import Fastify from "fastify";
+
+//import gameRoutes from "./routes/game.js";
+import userRoutes from "./routes/user.js";
+import chatRoutes from "./routes/chat.js";
+import healthRoute from "./health.js";
+
+const fastify = Fastify({ logger: true });
 
 const start = async () => {
   try {
-    //await fastify.register(require("./plugins/auth"));
-    await fastify.register(require("./routes/game"));
-    await fastify.register(require("./routes/user"));
-    await fastify.register(require("./routes/chat"));
+    // await fastify.register(authPlugin);
 
+    //await fastify.register(gameRoutes); // Temporarily disabled until game routes are fully migrated to ESM
+    await fastify.register(userRoutes);
+    await fastify.register(chatRoutes);
+    await fastify.register(healthRoute);
     await fastify.listen({ port: 3000, host: "0.0.0.0" });
   } catch (error) {
     fastify.log.error(error);
