@@ -62,11 +62,25 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/game_db
 
     ports:
       - "3002:3002"
     networks:
       - transcendence-network
+  
+  user:
+   build:
+     context: ./services/user-service
+     dockerfile: Dockerfile.dev
+   depends_on:
+    database:
+      condition: service_healthy
+   environment:
+    POSTGRES_USER: ${POSTGRES_USER}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    POSTGRES_DB: ${POSTGRES_DB}
+    DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/user_db
 
   user:
     build:
