@@ -1,11 +1,12 @@
-const fp = require("fastify-plugin");
+import fp from "fastify-plugin";
+import httpProxy from "@fastify/http-proxy";
 
 async function chatRoutes(fastify) {
-  fastify.register(require("@fastify/http-proxy"), {
+  fastify.register(httpProxy, {
     upstream: "http://chat:3004",
     prefix: "/api/chat",
     websocket: true,
   });
 }
 
-module.exports = fp(chatRoutes);
+export default fp(chatRoutes);
