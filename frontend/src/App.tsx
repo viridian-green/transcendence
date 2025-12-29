@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Link, Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import {
 	Home,
 	About,
@@ -11,7 +11,7 @@ import {
 	Registration,
 	ProtectedRoute,
 } from '@pages/index';
-import { Avatar } from '@components/index';
+import TopRightAvatar from './pages/TopRightAvatar';
 
 function App() {
 	const location = useLocation();
@@ -23,11 +23,12 @@ function App() {
 	return (
 		<div className='flex min-h-screen flex-col bg-black text-pink-600'>
 			{hasAvatar && (
-				<nav className='font-bit-slim flex justify-end p-6'>
+				<nav className='flex justify-end p-6'>
 					{/* <Link to='/'>Home</Link>
 						<Link to='/about'>About</Link>
 						<Link to='/game'>Pong</Link> */}
-					<Link to='/profile'>{<Avatar />}</Link>
+					{/* <Link to='/profile'>{<Avatar />}</Link> */}
+					<TopRightAvatar />
 				</nav>
 			)}
 
