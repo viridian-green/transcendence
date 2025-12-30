@@ -14,23 +14,23 @@ const Home: FC = () => {
 	};
 
 	const [showWelcome, setShowWelcome] = useState(true);
-	const [fadein, setFadein] = useState(true);
+	const [fadeIn, setFadeIn] = useState(true);
 	const [showRest, setShowRest] = useState(false);
 
 	useEffect(() => {
-		// Wait for slideIn animation to finish
+		// Wait for slideIn and slideOut animation to finish
 		const timer1 = setTimeout(() => {
-			setShowWelcome(false); // triggers slideOut
+			setShowWelcome(false);
 		}, 1200); // 0.6s animation + 0.6s delay
 
 		const timer2 = setTimeout(() => {
-			setFadein(false); // triggers slideOut
-		}, 600); // 0.6s animation + 0.6s delay
+			setFadeIn(false); // triggers slideOut
+		}, 600);
 
 		// Show rest after welcome disappears
 		const timer3 = setTimeout(() => {
 			setShowRest(true);
-		}, 1800); // 0.6s later
+		}, 1800);
 
 		return () => {
 			clearTimeout(timer1);
@@ -45,7 +45,7 @@ const Home: FC = () => {
 				<section
 					className={
 						`flex items-center justify-center gap-4` +
-						(fadein ? ' animate-slide-in' : ' animate-slide-out')
+						(fadeIn ? ' animate-slide-in' : ' animate-slide-out')
 					}
 				>
 					<h1 className={`text-accent-pink font-retro text-center text-6xl font-bold`}>

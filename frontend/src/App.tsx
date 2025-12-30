@@ -10,6 +10,7 @@ import {
 	Login,
 	Registration,
 	ProtectedRoute,
+	PublicOnlyRoute,
 } from '@pages/index';
 import TopRightAvatar from './pages/TopRightAvatar';
 import { useAuth } from './hooks/useAuth';
@@ -37,9 +38,30 @@ function App() {
 			<main className='h-screen'>
 				<Suspense fallback={<Loading />}>
 					<Routes>
-						<Route path='/' element={<Landing />} />
-						<Route path='/login' element={<Login />} />
-						<Route path='/register' element={<Registration />} />
+						<Route
+							path='/'
+							element={
+								<PublicOnlyRoute>
+									<Landing />
+								</PublicOnlyRoute>
+							}
+						/>
+						<Route
+							path='/login'
+							element={
+								<PublicOnlyRoute>
+									<Login />
+								</PublicOnlyRoute>
+							}
+						/>
+						<Route
+							path='/register'
+							element={
+								<PublicOnlyRoute>
+									<Registration />
+								</PublicOnlyRoute>
+							}
+						/>
 						<Route
 							path='/home'
 							element={
