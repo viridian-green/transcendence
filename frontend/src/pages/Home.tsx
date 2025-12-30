@@ -48,7 +48,7 @@ const Home: FC = () => {
 						(fadein ? ' animate-slide-in' : ' animate-slide-out')
 					}
 				>
-					<h1 className={`text-accent-pink font-retro text-center text-6xl font-bold`}>
+					<h1 className='text-accent-pink font-retro text-center text-6xl font-bold'>
 						{welcomeMessage}
 					</h1>
 					<svg
