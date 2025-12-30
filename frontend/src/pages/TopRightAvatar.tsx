@@ -16,21 +16,23 @@ const ProfileCard = () => {
 		<div className='absolute top-14 right-0 flex flex-col rounded-lg bg-slate-900 p-4 whitespace-nowrap text-slate-300 shadow-xs shadow-slate-700'>
 			<p className='text-center text-pink-600'>{user?.username}</p>
 			<p className='mb-2 text-center text-sm text-pink-600'>{user?.email}</p>
-			<div
+			<button
+				type='button'
 				onClick={() => navigate('/profile')}
 				className='cursor-pointer rounded-lg border-0 px-2 hover:bg-[#0c8ce9]'
 			>
 				<p className='inline-block'>view profile</p>
 				<ProfileCircle className='ml-2 inline-block h-4 w-4 stroke-slate-300' />
-			</div>
+			</button>
 			<hr className='my-2 w-full border-slate-700' />
-			<div
+			<button
+				type='button'
 				onClick={handleSignout}
 				className='cursor-pointer rounded-lg border-0 px-2 hover:bg-[#0c8ce9]'
 			>
 				<p className='inline-block'>signout</p>
 				<Exit className='ml-2 inline-block h-4 w-4 stroke-slate-300' />
-			</div>
+			</button>
 		</div>
 	);
 };
@@ -38,8 +40,10 @@ const ProfileCard = () => {
 const TopRightAvatar = () => {
 	const [open, setOpen] = useState(false);
 	return (
-		<div onClick={() => setOpen(!open)} className='relative'>
-			<Avatar className='cursor-pointer' />
+		<div className='relative'>
+			<button type='button' onClick={() => setOpen(!open)} className='cursor-pointer'>
+				<Avatar />
+			</button>
 			{open && <ProfileCard />}
 		</div>
 	);
