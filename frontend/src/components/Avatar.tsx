@@ -13,7 +13,7 @@ const Avatar = ({ url, size = 48, className }: AvatarProps) => {
 	// const randomuserImage = 'https://randomuser.me/api/portraits/men/75.jpg';
 	return (
 		<div
-			className={`overflow-hidden rounded-full border-2 border-pink-500 hover:opacity-50 ${className}`}
+			className={`border-accent-pink overflow-hidden rounded-full border-2 hover:opacity-50 ${className}`}
 			style={{ width: size, height: size }}
 		>
 			<img

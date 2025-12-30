@@ -50,7 +50,7 @@
 
 	--color-accent-pink: var(--color-pink-600);
 	--color-accent-pink-hover: #f08ac5;
-	--color-accent-blue: #3b82f6;
+	--color-accent-blue: #3b82f6; /* #0c8ce9 */
 	--color-accent-purple-dark: var(--color-purple-600);
 	--color-accent-purple-light: var(--color-purple-500);
 	--color-accent-amber: #fbbf24;
