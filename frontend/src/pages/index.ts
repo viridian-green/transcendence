@@ -8,3 +8,4 @@ export { default as Registration } from './Registration';
 export { default as Login } from './Login';
 export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as TopRightAvatar } from './TopRightAvatar';
+export { default as PublicOnlyRoute } from './PublicOnlyRoute';
