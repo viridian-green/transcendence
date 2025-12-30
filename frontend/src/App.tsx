@@ -22,7 +22,7 @@ function App() {
 	}
 
 	return (
-		<div className='flex min-h-screen flex-col bg-black text-pink-600'>
+		<div className='flex min-h-screen flex-col'>
 			{isLoggedIn && (
 				<nav className='flex justify-end p-6'>
 					{/* <Link to='/'>Home</Link>
