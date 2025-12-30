@@ -22,9 +22,9 @@ function App() {
 	}
 
 	return (
-		<div className='flex min-h-screen flex-col'>
+		<div className='min-h-screen'>
 			{isLoggedIn && (
-				<nav className='flex justify-end p-6'>
+				<nav className='fixed top-0 right-0 z-50 p-6'>
 					{/* <Link to='/'>Home</Link>
 						<Link to='/about'>About</Link>
 						<Link to='/game'>Pong</Link>
@@ -34,7 +34,7 @@ function App() {
 				</nav>
 			)}
 
-			<main className='flex-1'>
+			<main className='h-screen'>
 				<Suspense fallback={<Loading />}>
 					<Routes>
 						<Route path='/' element={<Landing />} />

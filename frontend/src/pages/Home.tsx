@@ -13,9 +13,11 @@ const Home: FC = () => {
 	};
 
 	return (
-		<div className='flex flex-col items-center justify-center gap-6'>
+		<div className='flex min-h-screen flex-col items-center justify-center gap-6'>
 			<section className='flex items-center justify-center gap-4'>
-				<h1 className='text-center text-2xl font-bold'>{welcomeMessage}</h1>
+				<h1 className='text-accent-pink text-center text-2xl font-bold'>
+					{welcomeMessage}
+				</h1>
 				<svg
 					fill='#e60076'
 					version='1.1'
@@ -47,7 +49,7 @@ const Home: FC = () => {
 					</g>
 				</svg>
 			</section>
-			<p className='text-xs text-slate-400'>Choose your game mode:</p>
+			<p className='text-xs'>Choose your game mode:</p>
 			<div className='mt-4 flex flex-row justify-center gap-20 text-center text-xl'>
 				<PinkButton
 					text='AI Opponent'
