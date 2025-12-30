@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			}
 			const data = await response.json();
 			setUser(data);
-			setIsLoggedIn(data !== null);
+			setIsLoggedIn(true);
 		} catch (error) {
 			console.error('Failed to check auth status:', error);
 			setUser(null);
