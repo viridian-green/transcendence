@@ -59,7 +59,6 @@ function App() {
 						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
 						<Route path='*' element={<NotFound />} />
-						<Route path='/hometest' element={<Home />} />
 					</Routes>
 				</Suspense>
 			</main>
