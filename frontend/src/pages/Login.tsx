@@ -51,8 +51,13 @@ export default function Login() {
 				});
 				setErrors(formattedErrors);
 			} else {
-				// TODO maybe handle different error types e.g. invalid email or wrong password
-				setErrors({ submit: 'Failed to sign in. Please try again.' });
+				if (error instanceof Error) {
+					const message = error.message.trimEnd();
+					const formattedMessage = message.endsWith('.') ? message.slice(0, -1) : message;
+					setErrors({ submit: `${formattedMessage}. Please try again.` });
+				} else {
+					setErrors({ submit: `Failed to log in. Please try again.` });
+				}
 			}
 		} finally {
 			setIsSubmitting(false);
