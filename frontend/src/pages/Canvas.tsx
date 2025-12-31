@@ -1,3 +1,4 @@
+import type { GamePhase } from '@/shared.types';
 import { useEffect, useRef } from 'react';
 
 const CANVAS_WIDTH = 800;
@@ -9,6 +10,50 @@ const BALL_RADIUS = 8;
 
 const Canvas = () => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
+
+	const sequence = ['3', '2', '1', 'GO!'] as const;
+
+	const sequenceIndexRef = useRef(0);
+	const gamePhaseRef = useRef<GamePhase>('countdown');
+	const phaseStartTimeRef = useRef(0);
+
+	useEffect(() => {
+		gamePhaseRef.current = 'countdown';
+		sequenceIndexRef.current = 0;
+		phaseStartTimeRef.current = performance.now();
+	}, []);
+
+	const updateSequence = () => {
+		const now = performance.now();
+		const elapsed = now - phaseStartTimeRef.current;
+
+		if (elapsed >= 1000) {
+			sequenceIndexRef.current += 1;
+			phaseStartTimeRef.current = now;
+
+			if (sequenceIndexRef.current >= sequence.length) {
+				gamePhaseRef.current = 'playing';
+			}
+		}
+	};
+
+	const drawSequence = (ctx: CanvasRenderingContext2D, text: string, elapsed: number) => {
+		const progress = Math.min(elapsed / 1000, 1);
+
+		const scale = 0.8 + progress * 0.3;
+
+		ctx.save();
+		ctx.translate(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+		ctx.scale(scale, scale);
+
+		ctx.fillStyle = '#e60076';
+		ctx.font = '96px Retro, sans-serif';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.fillText(text, 0, 0);
+
+		ctx.restore();
+	};
 
 	// Initial centered state
 	const stateRef = useRef({
@@ -44,34 +89,26 @@ const Canvas = () => {
 		const draw = () => {
 			const { ball, paddles, scores } = stateRef.current;
 
+			ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
 			// Background
-			ctx.fillStyle =
-				getComputedStyle(document.documentElement).getPropertyValue('--color-bg') ||
-				'#121212';
+			ctx.fillStyle = '#121212';
 			ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
 			// Net
-			ctx.fillStyle =
-				getComputedStyle(document.documentElement).getPropertyValue('--color-border') ||
-				'#2a2a2a';
+			ctx.fillStyle = '#2a2a2a';
 			for (let y = 0; y < CANVAS_HEIGHT; y += 24) {
 				ctx.fillRect(CANVAS_WIDTH / 2 - 2, y, 6, 12);
 			}
 
 			// Ball
-			ctx.fillStyle =
-				getComputedStyle(document.documentElement).getPropertyValue(
-					'--color-accent-pink',
-				) || '#e60076';
+			ctx.fillStyle = gamePhaseRef.current !== 'countdown' ? '#e60076' : 'rgba(0, 0, 0, 0)';
 			ctx.beginPath();
 			ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, Math.PI * 2);
 			ctx.fill();
 
 			// Paddles
-			ctx.fillStyle =
-				getComputedStyle(document.documentElement).getPropertyValue(
-					'--color-accent-pink',
-				) || '#e60076';
+			ctx.fillStyle = '#e60076';
 			ctx.fillRect(20, paddles.left.y, PADDLE_WIDTH, PADDLE_HEIGHT);
 			ctx.fillRect(
 				CANVAS_WIDTH - 20 - PADDLE_WIDTH,
@@ -81,10 +118,7 @@ const Canvas = () => {
 			);
 
 			// Scores
-			ctx.fillStyle =
-				getComputedStyle(document.documentElement).getPropertyValue(
-					'--color-text-primary',
-				) || '##d4d4d4';
+			ctx.fillStyle = '##d4d4d4';
 			ctx.font = '32px Retro, sans-serif';
 			ctx.textAlign = 'center';
 			ctx.fillText(`${scores.left}`, CANVAS_WIDTH / 4, 48);
@@ -93,6 +127,18 @@ const Canvas = () => {
 
 		const loop = () => {
 			draw();
+
+			if (gamePhaseRef.current !== 'playing') {
+				updateSequence();
+
+				const elapsed = performance.now() - phaseStartTimeRef.current;
+				const text = sequence[sequenceIndexRef.current];
+
+				if (text) {
+					drawSequence(ctx, text, elapsed);
+				}
+			}
+
 			requestAnimationFrame(loop);
 		};
 
