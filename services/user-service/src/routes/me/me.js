@@ -1,70 +1,24 @@
-import bcrypt from "bcryptjs";
-import { updateUserSchema } from "../../schemas/auth.schema.js";
+import { parseUpdateUserBody, updateUser, getUserById, updateUserAvatar } from "../../services/user.service.js";
+import path from "path";
+import fs from "fs";
+import { pipeline } from "stream/promises";
 
 export default async function updateUserRoute(app) {
     app.put('/', { preHandler: app.authenticate }, async (req, reply) => {
         const userId = req.user.id;
 
-        const parsed = updateUserSchema.safeParse(req.body);
-        if (!parsed.success) {
-            return reply.code(400).send({ error: parsed.error.errors });
-        }
+        const updateData = parseUpdateUserBody(req);
+        const updatedUser = await updateUser(app, userId, updateData);
 
-        const updateData = parsed.data;
-
-        if (updateData.password) {
-            updateData.password = bcrypt.hash(updateData.password, 10);
-        }
-
-        // ------ encapsulate this later
-        //const updatedUser = await userService.updatedUser(userId, updateData);
-        const fields = [];
-        const values = [];
-        let index = 1;
-
-        for (const [key, value] of Object.entries(updateData)) {
-            fields.push(`${key} = $${index++}`);
-            values.push(value);
-        }
-
-        values.push(userId);
-
-        const query = `
-        UPDATE users
-        SET ${fields.join(", ")}
-        WHERE id = $${index}
-        RETURNING id, username, email
-      `;
-
-        const { rows } = await app.pg.query(query, values);
-
-        if (rows.length === 0) {
-            return reply.code(404).send({ error: "User not found" });
-        }
-        //------------------------------
-
-        return reply.send(rows[0]);
+        return reply.send(updatedUser);
     });
 
     app.get('/',
         { preHandler: app.authenticate },
         async (request, reply) => {
             const userId = request.user.id;
-
-            const { rows } = await app.pg.query(
-                `
-                SELECT id, username, email, avatar
-                FROM users
-                WHERE id = $1
-                `,
-                [userId]
-            );
-
-            if (rows.length === 0) {
-                return reply.code(404).send({ error: 'User not found' });
-            }
-
-            return reply.send(rows[0]);
+            const user = await getUserById(app, userId);
+            return reply.send(user);
         }
     );
 
@@ -79,15 +33,17 @@ export default async function updateUserRoute(app) {
         const filename = `user-${req.user.id}${ext}`;
         const filepath = path.join('uploads/avatars', filename);
 
-        await pump(data.file, fs.createWriteStream(filepath));
+        // Ensure uploads directory exists
+        const uploadDir = path.dirname(filepath);
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
 
-        await app.pq.query(
-            'UPDATE users SET avatar = $1 WHERE id = $2',
-            [filename, req.user.id]
-        );
-        reply.send({ avatar: filename });
-    }
-    )
-};
+        await pipeline(data.file, fs.createWriteStream(filepath));
+
+        const avatar = await updateUserAvatar(app, req.user.id, filename);
+        return reply.send({ avatar });
+    });
+}
 
 
