@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	// Used to log in a user, create a session, and store the user data in the context
 	const login = async (username: string, password: string) => {
-		const response = await fetch('/api/users/login', {
+		const response = await fetch('/api/auth/login', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	// Used to register a new user, create a session, and store the user data in the context
 	const register = async (email: string, password: string, username: string) => {
-		const response = await fetch('/api/users/register', {
+		const response = await fetch('/api/auth/register', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	// Used to sign out a user and clear the user data from the context
 	const signout = async () => {
-		await fetch('/api/users/signout', {
+		await fetch('/api/auth/signout', {
 			method: 'POST',
 			credentials: 'include',
 		});

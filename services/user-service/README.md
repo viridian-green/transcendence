@@ -49,7 +49,7 @@ This service uses cookie bases authentication:
 
 ### Endpoint
 ```bash
-POST /api/users/register
+POST /api/auth/register
 ```
 
 ### Description
@@ -87,7 +87,7 @@ Authentication is not automatic: user must login first.
 ### Endpoint
 
 ```bash
-POST /api/users/login
+POST /api/auth/login
 ```
 
 **Request**
@@ -111,7 +111,7 @@ POST /api/users/login
 ### Endpoint
 
 ```bash
-POST /api/users/signout
+POST /api/auth/signout
 ```
 
 ### Behavior
@@ -195,7 +195,7 @@ make up
 Example register test (direct service access):
 
 ```bash
-curl -X POST http://localhost:3000/api/users/register \
+curl -X POST http://localhost:3000/api/auth/register \
     -H "Content-type: application/json" \
     -d '{"email":"test@test.com", "username":"test","password":"1234"}'
 ```
@@ -203,7 +203,7 @@ curl -X POST http://localhost:3000/api/users/register \
 Then, login:
 
 ```bash
-curl -X POST http://localhost:3003/api/users/login \
+curl -X POST http://localhost:3003/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"test","password":"1234"}'
 ```
