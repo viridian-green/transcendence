@@ -118,7 +118,7 @@ const Canvas = () => {
 			);
 
 			// Scores
-			ctx.fillStyle = '##d4d4d4';
+			ctx.fillStyle = '#d4d4d4';
 			ctx.font = '32px Retro, sans-serif';
 			ctx.textAlign = 'center';
 			ctx.fillText(`${scores.left}`, CANVAS_WIDTH / 4, 48);
