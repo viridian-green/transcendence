@@ -31,9 +31,9 @@ All routes are prefixed with:
 | GET    | `/me`           | Get current authenticated us             | ✅ Implemented |
 | PUT    | `/me`           | Update current authenticated user        | ✅ Implemented |
 | POST   | `/signout`      | Clear authentication cookie              | ✅ Implemented |
-| POST   | `/friends/:id`  | Send a friend request                    | 🚧 In progress |
-| DELETE | `/friends/:id`  | Remove an existing friend                | 🚧 Planned     |
-| GET    | `/friends`      | See friends list.                        | 🚧 Planned     |
+| POST   | `/friends/:id`  | Send a friend request                    | ✅ Implemented |
+| DELETE | `/friends/:id`  | Remove an existing friend                | ✅ Implemented |
+| GET    | `/friends`      | See friends list.                        | ✅ Implemented |
 
 ---
 
