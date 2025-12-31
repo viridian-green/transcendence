@@ -37,13 +37,33 @@
 	--font-bit: 'Bit', sans-serif;
 	--font-bit-slim: 'Bit Slim', sans-serif;
 	--font-bit-large: 'Bit Large', sans-serif;
+
+	--color-bg: #121212;
+	--color-surface: #181818;
+	--color-elevated: #1f1f1f;
+	--color-border: #2a2a2a;
+
+	--color-text-primary: var(--color-neutral-300);
+	--color-text-secondary: #b3b3b3;
+	--color-text-muted: #737373;
+	--color-text-inverse: #121212;
+
+	--color-accent-pink: var(--color-pink-600);
+	--color-accent-pink-hover: #f08ac5;
+	--color-accent-blue: #3b82f6; /* #0c8ce9 */
+	--color-accent-purple-dark: var(--color-purple-600);
+	--color-accent-purple-light: var(--color-purple-500);
+	--color-accent-amber: #fbbf24;
+
+	--color-status-online: #4ade80; /* #00FF85 */
 }
 
 body {
 	margin: 0;
 	padding: 0;
 	font-family: sans-serif;
-	background-color: #f0f0f0;
+	background-color: var(--color-bg);
+	color: var(--color-text-primary);
 }
 
 @tailwind utilities;

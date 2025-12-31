@@ -9,7 +9,7 @@ const Landing = () => {
 	const navigate = useNavigate();
 
 	return (
-		<div className='relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-black p-4 text-pink-600'>
+		<div className='text-accent-pink relative flex min-h-screen flex-col items-center justify-center overflow-hidden p-4'>
 			{/* Animated Background Spheres with Pixelated Effect */}
 			<div className='pointer-events-none absolute inset-0'>
 				{/* Black Sphere - Top Left */}

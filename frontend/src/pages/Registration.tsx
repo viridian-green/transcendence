@@ -29,23 +29,23 @@ const registrationSchema = z
 type RegistrationUser = z.infer<typeof registrationSchema>;
 
 const ErrorMessage = ({ message }: { message: string }) => (
-	<div className='flex text-pink-600'>
+	<div className='text-accent-pink flex'>
 		<ExclamationCircleOutline className='mr-1 h-4 w-4' />
-		<p className='text-sm text-pink-600'>{message}</p>
+		<p className='text-accent-pink text-sm'>{message}</p>
 	</div>
 );
 
 export default function Registration() {
 	const [formData, setFormData] = useState({
 		email: '',
-		password: '',
 		username: '',
+		password: '',
 		confirmPassword: '',
 	});
 	const [errors, setErrors] = useState<{
 		email?: string;
-		password?: string;
 		username?: string;
+		password?: string;
 		confirmPassword?: string;
 		submit?: string;
 	}>({});
@@ -66,7 +66,7 @@ export default function Registration() {
 
 			const validUser: RegistrationUser = registrationSchema.parse(data);
 
-			await register(validUser.username, validUser.password, validUser.email);
+			await register(validUser.email, validUser.username, validUser.password);
 			navigate('/home');
 		} catch (error) {
 			if (error instanceof ZodError) {
@@ -78,8 +78,13 @@ export default function Registration() {
 				});
 				setErrors(formattedErrors);
 			} else {
-				// TODO maybe handle different error types e.g. username taken, email taken, etc.
-				setErrors({ submit: 'Failed to create account. Please try again.' });
+				if (error instanceof Error) {
+					const message = error.message.trimEnd();
+					const formattedMessage = message.endsWith('.') ? message.slice(0, -1) : message;
+					setErrors({ submit: `${formattedMessage}. Please try again.` });
+				} else {
+					setErrors({ submit: `Failed to create account. Please try again.` });
+				}
 			}
 		} finally {
 			setIsSubmitting(false);
@@ -96,10 +101,12 @@ export default function Registration() {
 	};
 
 	return (
-		<div className='flex min-h-screen items-center justify-center p-4 text-white'>
+		<div className='flex min-h-screen items-center justify-center p-4'>
 			<div className='w-full max-w-md'>
 				<div>
-					<h1 className='mb-6 text-center text-5xl font-bold text-pink-600'>Register</h1>
+					<h1 className='text-accent-pink mb-6 text-center text-5xl font-bold'>
+						Register
+					</h1>
 				</div>
 				<div>
 					<form
@@ -110,7 +117,7 @@ export default function Registration() {
 						className='space-y-4'
 					>
 						<div className='flex flex-col space-y-2'>
-							<label htmlFor='email' className='text-md font-medium text-slate-300'>
+							<label htmlFor='email' className='text-md font-medium'>
 								Email
 							</label>
 							<input
@@ -121,15 +128,12 @@ export default function Registration() {
 								onChange={handleChange}
 								required
 								placeholder='Enter your email'
-								className='rounded-md border-2 border-slate-700 p-2 text-sm'
+								className='border-border text-text-secondary rounded-md border-2 p-2 text-sm'
 							/>
 							{errors.email && <ErrorMessage message={errors.email} />}
 						</div>
 						<div className='flex flex-col space-y-2'>
-							<label
-								htmlFor='username'
-								className='text-md font-medium text-slate-300'
-							>
+							<label htmlFor='username' className='text-md font-medium'>
 								Username
 							</label>
 							<input
@@ -140,15 +144,12 @@ export default function Registration() {
 								onChange={handleChange}
 								required
 								placeholder='Enter your username'
-								className='rounded-md border-2 border-slate-700 p-2 text-sm'
+								className='border-border text-text-secondary rounded-md border-2 p-2 text-sm'
 							/>
 							{errors.username && <ErrorMessage message={errors.username} />}
 						</div>
 						<div className='flex flex-col space-y-2'>
-							<label
-								htmlFor='password'
-								className='text-md font-medium text-slate-300'
-							>
+							<label htmlFor='password' className='text-md font-medium'>
 								Password
 							</label>
 							<input
@@ -159,15 +160,12 @@ export default function Registration() {
 								onChange={handleChange}
 								required
 								placeholder='Enter your password'
-								className='rounded-md border-2 border-slate-700 p-2 text-sm'
+								className='border-border text-text-secondary rounded-md border-2 p-2 text-sm'
 							/>
 							{errors.password && <ErrorMessage message={errors.password} />}
 						</div>
 						<div className='flex flex-col space-y-2'>
-							<label
-								htmlFor='confirmPassword'
-								className='text-md font-medium text-slate-300'
-							>
+							<label htmlFor='confirmPassword' className='text-md font-medium'>
 								Confirm Password
 							</label>
 							<input
@@ -178,7 +176,7 @@ export default function Registration() {
 								onChange={handleChange}
 								required
 								placeholder='Confirm your password'
-								className='rounded-md border-2 border-slate-700 p-2 text-sm'
+								className='border-border text-text-secondary rounded-md border-2 p-2 text-sm'
 							/>
 							{errors.confirmPassword && (
 								<ErrorMessage message={errors.confirmPassword} />
@@ -186,9 +184,12 @@ export default function Registration() {
 						</div>
 						<div>
 							<input type='checkbox' id='terms' name='terms' value='terms' />
-							<label htmlFor='terms' className='ml-2 text-sm text-slate-300'>
+							<label htmlFor='terms' className='ml-2 text-sm'>
 								I agree to the{' '}
-								<a href='/terms' className='text-purple-600 hover:text-purple-500'>
+								<a
+									href='/terms'
+									className='text-accent-purple-dark hover:text-accent-purple-light'
+								>
 									Terms and Policy
 								</a>
 							</label>
@@ -196,14 +197,17 @@ export default function Registration() {
 						{errors.submit && <ErrorMessage message={errors.submit} />}
 						<button
 							type='submit'
-							className='w-full rounded-lg border-2 border-pink-600 bg-pink-600 py-2 text-black'
+							className='border-accent-pink bg-accent-pink text-text-inverse w-full rounded-lg border-2 py-2'
 							disabled={isSubmitting}
 						>
 							{isSubmitting ? 'Creating account...' : 'Create Account'}
 						</button>
-						<div className='text-center text-sm text-slate-300'>
+						<div className='text-center text-sm'>
 							Already have an account?{' '}
-							<a href='/login' className='text-purple-600 hover:text-purple-500'>
+							<a
+								href='/login'
+								className='text-accent-purple-dark hover:text-accent-purple-light'
+							>
 								Login
 							</a>
 						</div>
