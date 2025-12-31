@@ -11,6 +11,7 @@ import {
 	Registration,
 	ProtectedRoute,
 	PublicOnlyRoute,
+	GameEnd,
 } from '@pages/index';
 import TopRightAvatar from './pages/TopRightAvatar';
 import { useAuth } from './hooks/useAuth';
@@ -78,6 +79,9 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
+						{/* test routes */}
+						<Route path='/test/game/end' element={<GameEnd />} />
+						<Route path='/test/game' element={<Game />} />
 						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
 						<Route path='*' element={<NotFound />} />
