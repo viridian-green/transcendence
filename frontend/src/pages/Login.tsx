@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z, ZodError } from 'zod';
-import { ExclamationCircleOutline } from '@components/index';
+import { ErrorMessage } from '@components/index';
 import { useAuth } from '@hooks/useAuth.tsx';
 
 const logInSchema = z.object({
@@ -10,13 +10,6 @@ const logInSchema = z.object({
 });
 
 type LoginUser = z.infer<typeof logInSchema>;
-
-const ErrorMessage = ({ message }: { message: string }) => (
-	<div className='text-accent-pink flex'>
-		<ExclamationCircleOutline className='mr-1 h-4 w-4' />
-		<p className='text-accent-pink text-sm'>{message}</p>
-	</div>
-);
 
 export default function Login() {
 	const [formData, setFormData] = useState({
