@@ -1,7 +1,6 @@
 import { PinkButton } from '@/components';
 import Canvas from './Canvas';
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { GameState } from '@/shared.types';
 
@@ -51,16 +50,13 @@ const fakeGameStateCountdown: GameState = {
 const Game = () => {
 	const navigate = useNavigate();
 	const { state } = useLocation();
-	const { user } = useAuth();
-	const opponent = state?.opponent;
+	const leftPlayer = state?.leftPlayer ?? 'Player 1';
+	const rightPlayer = state?.rightPlayer ?? 'Player 2';
 
 	// TODO set to null
 	const [gameState, setGameState] = useState<GameState>(fakeGameStatePlaying);
 	// TODO remove
 	console.log(setGameState, fakeGameStateCountdown);
-
-	const leftPlayer = user?.username || 'Player 1';
-	const rightPlayer = opponent ?? 'Player 2';
 
 	useEffect(() => {
 		// TODO: Initialize WebSocket connection here

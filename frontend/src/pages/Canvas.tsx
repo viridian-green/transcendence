@@ -1,6 +1,7 @@
 import type { GameState } from '@/shared.types';
 import { useEffect, useRef } from 'react';
 
+// TODO export to shared const file
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 400;
 

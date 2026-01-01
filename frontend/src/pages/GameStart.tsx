@@ -1,26 +1,55 @@
 import { ErrorMessage, PinkButton } from '@/components';
 import { useAuth } from '@/hooks/useAuth';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+type AliasAndPosition = {
+	position: 'left' | 'right';
+	alias: string;
+};
 
 // TODO the logic here is that the logged in user always plays with w and s keys, maybe randomize logic
 const GameStart = () => {
 	const navigate = useNavigate();
-	const [opponent, setOpponent] = useState('');
 	const { user } = useAuth();
+	const [opponent, setOpponent] = useState<AliasAndPosition>({ position: 'right', alias: '' });
+	const opponentAlias = opponent.alias || 'Opponent';
+	const loginUser: AliasAndPosition = useMemo(
+		() => ({
+			alias: user?.username ?? 'You',
+			position: opponent.position === 'left' ? 'left' : 'right',
+		}),
+		[opponent, user],
+	);
+	const leftPlayer = opponent.position === 'left' ? opponentAlias : loginUser.alias;
+	const rightPlayer = opponent.position === 'right' ? opponentAlias : loginUser.alias;
 	const [error, setError] = useState<string | null>(null);
 	const handleStartGame = () => {
-		if (opponent.length === 0) {
+		if (opponent.alias.length === 0) {
 			setError('Please provide an alias for your opponent');
 			return;
 		}
-		navigate('/game', { state: { opponent } });
+		if (opponent.alias === user?.username) {
+			setError('Please provide a different alias');
+			return;
+		}
+		navigate('/game', { state: { leftPlayer, rightPlayer } });
 	};
 
 	const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setOpponent(e.target.value);
+		setOpponent((prev) => ({ ...prev, alias: e.target.value }));
 		if (error) {
 			setError(null);
+		}
+	};
+
+	const handleSideChange = () => {
+		switch (opponent.position) {
+			case 'right':
+				setOpponent((prev) => ({ ...prev, position: 'left' }));
+				break;
+			case 'left':
+				setOpponent((prev) => ({ ...prev, position: 'right' }));
 		}
 	};
 
@@ -36,12 +65,12 @@ const GameStart = () => {
 					id='opponent'
 					type='text'
 					placeholder="Enter opponent's alias"
-					value={opponent}
+					value={opponent.alias}
 					onChange={(e) => handleValueChange(e)}
 				/>
 				<div className='flex items-center justify-center gap-10'>
 					<div className='bg-surface border-border shadow-elevated flex min-w-54 flex-col items-center gap-2 rounded-lg px-6 py-4 shadow'>
-						<p className='text-2xl'>{user?.username ?? 'You'}</p>
+						<p className='text-2xl'>{leftPlayer}</p>
 						<div className='flex w-full items-center justify-between'>
 							<p className='text-text-secondary'>Paddle:</p>
 							<p className='text-xl'>Left</p>
@@ -58,8 +87,15 @@ const GameStart = () => {
 							</div>
 						</div>
 					</div>
+					<button
+						type='button'
+						className='border-accent-pink text-accent-pink hover:bg-accent-pink hover:text-bg rounded-lg border px-2 text-2xl font-bold'
+						onClick={handleSideChange}
+					>
+						&harr;
+					</button>
 					<div className='bg-surface border-border shadow-elevated flex min-w-54 flex-col items-center gap-2 rounded-lg px-6 py-4 shadow'>
-						<p className='text-2xl'>{opponent.length > 0 ? opponent : 'Opponent'}</p>
+						<p className='text-2xl'>{rightPlayer}</p>
 						<div className='flex w-full items-center justify-between'>
 							<p className='text-text-secondary'>Paddle:</p>
 							<p className='text-xl'>Right</p>

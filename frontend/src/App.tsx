@@ -28,11 +28,6 @@ function App() {
 		<div className='min-h-screen'>
 			{isLoggedIn && (
 				<nav className='fixed top-0 right-0 z-50 p-6'>
-					{/* <Link to='/'>Home</Link>
-						<Link to='/about'>About</Link>
-						<Link to='/game'>Pong</Link>
-						<Link to='/profile'>{<Avatar />}</Link> 
-					*/}
 					<TopRightAvatar />
 				</nav>
 			)}
@@ -96,11 +91,6 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
-						{/* test routes */}
-						<Route path='/test/game-end' element={<GameEnd />} />
-						<Route path='/test/game' element={<Game />} />
-						<Route path='/test/home' element={<Home />} />
-						<Route path='/test/game-start' element={<GameStart />} />
 						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
 						<Route path='*' element={<NotFound />} />
