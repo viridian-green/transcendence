@@ -55,9 +55,9 @@ const Game = () => {
 	const opponent = state?.opponent;
 
 	// TODO set to null
-	const [gameState, setGameState] = useState<GameState>(fakeGameStateCountdown);
+	const [gameState, setGameState] = useState<GameState>(fakeGameStatePlaying);
 	// TODO remove
-	console.log(setGameState, fakeGameStatePlaying);
+	console.log(setGameState, fakeGameStateCountdown);
 
 	const leftPlayer = user?.username || 'Player 1';
 	const rightPlayer = opponent ?? 'Player 2';
