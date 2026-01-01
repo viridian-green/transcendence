@@ -117,6 +117,7 @@ const Game = () => {
 			</div>
 			<Canvas gameState={gameState} />
 			<PinkButton
+				className='text-accent-pink'
 				text={gameState?.phase === 'paused' ? 'Resume' : 'Pause'}
 				onClick={handlePauseToggle}
 			/>

@@ -29,7 +29,7 @@ const GameEnd = () => {
 		<div className='flex min-h-screen flex-col items-center justify-center gap-6'>
 			<section className='flex flex-col items-center justify-center gap-6'>
 				<p className='text-accent-pink font-retro text-6xl font-bold'>Winner</p>
-				<p className='text-2xl'>{alias}</p>
+				<p className='text-accent-amber text-2xl'>{alias}</p>
 				<p className='text-2xl'>
 					{score1} : {score2}
 				</p>
