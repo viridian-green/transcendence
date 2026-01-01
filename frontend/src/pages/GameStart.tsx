@@ -14,7 +14,7 @@ const GameStart = () => {
 			setError('Please provide an alias for your opponent');
 			return;
 		}
-		navigate('/game');
+		navigate('/game', { state: { opponent } });
 	};
 
 	const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {

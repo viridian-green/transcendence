@@ -8,20 +8,24 @@ const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 80;
 const BALL_RADIUS = 8;
 
-const Canvas = () => {
+interface CanvasProps {
+	gamePhase: GamePhase;
+	setGamePhase: (gamePhase: GamePhase) => void;
+}
+
+const Canvas = ({ gamePhase, setGamePhase }: CanvasProps) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	const sequence = ['3', '2', '1', 'GO!'] as const;
 
 	const sequenceIndexRef = useRef(0);
-	const gamePhaseRef = useRef<GamePhase>('countdown');
 	const phaseStartTimeRef = useRef(0);
 
 	useEffect(() => {
-		gamePhaseRef.current = 'countdown';
+		setGamePhase('countdown');
 		sequenceIndexRef.current = 0;
 		phaseStartTimeRef.current = performance.now();
-	}, []);
+	}, [setGamePhase]);
 
 	const updateSequence = () => {
 		const now = performance.now();
@@ -32,7 +36,7 @@ const Canvas = () => {
 			phaseStartTimeRef.current = now;
 
 			if (sequenceIndexRef.current >= sequence.length) {
-				gamePhaseRef.current = 'playing';
+				setGamePhase('playing');
 			}
 		}
 	};
@@ -102,7 +106,7 @@ const Canvas = () => {
 			}
 
 			// Ball
-			ctx.fillStyle = gamePhaseRef.current !== 'countdown' ? '#e60076' : 'rgba(0, 0, 0, 0)';
+			ctx.fillStyle = gamePhase !== 'countdown' ? '#e60076' : 'rgba(0, 0, 0, 0)';
 			ctx.beginPath();
 			ctx.arc(ball.x, ball.y, BALL_RADIUS, 0, Math.PI * 2);
 			ctx.fill();
@@ -128,7 +132,7 @@ const Canvas = () => {
 		const loop = () => {
 			draw();
 
-			if (gamePhaseRef.current !== 'playing') {
+			if (gamePhase !== 'playing') {
 				updateSequence();
 
 				const elapsed = performance.now() - phaseStartTimeRef.current;

@@ -4,4 +4,4 @@ export type User = {
 	email: string;
 };
 
-export type GamePhase = 'countdown' | 'go' | 'playing';
+export type GamePhase = 'countdown' | 'go' | 'playing' | 'ended' | 'paused';
