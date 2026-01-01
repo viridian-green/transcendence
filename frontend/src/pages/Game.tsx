@@ -3,7 +3,50 @@ import Canvas from './Canvas';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useLocation, useNavigate } from 'react-router-dom';
-import type { GamePhase } from '@/shared.types';
+import type { GameState } from '@/shared.types';
+
+// TODO remove
+const fakeGameStatePlaying: GameState = {
+	phase: 'playing',
+	ball: {
+		x: 400, // Center horizontally
+		y: 200, // Center vertically
+	},
+	paddles: {
+		left: {
+			y: 160, // Center vertically (200 - 80/2)
+		},
+		right: {
+			y: 160, // Center vertically
+		},
+	},
+	scores: {
+		left: 3,
+		right: 5,
+	},
+};
+
+// TODO remove
+const fakeGameStateCountdown: GameState = {
+	phase: 'countdown',
+	countdownText: '3',
+	ball: {
+		x: 400, // Center horizontally
+		y: 200, // Center vertically
+	},
+	paddles: {
+		left: {
+			y: 160, // Center vertically (200 - 80/2)
+		},
+		right: {
+			y: 160, // Center vertically
+		},
+	},
+	scores: {
+		left: 3,
+		right: 5,
+	},
+};
 
 const Game = () => {
 	const navigate = useNavigate();
@@ -11,7 +54,10 @@ const Game = () => {
 	const { user } = useAuth();
 	const opponent = state?.opponent;
 
-	const [gamePhase, setGamePhase] = useState<GamePhase>('countdown');
+	// TODO set to null
+	const [gameState, setGameState] = useState<GameState>(fakeGameStateCountdown);
+	// TODO remove
+	console.log(setGameState, fakeGameStatePlaying);
 
 	const leftPlayer = user?.username || 'Player 1';
 	const rightPlayer = opponent ?? 'Player 2';
@@ -28,24 +74,39 @@ const Game = () => {
 		// return () => ws.close();
 
 		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.code === 'Space') {
-				setGamePhase((prev) => (prev === 'paused' ? 'playing' : 'paused'));
-			}
 			if (event.code === 'Escape') {
 				navigate('/home');
+			} else if (event.code === 'Space') {
+				// handle paused state
 			}
 		};
+
 		window.addEventListener('keydown', onKeyDown);
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, [navigate]);
 
-	const togglePause = () => {
-		setGamePhase((prev) => (prev === 'paused' ? 'playing' : 'paused'));
+	const handlePauseToggle = () => {
+		// TODO: Send pause/resume command to server via WebSocket
+		// ws.send(JSON.stringify({ type: 'TOGGLE_PAUSE' }));
 	};
 
-	if (gamePhase === 'ended') {
-		navigate('/game-end');
-	}
+	useEffect(() => {
+		if (gameState?.phase === 'ended') {
+			const winner =
+				gameState.scores.left > gameState.scores.right ? leftPlayer : rightPlayer;
+
+			navigate('/game-end', {
+				state: {
+					gameEndData: {
+						winner,
+						leftPlayer,
+						rightPlayer,
+						scores: gameState.scores,
+					},
+				},
+			});
+		}
+	}, [gameState, navigate, leftPlayer, rightPlayer]);
 
 	return (
 		<div className='bg-bg flex min-h-screen flex-col items-center justify-center gap-4'>
@@ -54,8 +115,11 @@ const Game = () => {
 				<p>{leftPlayer}</p>
 				<p>{rightPlayer}</p>
 			</div>
-			<Canvas gamePhase={gamePhase} setGamePhase={setGamePhase} />
-			<PinkButton text={gamePhase === 'paused' ? 'Resume' : 'Pause'} onClick={togglePause} />
+			<Canvas gameState={gameState} />
+			<PinkButton
+				text={gameState?.phase === 'paused' ? 'Resume' : 'Pause'}
+				onClick={handlePauseToggle}
+			/>
 		</div>
 	);
 };

@@ -5,6 +5,7 @@ import confetti from 'node_modules/@hiseb/confetti/dist';
 
 const GameEnd = () => {
 	const navigate = useNavigate();
+	// TODO replace fake data by state from location
 	const alias = 'Player'; // Replace with actual winner's alias
 	const score1 = 10; // Replace with actual score
 	const score2 = 8; // Replace with actual score
