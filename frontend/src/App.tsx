@@ -11,6 +11,8 @@ import {
 	Registration,
 	ProtectedRoute,
 	PublicOnlyRoute,
+	PrivacyPolicy,
+	TermsOfService,
 } from '@pages/index';
 import TopRightAvatar from './pages/TopRightAvatar';
 import { useAuth } from './hooks/useAuth';
@@ -80,10 +82,16 @@ function App() {
 						/>
 						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
+						<Route path='/privacy-policy' element={<PrivacyPolicy />} />
+						<Route path='/terms-of-service' element={<TermsOfService />} />
 						<Route path='*' element={<NotFound />} />
 					</Routes>
 				</Suspense>
 			</main>
+			{/* <footer className='text-center'>
+				<Link to='/terms' className='border-r p-2 mr-2'>Terms of Service</Link>
+				<Link to='/privacy'>Privacy Policy</Link>
+			</footer> */}
 		</div>
 	);
 }
