@@ -9,7 +9,7 @@ export default function Chat() {
   useEffect(() => {
     // Connect to WebSocket through NGINX/Gateway
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/api/chat`;
+    const wsUrl = `${protocol}//${window.location.host}/api/chat/websocket`;
     
     ws.current = new WebSocket(wsUrl);
 
