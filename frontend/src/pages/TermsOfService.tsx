@@ -1,4 +1,4 @@
-import LegalText from '@/components/LegalText';
+import LegalText from '@components/LegalText';
 
 export default function TermsOfService() {
 	return (
