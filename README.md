@@ -83,3 +83,38 @@ The gateway modules now live in `gateway/routes` (previously `gateway/services`)
 ```js
 const { registerGameModule } = require("./routes/game");
 ```
+
+---
+
+## Testing & Development
+
+### Create a test user via terminal
+
+```bash
+curl -X POST https://localhost:8443/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","username":"testuser","password":"Password123!"}' \
+  -k
+```
+
+### Check users in database
+
+```bash
+docker exec postgres_db psql -U myuser -d user_db -c "SELECT id, username, email, created_at FROM users ORDER BY id;"
+```
+
+### Login via terminal (saves cookie to file)
+
+```bash
+curl -X POST https://localhost:8443/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","password":"Password123!"}' \
+  -k -c cookies.txt
+```
+
+### Check authentication status
+
+```bash
+curl https://localhost:8443/api/users/me -k -b cookies.txt
+```
+
