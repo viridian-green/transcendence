@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-API_URL="http://127.0.0.1:3000/api/users/register"
+API_URL="http://127.0.0.1:3000/api/auth/register"
 
 #echo "▶ Running user-service register route tests"
 

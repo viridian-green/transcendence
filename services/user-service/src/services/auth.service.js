@@ -93,3 +93,24 @@ export async function ensureValidPassword(password, user) {
         throw err;
     }
 }
+
+/**
+ * Authenticate middleware - reads user info from headers
+ * The API Gateway handles JWT verification and passes user info via headers
+ */
+export async function authenticate(request, reply) {
+    const userId = request.headers['x-user-id'];
+    const username = request.headers['x-username'];
+
+    if (!userId) {
+        const err = new Error("Missing user authentication");
+        err.statusCode = 401;
+        throw err;
+    }
+
+    // Attach user info to request for use in routes
+    request.user = {
+        id: parseInt(userId, 10),
+        username: username
+    };
+}
