@@ -26,25 +26,6 @@ async function dbConnector(app, options) {
             throw err // fail fast in CI
         }
     })
-
-  // CREATE TABLE
-//   fastify.addHook('onReady', async () => {
-//     try {
-//       await fastify.pg.query(`
-//         CREATE TABLE IF NOT EXISTS users (
-//             id SERIAL PRIMARY KEY,
-//             username TEXT UNIQUE NOT NULL,
-//             password TEXT NOT NULL,
-//             email TEXT NOT NULL,
-//             avatar TEXT NOT NULL DEFAULT 'default.png',
-//             created_at TIMESTAMP DEFAULT NOW()
-//         );
-//       `)
-//       fastify.log.info('User Table created (or already existed).')
-//     } catch (err) {
-//       fastify.log.error(err, 'Error creating User table')
-//     }
-//   })
 }
 
 export default fastifyPlugin(dbConnector)
