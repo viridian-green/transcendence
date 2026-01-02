@@ -10,7 +10,7 @@ const Home: FC = () => {
 	const welcomeMessage = user ? `Welcome, ${user.username}!` : 'Welcome!';
 
 	const handleLocalGameStart = () => {
-		navigate('/game');
+		navigate('/game-start');
 	};
 
 	const [showWelcome, setShowWelcome] = useState(true);

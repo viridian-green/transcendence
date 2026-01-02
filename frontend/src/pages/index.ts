@@ -10,3 +10,6 @@ export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as Chat } from './Chat';
 export { default as TopRightAvatar } from './TopRightAvatar';
 export { default as PublicOnlyRoute } from './PublicOnlyRoute';
+export { default as Canvas } from './Canvas';
+export { default as GameEnd } from './GameEnd';
+export { default as GameStart } from './GameStart';
