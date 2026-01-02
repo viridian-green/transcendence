@@ -1,12 +1,16 @@
 import { useEffect, useState, useRef } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Chat() {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<string[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
+    if (!user) return; // Extra safety check
+
     // Connect to WebSocket through NGINX/Gateway
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/api/chat/websocket`;
@@ -35,7 +39,7 @@ export default function Chat() {
     return () => {
       ws.current?.close();
     };
-  }, []);
+  }, [user]);
 
   const sendMessage = () => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN && inputMessage.trim()) {
