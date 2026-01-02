@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	};
 
 	// Used to register a new user, create a session, and store the user data in the context
-	const register = async (email: string, password: string, username: string) => {
+	const register = async (email: string, username: string, password: string) => {
 		const response = await fetch('/api/auth/register', {
 			method: 'POST',
 			headers: {
