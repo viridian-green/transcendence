@@ -1,4 +1,4 @@
-.policy-and-terms-pages {
+.legal-text-wrapper {
 	width: 100%;
 	display: flex;
 	flex-direction: column;
@@ -7,7 +7,7 @@
 	padding: 18px;
 }
 
-.policy-and-terms-pages article {
+.legal-text {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -20,29 +20,29 @@
 	color: var(--color-text-secondary);
 }
 
-.policy-and-terms-pages h1 {
+.legal-text h1 {
 	/* font-family: 'Retro', sans-serif; */
 	font-weight: bold;
 	font-size: var(--text-3xl);
 	color: var(--color-accent-pink);
 }
 
-.policy-and-terms-pages h2 {
+.legal-text h2 {
 	margin-top: 12px;
 	font-size: var(--text-xl);
 	font-weight: bold;
 	color: var(--color-text-primary);
 }
 
-.policy-and-terms-pages ul {
+.legal-text ul {
 	list-style: inside;
 }
 
-.policy-and-terms-pages a {
+.legal-text a {
 	color: var(--color-accent-blue);
 }
 
-.policy-and-terms-pages .date {
+.legal-text .date {
 	padding: 12px 0px 12px;
 	color: var(--color-text-primary);
 }
