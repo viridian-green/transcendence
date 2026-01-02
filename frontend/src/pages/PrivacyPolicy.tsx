@@ -32,6 +32,12 @@ export default function PrivacyPolicy() {
 				All data is stored only for development and testing purposes. Data may be deleted or
 				reset at any time. Users should not provide sensitive or real personal information.
 			</p>
+			<h2>Cookies</h2>
+			<p>
+				We use authentication cookies to maintain your login session. These cookies are
+				essential for the game to function and are not used for tracking or advertising
+				purposes.
+			</p>
 			<h2>Contact</h2>
 			<p>If you have questions about this project, you may contact the developer at:</p>
 			<p>
