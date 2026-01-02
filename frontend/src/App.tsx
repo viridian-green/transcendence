@@ -94,7 +94,12 @@ function App() {
 						/>
 						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
-						<Route path='/chat' element={<Chat />} />
+						<Route path='/chat' element={
+								<ProtectedRoute>
+									<Chat />
+								</ProtectedRoute>
+							}
+						/>
 						<Route path='*' element={<NotFound />} />
 					</Routes>
 				</Suspense>
