@@ -18,6 +18,7 @@ const start = async () => {
         await fastify.register(authPlugin);
         //await fastify.register(gameRoutes); // Temporarily disabled until game routes are fully migrated to ESM
         await fastify.register(userRoutes);
+        await fastify.register(chatRoutes);
         await fastify.register(healthRoute);
 
         //DEBUGGING - This is needed to print the routes

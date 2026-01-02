@@ -6,6 +6,13 @@ async function userRoutes(fastify) {
     upstream: "http://user:3003",
     prefix: "/api/auth",
     rewritePrefix: "/auth",
+    rewriteRequestHeaders: (originalReq, headers) => {
+      // Forward cookies for authentication
+      if (originalReq.headers.cookie) {
+        headers.cookie = originalReq.headers.cookie;
+      }
+      return headers;
+    },
     // methods: ["GET", "POST", etc], //use this in production, safer
   });
 
