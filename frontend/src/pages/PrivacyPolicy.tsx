@@ -37,7 +37,8 @@ export default function PrivacyPolicy() {
 				<h2>Contact</h2>
 				<p>If you have questions about this project, you may contact the developer at:</p>
 				<p>
-					<strong>Email:</strong> retroscendence@mail.com
+					<strong>Email: </strong>
+					<a href='mailto:retroscendence@mail.com'>retroscendence@mail.com</a>
 				</p>
 			</article>
 		</div>

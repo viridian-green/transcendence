@@ -1,21 +1,3 @@
-h1 {
-	/* font-family: 'Retro', sans-serif; */
-	font-weight: bold;
-	font-size: var(--text-3xl);
-	color: var(--color-accent-pink);
-}
-
-h2 {
-	margin-top: 12px;
-	font-size: var(--text-xl);
-	font-weight: bold;
-	color: var(--color-text-primary);
-}
-
-ul {
-	list-style: inside;
-}
-
 .policy-and-terms-pages {
 	width: 100%;
 	display: flex;
@@ -25,16 +7,7 @@ ul {
 	padding: 18px;
 }
 
-a {
-	color: var(--color-accent-blue);
-}
-
-.date {
-	padding: 12px 0px 12px;
-	color: var(--color-text-primary);
-}
-
-article {
+.policy-and-terms-pages article {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -45,4 +18,31 @@ article {
 	padding: 2rem;
 	border-radius: 1rem;
 	color: var(--color-text-secondary);
+}
+
+.policy-and-terms-pages h1 {
+	/* font-family: 'Retro', sans-serif; */
+	font-weight: bold;
+	font-size: var(--text-3xl);
+	color: var(--color-accent-pink);
+}
+
+.policy-and-terms-pages h2 {
+	margin-top: 12px;
+	font-size: var(--text-xl);
+	font-weight: bold;
+	color: var(--color-text-primary);
+}
+
+.policy-and-terms-pages ul {
+	list-style: inside;
+}
+
+.policy-and-terms-pages a {
+	color: var(--color-accent-blue);
+}
+
+.policy-and-terms-pages .date {
+	padding: 12px 0px 12px;
+	color: var(--color-text-primary);
 }

@@ -66,7 +66,8 @@ export default function TermsOfService() {
 				<p>If you have questions about these Terms, you may contact us at:</p>
 
 				<p>
-					<strong>Email:</strong> retroscendence@mail.com
+					<strong>Email: </strong>
+					<a href='mailto:retroscendence@mail.com'>retroscendence@mail.com</a>
 				</p>
 			</article>
 		</div>
