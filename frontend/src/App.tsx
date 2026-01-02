@@ -11,6 +11,8 @@ import {
 	Registration,
 	ProtectedRoute,
 	PublicOnlyRoute,
+	GameEnd,
+	GameStart,
 } from '@pages/index';
 import TopRightAvatar from './pages/TopRightAvatar';
 import { useAuth } from './hooks/useAuth';
@@ -26,11 +28,6 @@ function App() {
 		<div className='min-h-screen'>
 			{isLoggedIn && (
 				<nav className='fixed top-0 right-0 z-50 p-6'>
-					{/* <Link to='/'>Home</Link>
-						<Link to='/about'>About</Link>
-						<Link to='/game'>Pong</Link>
-						<Link to='/profile'>{<Avatar />}</Link> 
-					*/}
 					<TopRightAvatar />
 				</nav>
 			)}
@@ -75,6 +72,22 @@ function App() {
 							element={
 								<ProtectedRoute>
 									<Game />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path='/game-start'
+							element={
+								<ProtectedRoute>
+									<GameStart />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path='/game-end'
+							element={
+								<ProtectedRoute>
+									<GameEnd />
 								</ProtectedRoute>
 							}
 						/>

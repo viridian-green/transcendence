@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { z, ZodError } from 'zod';
-import { ExclamationCircleOutline } from '@components/index';
 import { useAuth } from '@hooks/useAuth.tsx';
+import { ErrorMessage } from '@components/index';
 
 const registrationSchema = z
 	.object({
@@ -27,13 +27,6 @@ const registrationSchema = z
 	});
 
 type RegistrationUser = z.infer<typeof registrationSchema>;
-
-const ErrorMessage = ({ message }: { message: string }) => (
-	<div className='text-accent-pink flex'>
-		<ExclamationCircleOutline className='mr-1 h-4 w-4' />
-		<p className='text-accent-pink text-sm'>{message}</p>
-	</div>
-);
 
 export default function Registration() {
 	const [formData, setFormData] = useState({

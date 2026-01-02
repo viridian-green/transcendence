@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-export function Exit(props: SVGProps<SVGSVGElement>) {
+export default function Exit(props: SVGProps<SVGSVGElement>) {
 	return (
 		<svg
 			xmlns='http://www.w3.org/2000/svg'
@@ -20,4 +20,3 @@ export function Exit(props: SVGProps<SVGSVGElement>) {
 		</svg>
 	);
 }
-export default Exit;
