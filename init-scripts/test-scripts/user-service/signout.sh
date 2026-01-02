@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-API_URL="http://localhost:3000/api/users"
+API_URL="http://localhost:3000/api/auth"
 COOKIE_JAR="cookies.txt"
 
 #echo "▶ Running user-service signout route tests"
