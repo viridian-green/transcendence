@@ -1,4 +1,4 @@
-.PHONY: setup up down logs clean rebuild restart nocache
+.PHONY: setup up down logs clean rebuild restart nocache prune
 
 # Generate SSL certificates if they don't exist
 setup:
@@ -42,9 +42,19 @@ clean:
 	docker compose down -v
 	rm -rf nginx/ssl/*.crt nginx/ssl/*.key
 
+# Prune Docker cache/containers/networks (keeps volumes e.g., database)
+prune:
+	docker system prune -f
+	docker builder prune -f
+
 # Rebuild from scratch
 rebuild: clean setup
 	docker compose up --build -d
 
 open:
 	open https://localhost:8443
+
+
+# Check for existing users in table
+usertable:
+	docker exec postgres_db psql -U myuser -d user_db -c "SELECT id, username, email, created_at FROM users ORDER BY id;"
