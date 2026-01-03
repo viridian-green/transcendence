@@ -11,6 +11,8 @@ import {
 	Registration,
 	ProtectedRoute,
 	PublicOnlyRoute,
+	PrivacyPolicy,
+	TermsOfService,
 	GameEnd,
 	GameStart,
 } from '@pages/index';
@@ -93,6 +95,8 @@ function App() {
 						/>
 						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
+						<Route path='/privacy-policy' element={<PrivacyPolicy />} />
+						<Route path='/terms-of-service' element={<TermsOfService />} />
 						<Route path='*' element={<NotFound />} />
 					</Routes>
 				</Suspense>
