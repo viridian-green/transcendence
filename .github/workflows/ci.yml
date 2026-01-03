@@ -33,7 +33,10 @@ jobs:
         cp services/user-service/.env.example services/user-service/.env
 
     - name: Build and run containers
-      run: make up
+      run: |
+        docker compose down -v || true
+        docker compose build --no-cache
+        docker compose up -d
 
    #Test: Show that environment variables are working
     - name: Print environment variables
