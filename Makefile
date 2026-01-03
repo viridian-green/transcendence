@@ -26,7 +26,6 @@ logs: setup
 down:
 	docker compose down
 
-
 restart: down
 	docker compose up -d --build
 
@@ -35,7 +34,6 @@ nocache:
 	docker compose down
 	docker compose build --no-cache user
 	docker compose up
-
 
 # Clean everything including volumes
 clean:
@@ -48,3 +46,17 @@ rebuild: clean setup
 
 open:
 	open https://localhost:8443
+
+
+## Testing
+
+# Create test user
+usertest:
+	curl -X POST https://localhost:8443/api/auth/register \
+  	-H "Content-Type: application/json" \
+ 	-d '{"email":"user@example.com","username":"testuser","password":"Password123!"}' \
+  	-k  \
+
+# Check for existing users in table
+usertable:
+	docker exec postgres_db psql -U myuser -d user_db -c "SELECT id, username, email, created_at FROM users ORDER BY id;"
