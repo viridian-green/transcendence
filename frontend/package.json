@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "(tsc -b || true) && vite build", // keep TS errors visible but don't fail build
+		"build": "(tsc -b || true) && vite build",
 		"lint": "eslint .",
 		"preview": "vite preview",
 		"prepare": "cd .. && husky frontend/.husky && husky install"
