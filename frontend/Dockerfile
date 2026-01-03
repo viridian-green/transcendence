@@ -31,8 +31,8 @@ FROM nginxinc/nginx-unprivileged:${NGINX_VERSION} AS runner
 # Use a built-in non-root user for security best practices
 USER nginx
 
-# Copy custom Nginx config (from repo root context)
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
+# Copy custom Nginx config
+COPY /nginx/nginx.conf /etc/nginx/nginx.conf
 
 # Copy the static build output from the build stage to Nginx's default HTML serving directory
 COPY --chown=nginx:nginx  --from=builder /app/dist /usr/share/nginx/html
