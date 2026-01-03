@@ -82,6 +82,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/user_db
       JWT_SECRET: ${JWT_SECRET}
+      COOKIE_SECRET: ${COOKIE_SECRET:-test_cookie_secret}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://user:3003/health"]
       interval: 5s
