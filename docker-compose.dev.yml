@@ -42,7 +42,11 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
     ports:
       - "5173:5173"
     working_dir: /app
@@ -50,11 +54,13 @@ services:
       - transcendence-network
     environment:
       - DOCKER=true
+      - CHOKIDAR_USEPOLLING=1
+      - CHOKIDAR_INTERVAL=300
 
   game:
     build:
       context: ./services/game-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     depends_on:
       database:
         condition: service_healthy
@@ -72,7 +78,7 @@ services:
   user:
     build:
       context: ./services/user-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     depends_on:
       database:
         condition: service_healthy
@@ -93,27 +99,30 @@ services:
       - transcendence-network
 
   # chat:
-  #   build:
-  #     context: ./services/chat-service
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     database:
-  #       condition: service_healthy
-  #   environment:
-  #     POSTGRES_USER: ${POSTGRES_USER}
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  #     POSTGRES_DB: ${POSTGRES_DB}
-  #     JWT_SECRET: ${JWT_SECRET}
-  #   ports:
-  #     - "3004:3004"
-  #   networks:
-  #     - transcendence-network
-  #   command: ["npm", "run", "dev"]
+    # build:
+    #   context: ./services/chat-service
+    #   dockerfile: Dockerfile.dev
+    # depends_on:
+    #   database:
+    #     condition: service_healthy
+    # environment:
+    #   POSTGRES_USER: ${POSTGRES_USER}
+    #   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    #   POSTGRES_DB: ${POSTGRES_DB}
+    #   JWT_SECRET: ${JWT_SECRET}
+    # ports:
+    #   - "3004:3004"
+    # networks:
+    #   - transcendence-network
+    # volumes:
+    #   - ./services/chat-service:/app
+    #   - /app/node_modules
+    # command: ["npm","run","dev"]
 
   api-gateway:
     build:
       context: ./api-gateway
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     env_file:
       - .env
     environment:
@@ -134,11 +143,9 @@ services:
       timeout: 3s
       retries: 10
 
-
 networks:
   transcendence-network:
     driver: bridge
 
 volumes:
   postgres_data:
-
