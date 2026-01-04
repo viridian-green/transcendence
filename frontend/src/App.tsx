@@ -15,6 +15,7 @@ import {
 	TermsOfService,
 	GameEnd,
 	GameStart,
+	Profile,
 } from '@pages/index';
 import TopRightAvatar from './pages/TopRightAvatar';
 import { useAuth } from './hooks/useAuth';
@@ -98,6 +99,8 @@ function App() {
 						<Route path='/privacy-policy' element={<PrivacyPolicy />} />
 						<Route path='/terms-of-service' element={<TermsOfService />} />
 						<Route path='*' element={<NotFound />} />
+						{/* test routes */}
+						<Route path='/profile' element={<Profile />} />
 					</Routes>
 				</Suspense>
 			</main>

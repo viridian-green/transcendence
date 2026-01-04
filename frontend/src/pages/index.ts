@@ -14,3 +14,4 @@ export { default as TermsOfService } from './TermsOfService';
 export { default as Canvas } from './Canvas';
 export { default as GameEnd } from './GameEnd';
 export { default as GameStart } from './GameStart';
+export { default as Profile } from './Profile';
