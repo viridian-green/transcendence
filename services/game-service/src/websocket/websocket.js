@@ -1,4 +1,3 @@
-
 export default async function gameWebsocket(fastify){
   fastify.get("/game", { websocket: true }, (connection, req) => {
     console.log("Player connected");

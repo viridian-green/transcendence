@@ -1,11 +1,13 @@
-const fp = require("fastify-plugin");
+import fp from "fastify-plugin";
+import httpProxy from "@fastify/http-proxy";
 
 async function gameRoutes(fastify, options) {
-  fastify.register(require("@fastify/http-proxy"), {
+  fastify.register(httpProxy, {
     upstream: "http://game:3002",
-    prefix: "/api/game",
+    prefix: "/game",
+    websocket: true,
     rewritePrefix: "/",
   });
 }
 
-module.exports = fp(gameRoutes);
+export default fp(gameRoutes);
