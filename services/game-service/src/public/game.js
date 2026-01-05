@@ -3,7 +3,9 @@ const ctx = canvas.getContext("2d");
 
 let p1 = { x: 20,  y: canvas.height / 2 - 40, w: 10, h: 80, dy: 0 };
 let p2 = { x: canvas.width - 30, y: canvas.height / 2 - 40, w: 10, h: 80, dy: 0 };
-let ball = { x: canvas.width/2, y: canvas.height/2, r: 8, dx: 4, dy: 4 };
+let speed = 4;
+let serveRight = true;
+let ball = { x: canvas.width/2, y: canvas.height/2, r: 8, dx: speed, dy: 4 }; 
 
 document.addEventListener("keydown", e => {
   if (e.key === "ArrowUp") p2.dy = -6;
@@ -19,15 +21,12 @@ document.addEventListener("keyup", e => {
 });
 
 function update() {
-  // Move paddles
   p1.y += p1.dy;
   p2.y += p2.dy;
 
-  // Clamp paddles inside screen
   p1.y = Math.max(0, Math.min(canvas.height - p1.h, p1.y));
   p2.y = Math.max(0, Math.min(canvas.height - p2.h, p2.y));
 
-  // Move ball
   ball.x += ball.dx;
   ball.y += ball.dy;
 
@@ -49,10 +48,19 @@ function update() {
     ball.x = p2.x - ball.r;
   }
 
-  // Reset if ball passes left or right
-  if (ball.x < 0 || ball.x > canvas.width) {
+  // Reset if ball is out of bounds of canvas
+if (ball.x < 0 || ball.x > canvas.width) {
     ball.x = canvas.width/2;
-    ball.y = canvas.height/2;
+    //Serving is at random on y axis
+    ball.y = ball.y = ball.r + Math.random() * (canvas.height - 2 * ball.r);
+
+    //ball either serves right or left,
+    ball.dx = serveRight ? Math.abs(ball.dx) : -Math.abs(ball.dx);
+    serveRight = !serveRight;
+
+    //OPTIONAL: randomizing the serving speed 
+    // ball.dy = (Math.random() * 4) - 2;
+    // if (ball.dy === 0) ball.dy = 1;
   }
 }
 

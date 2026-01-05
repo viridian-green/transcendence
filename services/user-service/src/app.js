@@ -1,19 +1,19 @@
 import Fastify from 'fastify';
 import dotenv from 'dotenv';
 
+import plugins from './plugins/index.js';
+import routes from './routes/index.js';
+
 dotenv.config();
 
 const app = Fastify({
     logger: true
 });
 
-import dbPlugin from './plugins/db.js';
-app.register(dbPlugin);
+app.register(plugins);
+app.register(routes);
 
-import healthRoute from './routes/health.js';
-app.register(healthRoute);
-
-import userRoutes from './routes/users/index.js';
-app.register(userRoutes, { prefix: '/users' });
+// await app.ready();
+// console.log(app.printRoutes());
 
 export default app;
