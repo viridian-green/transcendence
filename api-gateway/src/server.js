@@ -8,7 +8,7 @@ import cookie from "@fastify/cookie";
 import authPlugin from "./plugins/auth.js";
 import userRoutes from "./routes/user.js";
 import healthRoute from "./health.js";
-import websocket from "@fastify/websocket";
+// import websocket from "@fastify/websocket";
 import proxy from "@fastify/http-proxy";
 
 
@@ -16,11 +16,11 @@ const fastify = Fastify({ logger: true });
 
 const start = async () => {
     try {
-        await fastify.register(cookie);
-        await fastify.register(authPlugin);
-        await fastify.register(userRoutes);
+        // await fastify.register(cookie);
+        // await fastify.register(authPlugin);
+        // await fastify.register(userRoutes);
         await fastify.register(healthRoute);
-        await fastify.register(websocket);
+        // await fastify.register(websocket);
             
         fastify.register(proxy, {
         upstream: "http://game:3002",

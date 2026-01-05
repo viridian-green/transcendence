@@ -61,13 +61,15 @@ const Game = () => {
 	useEffect(() => {
 		// TODO: Initialize WebSocket connection here
 		const ws = new WebSocket("ws://localhost:3000/game");
-	
-		ws.onmessage = (event) => {
-		  const newGameState = JSON.parse(event.data);
-		  setGameState(newGameState);
+
+		ws.onopen = () => {
+		console.log("WS connected");
+		ws.send("hello");
 		};
-		
-		return () => ws.close();
+
+		ws.onmessage = (e) => console.log("message:", e.data);
+		ws.onerror = (e) => console.error("WS error", e);
+		ws.onclose = () => console.log("WS closed");
 
 		const onKeyDown = (event: KeyboardEvent) => {
 			if (event.code === 'Escape') {
