@@ -60,14 +60,14 @@ const Game = () => {
 
 	useEffect(() => {
 		// TODO: Initialize WebSocket connection here
-		// const ws = new WebSocket('your-websocket-url');
-		//
-		// ws.onmessage = (event) => {
-		//   const newGameState = JSON.parse(event.data);
-		//   setGameState(newGameState);
-		// };
-		//
-		// return () => ws.close();
+		const ws = new WebSocket("ws://localhost:3000/game");
+	
+		ws.onmessage = (event) => {
+		  const newGameState = JSON.parse(event.data);
+		  setGameState(newGameState);
+		};
+		
+		return () => ws.close();
 
 		const onKeyDown = (event: KeyboardEvent) => {
 			if (event.code === 'Escape') {

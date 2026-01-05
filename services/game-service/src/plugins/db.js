@@ -3,7 +3,6 @@ import fastifyPostgres from '@fastify/postgres'
 import Postgrator from 'postgrator'
 import path from 'path'
 
-
 // REGISTER DB
 fastify.register(fastifyPostgres, {
   connectionString: process.env.DATABASE_URL
