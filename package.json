@@ -2,6 +2,7 @@
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
     "@fastify/multipart": "^9.3.0",
+    "@fastify/websocket": "^11.2.0",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.5.0",
     "cookie": "^1.1.1",

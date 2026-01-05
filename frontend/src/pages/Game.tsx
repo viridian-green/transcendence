@@ -63,7 +63,7 @@ const Game = () => {
 		if (typeof window === 'undefined') return;
 
 		// FIXME - connect to WebSocket server, use proper URL
-		const ws = new WebSocket('ws://localhost:3002/game');
+		const ws = new WebSocket('ws://localhost:3000/game');
 		wsRef.current = ws;
 
 		ws.onopen = () => {
