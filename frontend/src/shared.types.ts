@@ -30,17 +30,23 @@ export interface GameState {
 }
 
 // WebSocket message types (examples)
-export interface WSMessage {
+// NOTE: it is a contract between client and server, but currently not used in the codebase
+export interface WSMessage<TWSMessage> {
 	type: 'GAME_STATE' | 'TOGGLE_PAUSE' | 'MOVE_PADDLE';
-	payload?: string; // TODO replace by actual type
+	payload?: TWSMessage; // TODO replace by actual type
 }
 
-export interface GameStateMessage extends WSMessage {
+export interface GameStateMessage extends WSMessage<GameState> {
 	type: 'GAME_STATE';
 	payload: GameState;
 }
 
-export interface PaddleMoveMessage extends WSMessage {
+export interface PaddlePayload {
+	player: 'left' | 'right';
+	direction: 'up' | 'down';
+}
+
+export interface PaddleMoveMessage extends WSMessage<PaddlePayload> {
 	type: 'MOVE_PADDLE';
 	payload: {
 		player: 'left' | 'right';
