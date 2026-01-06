@@ -53,39 +53,96 @@ const Game = () => {
 	const leftPlayer = state?.leftPlayer ?? 'Player 1';
 	const rightPlayer = state?.rightPlayer ?? 'Player 2';
 
-	// TODO set to null
-	const [gameState, setGameState] = useState<GameState>(fakeGameStatePlaying);
-	// TODO remove
-	console.log(setGameState, fakeGameStateCountdown);
+	const [gameState, setGameState] = useState<GameState | null>(null);
+
+	// websocket reference
+	const wsRef = useRef<WebSocket | null>(null);
 
 	useEffect(() => {
-		// TODO: Initialize WebSocket connection here
+		if (typeof window === 'undefined') return;
+
+
 		const ws = new WebSocket("ws://localhost:3000/game");
+		wsRef.current = ws;
 
 		ws.onopen = () => {
-		console.log("WS connected");
-		ws.send(JSON.stringify({ type: 'PING' }));
+			console.log('Connected to game server');
 		};
 
-		ws.onmessage = (e) => console.log("message:", e.data);
-		ws.onerror = (e) => console.error("WS error", e);
-		ws.onclose = () => console.log("WS closed");
+		ws.onmessage = (event) => {
+			setGameState(JSON.parse(event.data));
+		};
 
-		const onKeyDown = (event: KeyboardEvent) => {
-			if (event.code === 'Escape') {
-				navigate('/home');
-			} else if (event.code === 'Space') {
-				// handle paused state
+		ws.onerror = (error) => {
+			console.error('WebSocket error:', error);
+		};
+		
+if (!wsRef.current) return;
+
+		const handleKeyDown = (event: KeyboardEvent) => {
+			const ws = wsRef.current!;
+
+			switch (event.code) {
+				case 'KeyW':
+					ws.send(
+						JSON.stringify({
+							type: 'MOVE_PADDLE',
+							payload: {
+								player: 'left',
+								direction: 'up',
+							},
+						}),
+					);
+					break;
+				case 'KeyS':
+					ws.send(
+						JSON.stringify({
+							type: 'MOVE_PADDLE',
+							payload: {
+								player: 'left',
+								direction: 'down',
+							},
+						}),
+					);
+					break;
+				case 'ArrowUp':
+					ws.send(
+						JSON.stringify({
+							type: 'MOVE_PADDLE',
+							payload: {
+								player: 'right',
+								direction: 'up',
+							},
+						}),
+					);
+					break;
+				case 'ArrowDown':
+					ws.send(
+						JSON.stringify({
+							type: 'MOVE_PADDLE',
+							payload: {
+								player: 'right',
+								direction: 'down',
+							},
+						}),
+					);
+					break;
+				case 'Escape':
+					navigate('/home');
+					break;
+				case 'Space':
+					ws.send(JSON.stringify({ type: 'TOGGLE_PAUSE' }));
+					break;
 			}
 		};
 
-		window.addEventListener('keydown', onKeyDown);
-		return () => window.removeEventListener('keydown', onKeyDown);
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, [navigate]);
 
 	const handlePauseToggle = () => {
-		// TODO: Send pause/resume command to server via WebSocket
-		// ws.send(JSON.stringify({ type: 'TOGGLE_PAUSE' }));
+		if (!wsRef.current) return;
+		wsRef.current?.send(JSON.stringify({ type: 'TOGGLE_PAUSE' }));
 	};
 
 	useEffect(() => {
