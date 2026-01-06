@@ -4,54 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { GameState } from '@/shared.types';
 
-// TODO remove
-const fakeGameStatePlaying: GameState = {
-	phase: 'playing',
-	ball: {
-		x: 400, // Center horizontally
-		y: 200, // Center vertically
-	},
-	paddle: {
-    width: 2,   
-    height: 40,   
-    speed: 15    
-  },
-  ball: {
-    radius: 2,    
-    speed: 2.0,   
-  },
-  canvas: {
-    width: 100,   
-    height: 200 
-	},
-	scores: {
-		left: 3,
-		right: 5,
-	},
-};
-
-// TODO remove
-const fakeGameStateCountdown: GameState = {
-	phase: 'countdown',
-	countdownText: '3',
-	ball: {
-		x: 400, // Center horizontally
-		y: 200, // Center vertically
-	},
-	paddles: {
-		left: {
-			y: 160, // Center vertically (200 - 80/2)
-		},
-		right: {
-			y: 160, // Center vertically
-		},
-	},
-	scores: {
-		left: 3,
-		right: 5,
-	},
-};
-
 	const Game = () => {
   const navigate = useNavigate();
   const { state } = useLocation();

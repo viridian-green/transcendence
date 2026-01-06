@@ -5,6 +5,23 @@ const game = {
   clients: new Set(),
 };
 
+setInterval(() => {
+  moveBall(game.state);
+  const snapshot = {
+    paddles: {
+      left: game.state.paddles[0],
+      right: game.state.paddles[1],
+    },
+    ball: game.state.ball,
+    // optionally scores, phase, countdownText if you add them
+  };
+  const json = JSON.stringify({ type: 'STATE', payload: snapshot });
+
+  for (const client of game.clients) {
+    if (client.readyState === 1) client.send(json);
+  }
+}, 1000 / 60);
+
 export default async function gameWebsocket(fastify){
   fastify.get("/game", { websocket: true }, (connection, req) => {
     console.log("[GAME WS] Player connected", req.raw.url);
@@ -13,7 +30,8 @@ export default async function gameWebsocket(fastify){
 
     const ws = connection.socket;
     game.clients.add(ws);
-
+    
+    setInterval();
     const snapshot = {
       paddles: game.state.paddles,
       ball: game.state.ball,
