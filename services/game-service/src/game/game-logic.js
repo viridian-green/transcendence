@@ -122,3 +122,5 @@ function GameLoop() {
   moveBall();
 }
 
+export {GameLoop};
+

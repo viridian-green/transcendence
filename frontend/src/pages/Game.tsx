@@ -88,6 +88,7 @@ const Game = () => {
 		if (!wsRef.current) return;
 
 		const handleKeyDown = (event: KeyboardEvent) => {
+			if (!gameState) return;
 			const ws = wsRef.current!;
 
 			switch (event.code) {
