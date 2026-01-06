@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { GameState } from '@/shared.types';
 
-	const Game = () => {
+const Game = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const leftPlayer = state?.leftPlayer ?? 'Player 1';

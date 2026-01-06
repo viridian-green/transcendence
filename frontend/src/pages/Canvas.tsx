@@ -40,7 +40,7 @@ const Canvas = ({ gameState }: CanvasProps) => {
 			}
 
 			// Show loading state if no game state yet
-			if (!gameState ) {
+			if (!gameState || !gameState.paddles || !gameState.paddles.left || !gameState.paddles.right) {
 				ctx.fillStyle = '#d4d4d4';
 				ctx.font = '24px Retro, sans-serif';
 				ctx.textAlign = 'center';
@@ -68,20 +68,20 @@ const Canvas = ({ gameState }: CanvasProps) => {
 
 			// Paddles
 			ctx.fillStyle = '#e60076';
-			ctx.fillRect(20, gameState.paddles[0].y, PADDLE_WIDTH, PADDLE_HEIGHT);
-ctx.fillRect(
-  CANVAS_WIDTH - 20 - PADDLE_WIDTH,
-  gameState.paddles[1].y,
-  PADDLE_WIDTH,
-  PADDLE_HEIGHT,
-);
+			ctx.fillRect(20, gameState.paddles.left.y, PADDLE_WIDTH, PADDLE_HEIGHT);
+			ctx.fillRect(
+			CANVAS_WIDTH - 20 - PADDLE_WIDTH,
+			gameState.paddles.right.y,
+			PADDLE_WIDTH,
+			PADDLE_HEIGHT,
+			);
 
-			// Scores
-			ctx.fillStyle = '#d4d4d4';
-			ctx.font = '32px Retro, sans-serif';
-			ctx.textAlign = 'center';
-			ctx.fillText(`${gameState.scores.left}`, CANVAS_WIDTH / 4, 48);
-			ctx.fillText(`${gameState.scores.right}`, (CANVAS_WIDTH / 4) * 3, 48);
+		// 	// Scores
+		// 	ctx.fillStyle = '#d4d4d4';
+		// 	ctx.font = '32px Retro, sans-serif';
+		// 	ctx.textAlign = 'center';
+		// 	ctx.fillText(`${gameState.scores.left}`, CANVAS_WIDTH / 4, 48);
+		// 	ctx.fillText(`${gameState.scores.right}`, (CANVAS_WIDTH / 4) * 3, 48);
 		};
 
 		draw();
