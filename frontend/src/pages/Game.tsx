@@ -64,7 +64,7 @@ const Game = () => {
 
 		ws.onopen = () => {
 		console.log("WS connected");
-		ws.send("hello");
+		ws.send(JSON.stringify({ type: 'PING' }));
 		};
 
 		ws.onmessage = (e) => console.log("message:", e.data);

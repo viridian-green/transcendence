@@ -6,23 +6,35 @@ const game = {
 };
 
 export default async function gameWebsocket(fastify){
-  fastify.get("/ws/game", { websocket: true }, (connection, req) => {
+  fastify.get("/", { websocket: true }, (connection, req) => {
     console.log("Player connected");
 
-    connection.socket.on('message', msg => {
-  const { type, payload } = JSON.parse(msg);
+    const ws = connection.socket;
+    game.clients.add(ws);
 
-  switch (type) {
-    case 'PADDLE_MOVE':
-      movePaddle(game.state, payload.playerIndex, payload.direction);
-      break;
-    case 'PADDLE_STOP':
-      stopPaddle(game.state, payload.playerIndex);
-      break;
-  }
+    ws.on('message', msg => {
+      try {
+        const { type, payload } = JSON.parse(msg);
+
+        switch (type) {
+          case 'PADDLE_MOVE':
+            movePaddle(game.state, payload.playerIndex, payload.direction);
+            break;
+          case 'PADDLE_STOP':
+            stopPaddle(game.state, payload.playerIndex);
+            break;
+        }
+      } catch (err) {
+        console.error('WS parse error', err);
+      }
+    });
+
+    ws.on('close', () => {
+      console.log('Player disconnected');
+      game.clients.delete(ws);
+    });
   });
-
-});}
+}
 
 setInterval(() => {
     moveBall(game.state);
