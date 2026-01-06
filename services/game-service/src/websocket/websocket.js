@@ -1,4 +1,4 @@
-import {createInitialState, stopPaddle, movePaddle, moveBall, GameLoop} from './game/game-logic.js'
+import {createInitialState, stopPaddle, movePaddle, moveBall, GameLoop} from '../game/game-logic.js'
 
 const game = {
   state: createInitialState(),
@@ -6,7 +6,9 @@ const game = {
 };
 
 export default async function gameWebsocket(fastify){
-  fastify.get("/", { websocket: true }, (connection, req) => {
+  fastify.get("/game", { websocket: true }, (connection, req) => {
+    console.log("[GAME WS] Player connected", req.raw.url);
+
     console.log("Player connected");
 
     const ws = connection.socket;
@@ -16,6 +18,7 @@ export default async function gameWebsocket(fastify){
       paddles: game.state.paddles,
       ball: game.state.ball,
     };
+
     ws.send(JSON.stringify({ type: 'STATE', payload: snapshot }));
 
     ws.on('message', msg => {
@@ -41,16 +44,3 @@ export default async function gameWebsocket(fastify){
     });
   });
 }
-
-setInterval(() => {
-    moveBall(game.state);
-    const snapshot = {
-      paddles: game.state.paddles,
-      ball: game.state.ball,
-    };
-    const json = JSON.stringify({ type: 'STATE', payload: snapshot });
-
-    for (const client of game.clients) {
-      if (client.readyState === 1) client.send(json);
-    }
-  }, 1000 / 60);

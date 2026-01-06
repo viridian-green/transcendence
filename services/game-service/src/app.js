@@ -1,13 +1,16 @@
-const fastifyPostgres = require("@fastify/postgres");
-const path = require("path");
+
+import fastifyPostgres from '@fastify/postgres';
+
 import Fastify from "fastify";
 import websocket from "@fastify/websocket";
 import gameWebsocket from './websocket/websocket.js';
 
+const app = Fastify({ logger: true });
 
-const fastify = Fastify({
-    logger: true
-});
+// const fastifyPostgres = require("@fastify/postgres");
+// const path = require("path");
 
-fastify.register(websocket);
-fastify.get("/", { websocket: true }, gameWebsocketHandler);
+app.register(websocket);
+app.register(gameWebsocket);
+
+export default app;

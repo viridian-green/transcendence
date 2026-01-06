@@ -14,7 +14,7 @@ export const GAME_CONFIG = {
   }
 };
 
-export function createInitialState() {
+function createInitialState() {
   return {
     paddles: [
       { x: 10, y: GAME_CONFIG.canvas.height / 2 - GAME_CONFIG.paddle.height / 2, dy: 0 },
@@ -43,7 +43,7 @@ function resetBall(state) {
   state.serveRight = !state.serveRight;
 }
 
-export function stopPaddle(state, index) {
+function stopPaddle(state, index) {
   state.paddles[index].dy = 0;
 }
 
@@ -54,7 +54,7 @@ function clampPaddle(state, paddle) {
   );
 }
 
-export function movePaddle(state, index, key) {
+function movePaddle(state, index, key) {
   const paddle = state.paddles[index];
   const speed = GAME_CONFIG.paddle.speed;
 
@@ -62,7 +62,7 @@ export function movePaddle(state, index, key) {
   if (key === 'down') paddle.dy = speed;
 }
 
-export function moveBall(state) {
+function moveBall(state) {
   state.paddles.forEach(p => {
     p.y += p.dy;
     clampPaddle(state, p);
@@ -95,20 +95,9 @@ export function moveBall(state) {
   }
 }
 
-function GameLoop() {
-  moveBall();
+function GameLoop(state) {
+  moveBall(state);
 }
-
-// ws.send(JSON.stringify({
-//   type: 'PADDLE_MOVE',
-//   payload: { playerIndex: 0, direction: 'up' }
-// }));
-
-// ws.send(JSON.stringify({
-//   type: 'PADDLE_STOP',
-//   payload: { playerIndex: 0 }
-// }));
-
 
 export {createInitialState, stopPaddle, movePaddle, moveBall, GameLoop};
 

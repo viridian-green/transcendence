@@ -11,13 +11,18 @@ const fakeGameStatePlaying: GameState = {
 		x: 400, // Center horizontally
 		y: 200, // Center vertically
 	},
-	paddles: {
-		left: {
-			y: 160, // Center vertically (200 - 80/2)
-		},
-		right: {
-			y: 160, // Center vertically
-		},
+	paddle: {
+    width: 2,   
+    height: 40,   
+    speed: 15    
+  },
+  ball: {
+    radius: 2,    
+    speed: 2.0,   
+  },
+  canvas: {
+    width: 100,   
+    height: 200 
 	},
 	scores: {
 		left: 3,
@@ -69,8 +74,9 @@ const fakeGameStateCountdown: GameState = {
 
     ws.onmessage = (event) => {
       const msg = JSON.parse(event.data);
+	  console.log('WS message:', msg);
       if (msg.type === 'STATE') {
-        setGameState(msg.payload); // payload is { paddles, ball, ... }
+        setGameState(msg.payload); 
       }
     };
 
