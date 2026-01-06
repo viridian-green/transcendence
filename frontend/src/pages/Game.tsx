@@ -63,7 +63,7 @@ const Game = () => {
 		if (typeof window === 'undefined') return;
 
 		// FIXME - connect to WebSocket server, use proper URL
-		const ws = new WebSocket('ws://localhost:3000/game');
+		const ws = new WebSocket('wss://localhost:3000/ws/game');
 		wsRef.current = ws;
 
 		ws.onopen = () => {
@@ -71,7 +71,10 @@ const Game = () => {
 		};
 
 		ws.onmessage = (event) => {
-			setGameState(JSON.parse(event.data));
+		const msg = JSON.parse(event.data);
+			if (msg.type === 'STATE') {
+				setGameState(msg.payload);
+			}
 		};
 
 		ws.onerror = (error) => {
@@ -88,7 +91,6 @@ const Game = () => {
 		if (!wsRef.current) return;
 
 		const handleKeyDown = (event: KeyboardEvent) => {
-			if (!gameState) return;
 			const ws = wsRef.current!;
 
 			switch (event.code) {
@@ -98,7 +100,7 @@ const Game = () => {
 							type: 'MOVE_PADDLE',
 							payload: {
 								player: 'left',
-								direction: 'up',
+								key: 'up',
 							},
 						}),
 					);
@@ -109,7 +111,7 @@ const Game = () => {
 							type: 'MOVE_PADDLE',
 							payload: {
 								player: 'left',
-								direction: 'down',
+								key: 'down',
 							},
 						}),
 					);
@@ -120,7 +122,7 @@ const Game = () => {
 							type: 'MOVE_PADDLE',
 							payload: {
 								player: 'right',
-								direction: 'up',
+								key: 'up',
 							},
 						}),
 					);
@@ -131,7 +133,7 @@ const Game = () => {
 							type: 'MOVE_PADDLE',
 							payload: {
 								player: 'right',
-								direction: 'down',
+								key: 'down',
 							},
 						}),
 					);

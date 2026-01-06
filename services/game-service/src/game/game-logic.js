@@ -14,106 +14,84 @@ export const GAME_CONFIG = {
   }
 };
 
-function createPaddle(x, y) {
+export function createInitialState() {
   return {
-    x,
-    y,
-    dy: 0
+    paddles: [
+      { x: 10, y: GAME_CONFIG.canvas.height / 2 - GAME_CONFIG.paddle.height / 2, dy: 0 },
+      { x: GAME_CONFIG.canvas.width - 10 - GAME_CONFIG.paddle.width,
+        y: GAME_CONFIG.canvas.height / 2 - GAME_CONFIG.paddle.height / 2,
+        dy: 0 },
+    ],
+    ball: {
+      x: GAME_CONFIG.canvas.width / 2,
+      y: GAME_CONFIG.canvas.height / 2,
+      r: GAME_CONFIG.ball.radius,
+      dx: GAME_CONFIG.ball.speed,
+      dy: GAME_CONFIG.ball.speed,
+    },
+    serveRight: true,
   };
 }
 
-const paddles = [
-  createPaddle(10, GAME_CONFIG.canvas.height / 2 - GAME_CONFIG.paddle.height / 2),
-  createPaddle(
-    GAME_CONFIG.canvas.width - 10 - GAME_CONFIG.paddle.width,
-    GAME_CONFIG.canvas.height / 2 - GAME_CONFIG.paddle.height / 2
-  )
-]; 
+function resetBall(state) {
+  const { canvas, ball: ballCfg, paddle } = GAME_CONFIG;
+  const ball = state.ball;
 
-let serveRight = true;
-let ball = {
-  x: GAME_CONFIG.canvas.width / 2,
-  y: GAME_CONFIG.canvas.height / 2,
-  r: GAME_CONFIG.ball.radius,
-  dx: GAME_CONFIG.ball.speed,
-  dy: GAME_CONFIG.ball.speed
-};
-
-document.addEventListener("keydown", e => {
-  if (e.key === "w") paddles[0].dy = -GAME_CONFIG.paddle.speed;
-  if (e.key === "s") paddles[0].dy =  GAME_CONFIG.paddle.speed;
-
-  if (e.key === "ArrowUp") paddles[1].dy = -GAME_CONFIG.paddle.speed;
-  if (e.key === "ArrowDown") paddles[1].dy =  GAME_CONFIG.paddle.speed;
-});
-
-document.addEventListener("keyup", e => {
-  if (["w", "s"].includes(e.key)) paddles[0].dy = 0;
-  if (["ArrowUp", "ArrowDown"].includes(e.key)) paddles[1].dy = 0;
-});
-
-
-function resetBall() {
-  ball.x = GAME_CONFIG.canvas.width / 2;
-  ball.y =
-    ball.r +
-    Math.random() * (GAME_CONFIG.canvas.height - 2 * ball.r);
-
-  ball.dx = serveRight
-    ? Math.abs(ball.dx)
-    : -Math.abs(ball.dx);
-
-  serveRight = !serveRight;
+  ball.x = canvas.width / 2;
+  ball.y = ballCfg.radius + Math.random() * (canvas.height - 2 * ballCfg.radius);
+  ball.dx = state.serveRight ? Math.abs(ball.dx) : -Math.abs(ball.dx);
+  state.serveRight = !state.serveRight;
 }
 
-function movePaddle(paddle) {
-  paddle.y += paddle.dy;
+export function stopPaddle(state, index) {
+  state.paddles[index].dy = 0;
+}
 
+function clampPaddle(state, paddle) {
   paddle.y = Math.max(
     0,
-    Math.min(
-      GAME_CONFIG.canvas.height - GAME_CONFIG.paddle.height,
-      paddle.y
-    )
+    Math.min(GAME_CONFIG.canvas.height - GAME_CONFIG.paddle.height, paddle.y)
   );
 }
 
+export function movePaddle(state, index, key) {
+  const paddle = state.paddles[index];
+  const speed = GAME_CONFIG.paddle.speed;
 
-function moveBall() {
+  if (key === 'up') paddle.dy = -speed;
+  if (key === 'down') paddle.dy = speed;
+}
+
+export function moveBall(state) {
+  state.paddles.forEach(p => {
+    p.y += p.dy;
+    clampPaddle(state, p);
+  });
+
+  const { canvas, paddle } = GAME_CONFIG;
+  const ball = state.ball;
+
   ball.x += ball.dx;
   ball.y += ball.dy;
 
-  if (
-    ball.y - ball.r < 0 ||
-    ball.y + ball.r > GAME_CONFIG.canvas.height
-  ) {
+  if (ball.y - ball.r < 0 || ball.y + ball.r > canvas.height) {
     ball.dy *= -1;
   }
 
-  paddles.forEach((paddle, index) => {
-    const isLeftPaddle = index === 0;
+  state.paddles.forEach((p, index) => {
+    const isLeft = index === 0;
+    const withinY = ball.y > p.y && ball.y < p.y + paddle.height;
+    const hitLeft  = isLeft && ball.x - ball.r < p.x + paddle.width;
+    const hitRight = !isLeft && ball.x + ball.r > p.x;
 
-    if (
-      ball.y > paddle.y &&
-      ball.y < paddle.y + GAME_CONFIG.paddle.height &&
-      (
-        isLeftPaddle
-          ? ball.x - ball.r < paddle.x + GAME_CONFIG.paddle.width
-          : ball.x + ball.r > paddle.x
-      )
-    ) {
+    if (withinY && (hitLeft || hitRight)) {
       ball.dx *= -1;
-      ball.x = isLeftPaddle
-        ? paddle.x + GAME_CONFIG.paddle.width + ball.r
-        : paddle.x - ball.r;
+      ball.x = isLeft ? p.x + paddle.width + ball.r : p.x - ball.r;
     }
   });
 
-  if (
-    ball.x < 0 ||
-    ball.x > GAME_CONFIG.canvas.width
-  ) {
-    resetBall();
+  if (ball.x < 0 || ball.x > canvas.width) {
+    resetBall(state);
   }
 }
 
@@ -122,5 +100,28 @@ function GameLoop() {
   moveBall();
 }
 
-export {GameLoop};
+ws.send(JSON.stringify({
+  type: 'PADDLE_MOVE',
+  payload: { playerIndex: 0, direction: 'up' }
+}));
+
+ws.send(JSON.stringify({
+  type: 'PADDLE_STOP',
+  payload: { playerIndex: 0 }
+}));
+
+setInterval(() => {
+  step(game.state);
+  const snapshot = {
+    paddles: game.state.paddles,
+    ball: game.state.ball,
+  };
+  const json = JSON.stringify({ type: 'STATE', payload: snapshot });
+
+  for (const client of game.clients) {
+    if (client.readyState === 1) client.send(json);
+  }
+}, 1000 / 60);
+
+export {createInitialState, stopPaddle, movePaddle, moveBall, GameLoop};
 
