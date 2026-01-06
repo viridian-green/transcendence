@@ -8,8 +8,6 @@ import gameRoutes from "./routes/game.js";
 import authPlugin from "./plugins/auth.js";
 import userRoutes from "./routes/user.js";
 import healthRoute from "./health.js";
-// import websocket from "@fastify/websocket";
-// import proxy from "@fastify/http-proxy";
 
 
 const fastify = Fastify({ logger: true });

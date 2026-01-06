@@ -4,48 +4,48 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { GameState } from '@/shared.types';
 
-// TODO remove - leaving it here for reference until game state from server is integrated
-// const fakeGameStatePlaying: GameState = {
-// 	phase: 'playing',
-// 	ball: {
-// 		x: 400, // Center horizontally
-// 		y: 200, // Center vertically
-// 	},
-// 	paddles: {
-// 		left: {
-// 			y: 160, // Center vertically (200 - 80/2)
-// 		},
-// 		right: {
-// 			y: 160, // Center vertically
-// 		},
-// 	},
-// 	scores: {
-// 		left: 3,
-// 		right: 5,
-// 	},
-// };
+// TODO remove
+const fakeGameStatePlaying: GameState = {
+	phase: 'playing',
+	ball: {
+		x: 400, // Center horizontally
+		y: 200, // Center vertically
+	},
+	paddles: {
+		left: {
+			y: 160, // Center vertically (200 - 80/2)
+		},
+		right: {
+			y: 160, // Center vertically
+		},
+	},
+	scores: {
+		left: 3,
+		right: 5,
+	},
+};
 
-// TODO remove - leaving it here for reference until countdown is implemented
-// const fakeGameStateCountdown: GameState = {
-// 	phase: 'countdown',
-// 	countdownText: '3',
-// 	ball: {
-// 		x: 400, // Center horizontally
-// 		y: 200, // Center vertically
-// 	},
-// 	paddles: {
-// 		left: {
-// 			y: 160, // Center vertically (200 - 80/2)
-// 		},
-// 		right: {
-// 			y: 160, // Center vertically
-// 		},
-// 	},
-// 	scores: {
-// 		left: 0,
-// 		right: 0,
-// 	},
-// };
+// TODO remove
+const fakeGameStateCountdown: GameState = {
+	phase: 'countdown',
+	countdownText: '3',
+	ball: {
+		x: 400, // Center horizontally
+		y: 200, // Center vertically
+	},
+	paddles: {
+		left: {
+			y: 160, // Center vertically (200 - 80/2)
+		},
+		right: {
+			y: 160, // Center vertically
+		},
+	},
+	scores: {
+		left: 3,
+		right: 5,
+	},
+};
 
 const Game = () => {
 	const navigate = useNavigate();
@@ -53,107 +53,39 @@ const Game = () => {
 	const leftPlayer = state?.leftPlayer ?? 'Player 1';
 	const rightPlayer = state?.rightPlayer ?? 'Player 2';
 
-	// game state from server
-	const [gameState, setGameState] = useState<GameState | null>(null);
-
-	// websocket reference
-	const wsRef = useRef<WebSocket | null>(null);
+	// TODO set to null
+	const [gameState, setGameState] = useState<GameState>(fakeGameStatePlaying);
+	// TODO remove
+	console.log(setGameState, fakeGameStateCountdown);
 
 	useEffect(() => {
-		if (typeof window === 'undefined') return;
-
-		// FIXME - connect to WebSocket server, use proper URL
-		const ws = new WebSocket('wss://localhost:3000/ws/game');
-		wsRef.current = ws;
+		// TODO: Initialize WebSocket connection here
+		const ws = new WebSocket("ws://localhost:3000/game");
 
 		ws.onopen = () => {
-			console.log('Connected to game server');
+		console.log("WS connected");
+		ws.send("hello");
 		};
 
-		ws.onmessage = (event) => {
-		const msg = JSON.parse(event.data);
-			if (msg.type === 'STATE') {
-				setGameState(msg.payload);
+		ws.onmessage = (e) => console.log("message:", e.data);
+		ws.onerror = (e) => console.error("WS error", e);
+		ws.onclose = () => console.log("WS closed");
+
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.code === 'Escape') {
+				navigate('/home');
+			} else if (event.code === 'Space') {
+				// handle paused state
 			}
 		};
 
-		ws.onerror = (error) => {
-			console.error('WebSocket error:', error);
-		};
-
-		return () => {
-			ws.close();
-			wsRef.current = null;
-		};
-	}, []);
-
-	useEffect(() => {
-		if (!wsRef.current) return;
-
-		const handleKeyDown = (event: KeyboardEvent) => {
-			const ws = wsRef.current!;
-
-			switch (event.code) {
-				case 'KeyW':
-					ws.send(
-						JSON.stringify({
-							type: 'MOVE_PADDLE',
-							payload: {
-								player: 'left',
-								key: 'up',
-							},
-						}),
-					);
-					break;
-				case 'KeyS':
-					ws.send(
-						JSON.stringify({
-							type: 'MOVE_PADDLE',
-							payload: {
-								player: 'left',
-								key: 'down',
-							},
-						}),
-					);
-					break;
-				case 'ArrowUp':
-					ws.send(
-						JSON.stringify({
-							type: 'MOVE_PADDLE',
-							payload: {
-								player: 'right',
-								key: 'up',
-							},
-						}),
-					);
-					break;
-				case 'ArrowDown':
-					ws.send(
-						JSON.stringify({
-							type: 'MOVE_PADDLE',
-							payload: {
-								player: 'right',
-								key: 'down',
-							},
-						}),
-					);
-					break;
-				case 'Escape':
-					navigate('/home');
-					break;
-				case 'Space':
-					ws.send(JSON.stringify({ type: 'TOGGLE_PAUSE' }));
-					break;
-			}
-		};
-
-		window.addEventListener('keydown', handleKeyDown);
-		return () => window.removeEventListener('keydown', handleKeyDown);
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
 	}, [navigate]);
 
 	const handlePauseToggle = () => {
-		if (!wsRef.current) return;
-		wsRef.current?.send(JSON.stringify({ type: 'TOGGLE_PAUSE' }));
+		// TODO: Send pause/resume command to server via WebSocket
+		// ws.send(JSON.stringify({ type: 'TOGGLE_PAUSE' }));
 	};
 
 	useEffect(() => {

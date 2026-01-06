@@ -110,18 +110,6 @@ ws.send(JSON.stringify({
   payload: { playerIndex: 0 }
 }));
 
-setInterval(() => {
-  step(game.state);
-  const snapshot = {
-    paddles: game.state.paddles,
-    ball: game.state.ball,
-  };
-  const json = JSON.stringify({ type: 'STATE', payload: snapshot });
-
-  for (const client of game.clients) {
-    if (client.readyState === 1) client.send(json);
-  }
-}, 1000 / 60);
 
 export {createInitialState, stopPaddle, movePaddle, moveBall, GameLoop};
 
