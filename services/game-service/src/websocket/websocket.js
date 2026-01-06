@@ -12,6 +12,12 @@ export default async function gameWebsocket(fastify){
     const ws = connection.socket;
     game.clients.add(ws);
 
+    const snapshot = {
+      paddles: game.state.paddles,
+      ball: game.state.ball,
+    };
+    ws.send(JSON.stringify({ type: 'STATE', payload: snapshot }));
+
     ws.on('message', msg => {
       try {
         const { type, payload } = JSON.parse(msg);

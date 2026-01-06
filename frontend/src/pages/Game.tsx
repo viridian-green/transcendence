@@ -47,40 +47,54 @@ const fakeGameStateCountdown: GameState = {
 	},
 };
 
-const Game = () => {
-	const navigate = useNavigate();
-	const { state } = useLocation();
-	const leftPlayer = state?.leftPlayer ?? 'Player 1';
-	const rightPlayer = state?.rightPlayer ?? 'Player 2';
+	const Game = () => {
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  const leftPlayer = state?.leftPlayer ?? 'Player 1';
+  const rightPlayer = state?.rightPlayer ?? 'Player 2';
 
-	const [gameState, setGameState] = useState<GameState | null>(null);
+  const [gameState, setGameState] = useState<GameState | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
 
-	// websocket reference
-	const wsRef = useRef<WebSocket | null>(null);
+  // 1. Open / close WebSocket
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
 
-	useEffect(() => {
-		if (typeof window === 'undefined') return;
+    const ws = new WebSocket('ws://localhost:3000/game');
+    wsRef.current = ws;
+
+    ws.onopen = () => {
+      console.log('Connected to game server');
+    };
+
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.type === 'STATE') {
+        setGameState(msg.payload); // payload is { paddles, ball, ... }
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    ws.onclose = () => {
+      console.log('WebSocket closed');
+      wsRef.current = null;
+    };
+
+    return () => {
+      ws.close();
+      wsRef.current = null;
+    };
+  }, []);
 
 
-		const ws = new WebSocket("ws://localhost:3000/game");
-		wsRef.current = ws;
+		useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+			const ws = wsRef.current;
 
-		ws.onopen = () => {
-			console.log('Connected to game server');
-		};
-
-		ws.onmessage = (event) => {
-			setGameState(JSON.parse(event.data));
-		};
-
-		ws.onerror = (error) => {
-			console.error('WebSocket error:', error);
-		};
-		
-if (!wsRef.current) return;
-
-		const handleKeyDown = (event: KeyboardEvent) => {
-			const ws = wsRef.current!;
+			if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
 			switch (event.code) {
 				case 'KeyW':

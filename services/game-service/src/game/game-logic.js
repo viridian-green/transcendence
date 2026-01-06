@@ -96,19 +96,18 @@ export function moveBall(state) {
 }
 
 function GameLoop() {
-  paddles.forEach(movePaddle);
   moveBall();
 }
 
-ws.send(JSON.stringify({
-  type: 'PADDLE_MOVE',
-  payload: { playerIndex: 0, direction: 'up' }
-}));
+// ws.send(JSON.stringify({
+//   type: 'PADDLE_MOVE',
+//   payload: { playerIndex: 0, direction: 'up' }
+// }));
 
-ws.send(JSON.stringify({
-  type: 'PADDLE_STOP',
-  payload: { playerIndex: 0 }
-}));
+// ws.send(JSON.stringify({
+//   type: 'PADDLE_STOP',
+//   payload: { playerIndex: 0 }
+// }));
 
 
 export {createInitialState, stopPaddle, movePaddle, moveBall, GameLoop};
