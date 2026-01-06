@@ -52,6 +52,16 @@ fix_docker_symlink "$HOME/.local/share/docker" "docker-data/rootless_storage"
 fix_docker_symlink "$HOME/.docker" ".docker"
 
 # --- Step 4: Final Docker Daemon Management ---
+echo "--- Copying init-scripts to local disk for Docker reliability ---"
+REPO_INIT_SCRIPTS="$HOME/sgoinfre/transcendence/init-scripts"
+LOCAL_INIT_SCRIPTS="$HOME/docker-init-scripts"
+if [ ! -d "$LOCAL_INIT_SCRIPTS" ]; then
+    mkdir -p "$LOCAL_INIT_SCRIPTS"
+fi
+cp -r "$REPO_INIT_SCRIPTS"/* "$LOCAL_INIT_SCRIPTS"/
+export INIT_SCRIPTS_PATH="$HOME/docker-init-scripts"
+echo "   -> Copied init-scripts to $LOCAL_INIT_SCRIPTS"
+
 echo "--- Restarting Docker Daemon ---"
 # Reload the user daemon to ensure it recognizes the updated symlinks
 systemctl --user daemon-reload
