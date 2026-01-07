@@ -53,6 +53,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
   const ws = wsRef.current;
   if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
+
   switch (event.code) {
     case 'KeyW':
       ws.send(JSON.stringify({
@@ -67,27 +68,22 @@ const handleKeyDown = (event: KeyboardEvent) => {
       }));
       break;
     case 'ArrowUp':
-      ws.send(JSON.stringify({
-        type: 'MOVE_PADDLE',
-        payload: { playerIndex: 1, direction: 'up' },
-      }));
-      break;
-    case 'ArrowDown':
-      ws.send(JSON.stringify({
-        type: 'MOVE_PADDLE',
-        payload: { playerIndex: 1, direction: 'down' },
-      }));
-      break;
+        ws.send(JSON.stringify({
+          type: 'MOVE_PADDLE',
+          payload: { playerIndex: 1, direction: 'up' },
+        }));
+        break;
+      case 'ArrowDown':
+        ws.send(JSON.stringify({
+          type: 'MOVE_PADDLE',
+          payload: { playerIndex: 1, direction: 'down' },
+        }));
+        break;
+      default:
+        break;
+   
 	console.log('keydown', event.code, ws?.readyState);
-	  
   }
-  ws.onmessage = (event: Event) => {
-  const msg = JSON.parse((event as MessageEvent).data);
-  if (msg.type === 'STATE') {
-    console.log('STATE paddles:', msg.payload.paddles);
-    setGameState(msg.payload);
-  }
-};
 };
 
   

@@ -5,15 +5,22 @@ const game = {
   clients: new Set(),
 };
 
+
 setInterval(() => {
-  moveBall(game.state);
+  GameLoop(game.state);
   const snapshot = {
-    paddles: {
-      left: game.state.paddles[0],
-      right: game.state.paddles[1],
-    },
-    ball: game.state.ball,
-  };
+  paddles: {
+    left: game.state.paddles[0],
+    right: game.state.paddles[1],
+  },
+  ball: game.state.ball,
+  scores: {
+    left: game.state.score.player1,
+    right: game.state.score.player2,
+  },
+  phase: game.state.game.phase,
+  countdown: game.state.game.countdown,
+};
 
   const json = JSON.stringify({ type: 'STATE', payload: snapshot });
 
@@ -23,18 +30,27 @@ setInterval(() => {
 }, 1000 / 60);
 
 
+      
+
 export default async function gameWebsocket(fastify) {
   fastify.get('/ws', { websocket: true }, (connection, req) => {
     const ws = connection.socket;
     game.clients.add(ws);
 
     const snapshot = {
-      paddles: {
-        left: game.state.paddles[0],
-        right: game.state.paddles[1],
-      },
-      ball: game.state.ball,
-    };
+  paddles: {
+    left: game.state.paddles[0],
+    right: game.state.paddles[1],
+  },
+  ball: game.state.ball,
+  scores: {
+    left: game.state.score.player1,
+    right: game.state.score.player2,
+  },
+  phase: game.state.game.phase,
+  countdown: game.state.game.countdown,
+};
+
     ws.send(JSON.stringify({ type: 'STATE', payload: snapshot }));
 
     ws.on('message', (msg) => {

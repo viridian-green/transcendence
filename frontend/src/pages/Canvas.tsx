@@ -40,7 +40,7 @@ const Canvas = ({ gameState }: CanvasProps) => {
 			}
 
 			// Show loading state if no game state yet
-			if (!gameState || !gameState.paddles || !gameState.paddles.left || !gameState.paddles.right) {
+			if (!gameState) {
 				ctx.fillStyle = '#d4d4d4';
 				ctx.font = '24px Retro, sans-serif';
 				ctx.textAlign = 'center';
@@ -50,12 +50,14 @@ const Canvas = ({ gameState }: CanvasProps) => {
 			}
 
 			// Countdown overlay
-			if (gameState.phase === 'countdown' && gameState.countdownText) {
+			if (gameState.phase === 'countdown') {
+				if (gameState.phase === 'countdown') {
 				ctx.fillStyle = '#e60076';
 				ctx.font = '96px Retro, sans-serif';
 				ctx.textAlign = 'center';
 				ctx.textBaseline = 'middle';
-				ctx.fillText(gameState.countdownText, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+				ctx.fillText(String(gameState.countdown), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+}
 			}
 
 			// Ball (hide during countdown)
@@ -76,12 +78,12 @@ const Canvas = ({ gameState }: CanvasProps) => {
 			PADDLE_HEIGHT,
 			);
 
-		// 	// Scores
-		// 	ctx.fillStyle = '#d4d4d4';
-		// 	ctx.font = '32px Retro, sans-serif';
-		// 	ctx.textAlign = 'center';
-		// 	ctx.fillText(`${gameState.scores.left}`, CANVAS_WIDTH / 4, 48);
-		// 	ctx.fillText(`${gameState.scores.right}`, (CANVAS_WIDTH / 4) * 3, 48);
+			// Scores
+			ctx.fillStyle = '#d4d4d4';
+			ctx.font = '32px Retro, sans-serif';
+			ctx.textAlign = 'center';
+			ctx.fillText(`${gameState.scores.left}`, CANVAS_WIDTH / 4, 48);
+			ctx.fillText(`${gameState.scores.right}`, (CANVAS_WIDTH / 4) * 3, 48);
 		};
 
 		draw();

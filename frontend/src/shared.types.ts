@@ -29,11 +29,11 @@ export interface GameState {
     };
   };
   phase: GamePhase;
-  countdownText: string;
   scores: {
     left: number;
     right: number;
   };
+  countdown: number;
 }
 
 // WebSocket message types (examples)

@@ -12,8 +12,11 @@ export const GAME_CONFIG = {
     width: 800,   
     height: 400 
   },
-  scoreLimit: 11
+  scoreLimit: 11,
+  countdownStart: 3
 };
+
+// export type PlayerIndex = 0 | 1;
 
 function createInitialState() {
 
@@ -34,8 +37,10 @@ function createInitialState() {
     serveRight: true,
     score: { player1: 0, player2: 0 },
     game: {
-    gameStatus: 'waiting',
+    phase: 'countdown',
+    countdown: GAME_CONFIG.countdownStart,
     winner: null
+    
     }
   };
 }
@@ -133,16 +138,37 @@ function moveBall(state) {
 function checkGameEnd(state) {
   const limit = state.scoreLimit;
   if (state.score[0] >= limit) {
-    state.gameStatus = 'ended';
+    state.phase = 'ended';
     state.winner = 0;
   } else if (state.score[1] >= limit) {
-    state.gameStatus = 'ended';
+    state.phase = 'ended';
     state.winner = 1;
   }
 }
 
 function GameLoop(state) {
-  moveBall(state);
+  if (state.game.phase === 'countdown') {
+    if (!state.game._framesLeft) {
+      state.game._framesLeft = GAME_CONFIG.countdownStart * 60;
+    }
+
+    state.game._framesLeft -= 1;
+
+    const secondsLeft = Math.ceil(state.game._framesLeft / 60);
+    state.game.countdown = secondsLeft;
+
+    if (state.game._framesLeft <= 0) {
+      state.game.phase = 'playing';
+      state.game.countdown = 0;
+      delete state.game._framesLeft;
+    }
+
+    return;
+  }
+  else if (state.game.phase === 'playing')
+    moveBall(state);
+  // else if (state.game.phase === 'paused')
+  //   continue;
 }
 
 export {createInitialState, stopPaddle, movePaddle, moveBall, GameLoop};
