@@ -9,8 +9,8 @@ export const GAME_CONFIG = {
     speed: 2.0,   
   },
   canvas: {
-    width: 100,   
-    height: 200 
+    width: 800,   
+    height: 400 
   }
 };
 
