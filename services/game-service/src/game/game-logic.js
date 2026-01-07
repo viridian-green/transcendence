@@ -124,25 +124,27 @@ function moveBall(state) {
   }
 });
 
-  if (ball.x < 0 || ball.x > canvas.width) {
-  state.score[1] += 1;
-    checkGameEnd(state);
-    resetBall(state);
-  } else if (ball.x - ball.r > canvas.width) {
-    state.score[0] += 1;
-    checkGameEnd(state);
-    resetBall(state);
-  }
+  if (ball.x + ball.r < 0) {
+  // ball fully past left wall → right player scores
+  state.score.player2 += 1;
+  checkGameEnd(state);
+  resetBall(state);
+} else if (ball.x - ball.r > canvas.width) {
+  // ball fully past right wall → left player scores
+  state.score.player1 += 1;
+  checkGameEnd(state);
+  resetBall(state);
+}
 }
 
 function checkGameEnd(state) {
-  const limit = state.scoreLimit;
-  if (state.score[0] >= limit) {
-    state.phase = 'ended';
-    state.winner = 0;
-  } else if (state.score[1] >= limit) {
-    state.phase = 'ended';
-    state.winner = 1;
+  const limit = GAME_CONFIG.scoreLimit;
+  if (state.score.player1 >= limit) {
+    state.game.phase = 'ended';
+    state.game.winner = 0;
+  } else if (state.score.player2 >= limit) {
+    state.game.phase = 'ended';
+    state.game.winner = 1;
   }
 }
 

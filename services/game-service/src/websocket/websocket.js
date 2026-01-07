@@ -68,18 +68,7 @@ export default async function gameWebsocket(fastify) {
       console.error('[GAME WS] WS parse error', err);
   }
     });
-
-      ws.on('message', (msg) => {
-    console.log('[GAME WS] Raw message:', msg.toString());
-    try {
-      const parsed = JSON.parse(msg);
-      console.log('[GAME WS] Parsed message:', parsed);
-
-    } catch (err) {
-      console.error('[GAME WS] WS parse error', err);
-    }
-  });
-
+    
     ws.on('close', () => {
       console.log('[GAME WS] Player disconnected');
       game.clients.delete(ws);
