@@ -11,10 +11,12 @@ export const GAME_CONFIG = {
   canvas: {
     width: 800,   
     height: 400 
-  }
+  },
+  scoreLimit: 11
 };
 
 function createInitialState() {
+
   return {
     paddles: [
       { x: 10, y: GAME_CONFIG.canvas.height / 2 - GAME_CONFIG.paddle.height / 2, dy: 0 },
@@ -30,6 +32,11 @@ function createInitialState() {
       dy: GAME_CONFIG.ball.speed,
     },
     serveRight: true,
+    score: { player1: 0, player2: 0 },
+    game: {
+    gameStatus: 'waiting',
+    winner: null
+    }
   };
 }
 
@@ -113,7 +120,24 @@ function moveBall(state) {
 });
 
   if (ball.x < 0 || ball.x > canvas.width) {
+  state.score[1] += 1;
+    checkGameEnd(state);
     resetBall(state);
+  } else if (ball.x - ball.r > canvas.width) {
+    state.score[0] += 1;
+    checkGameEnd(state);
+    resetBall(state);
+  }
+}
+
+function checkGameEnd(state) {
+  const limit = state.scoreLimit;
+  if (state.score[0] >= limit) {
+    state.gameStatus = 'ended';
+    state.winner = 0;
+  } else if (state.score[1] >= limit) {
+    state.gameStatus = 'ended';
+    state.winner = 1;
   }
 }
 
