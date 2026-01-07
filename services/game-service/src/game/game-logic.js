@@ -1,12 +1,12 @@
 export const GAME_CONFIG = {
   paddle: {
-    width: 2,   
-    height: 40,   
+    width: 10,   
+    height: 80,   
     speed: 15    
   },
   ball: {
-    radius: 2,    
-    speed: 2.0,   
+    radius: 8,    
+    speed: 2,   
   },
   canvas: {
     width: 800,   
@@ -78,17 +78,39 @@ function moveBall(state) {
     ball.dy *= -1;
   }
 
-  state.paddles.forEach((p, playerIndex) => {
-    const isLeft = playerIndex === 0;
-    const withinY = ball.y > p.y && ball.y < p.y + paddle.height;
-    const hitLeft  = isLeft && ball.x - ball.r < p.x + paddle.width;
-    const hitRight = !isLeft && ball.x + ball.r > p.x;
+ state.paddles.forEach((p, playerIndex) => {
+  const isLeft = playerIndex === 0;
+  const paddleTop = p.y;
+  const paddleBottom = p.y + paddle.height;
+  const paddleLeft = p.x;
+  const paddleRight = p.x + paddle.width;
 
-    if (withinY && (hitLeft || hitRight)) {
+  const withinY = ball.y + ball.r > paddleTop && ball.y - ball.r < paddleBottom;
+
+  if (!withinY) return;
+
+  if (isLeft) {
+    const willCross =
+      ball.dx < 0 &&
+      ball.x - ball.r <= paddleRight &&
+      ball.x - ball.dx - ball.r >= paddleRight;
+
+    if (willCross) {
       ball.dx *= -1;
-      ball.x = isLeft ? p.x + paddle.width + ball.r : p.x - ball.r;
+      ball.x = paddleRight + ball.r;
     }
-  });
+  } else {
+    const willCross =
+      ball.dx > 0 &&
+      ball.x + ball.r >= paddleLeft &&
+      ball.x - ball.dx + ball.r <= paddleLeft;
+
+    if (willCross) {
+      ball.dx *= -1;
+      ball.x = paddleLeft - ball.r;
+    }
+  }
+});
 
   if (ball.x < 0 || ball.x > canvas.width) {
     resetBall(state);
