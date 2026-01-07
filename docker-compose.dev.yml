@@ -36,6 +36,8 @@ services:
     depends_on:
       api-gateway:
         condition: service_healthy
+      database:
+        condition: service_healthy
       #frontend add a healthcheck
     networks:
       - transcendence-network
