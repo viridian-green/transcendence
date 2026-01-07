@@ -43,8 +43,8 @@ function resetBall(state) {
   state.serveRight = !state.serveRight;
 }
 
-function stopPaddle(state, index) {
-  state.paddles[index].dy = 0;
+function stopPaddle(state, playerIndex) {
+  state.paddles[playerIndex].dy = 0;
 }
 
 function clampPaddle(state, paddle) {
@@ -54,12 +54,12 @@ function clampPaddle(state, paddle) {
   );
 }
 
-function movePaddle(state, index, key) {
-  const paddle = state.paddles[index];
+function movePaddle(state, playerIndex, direction) {
+  const paddle = state.paddles[playerIndex];
   const speed = GAME_CONFIG.paddle.speed;
 
-  if (key === 'up') paddle.dy = -speed;
-  if (key === 'down') paddle.dy = speed;
+  if (direction === 'up') paddle.dy = -speed;
+  if (direction === 'down') paddle.dy = speed;
 }
 
 function moveBall(state) {
@@ -78,8 +78,8 @@ function moveBall(state) {
     ball.dy *= -1;
   }
 
-  state.paddles.forEach((p, index) => {
-    const isLeft = index === 0;
+  state.paddles.forEach((p, playerIndex) => {
+    const isLeft = playerIndex === 0;
     const withinY = ball.y > p.y && ball.y < p.y + paddle.height;
     const hitLeft  = isLeft && ball.x - ball.r < p.x + paddle.width;
     const hitRight = !isLeft && ball.x + ball.r > p.x;

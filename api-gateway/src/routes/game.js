@@ -7,7 +7,7 @@ async function gameRoutes(fastify, options) {
     upstream: 'http://game:3002',
     prefix: '/game',
     websocket: true,
-    rewritePrefix: '/ws', // external /game → game service /ws
+    rewritePrefix: '/ws',
   });
 }
 

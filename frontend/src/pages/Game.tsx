@@ -13,7 +13,6 @@ const Game = () => {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
 
-  // 1. Open / close WebSocket
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -47,70 +46,55 @@ const Game = () => {
     };
   }, []);
 
+  
 
-		useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-			const ws = wsRef.current;
+useEffect(() => {
+const handleKeyDown = (event: KeyboardEvent) => {
+  const ws = wsRef.current;
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
-			if (!ws || ws.readyState !== WebSocket.OPEN) return;
+  switch (event.code) {
+    case 'KeyW':
+      ws.send(JSON.stringify({
+        type: 'MOVE_PADDLE',
+        payload: { playerIndex: 0, direction: 'up' },
+      }));
+      break;
+    case 'KeyS':
+      ws.send(JSON.stringify({
+        type: 'MOVE_PADDLE',
+        payload: { playerIndex: 0, direction: 'down' },
+      }));
+      break;
+    case 'ArrowUp':
+      ws.send(JSON.stringify({
+        type: 'MOVE_PADDLE',
+        payload: { playerIndex: 1, direction: 'up' },
+      }));
+      break;
+    case 'ArrowDown':
+      ws.send(JSON.stringify({
+        type: 'MOVE_PADDLE',
+        payload: { playerIndex: 1, direction: 'down' },
+      }));
+      break;
+	console.log('keydown', event.code, ws?.readyState);
+	  
+  }
+  ws.onmessage = (event: Event) => {
+  const msg = JSON.parse((event as MessageEvent).data);
+  if (msg.type === 'STATE') {
+    console.log('STATE paddles:', msg.payload.paddles);
+    setGameState(msg.payload);
+  }
+};
+};
 
-			switch (event.code) {
-				case 'KeyW':
-					ws.send(
-						JSON.stringify({
-							type: 'MOVE_PADDLE',
-							payload: {
-								player: 'left',
-								direction: 'up',
-							},
-						}),
-					);
-					break;
-				case 'KeyS':
-					ws.send(
-						JSON.stringify({
-							type: 'MOVE_PADDLE',
-							payload: {
-								player: 'left',
-								direction: 'down',
-							},
-						}),
-					);
-					break;
-				case 'ArrowUp':
-					ws.send(
-						JSON.stringify({
-							type: 'MOVE_PADDLE',
-							payload: {
-								player: 'right',
-								direction: 'up',
-							},
-						}),
-					);
-					break;
-				case 'ArrowDown':
-					ws.send(
-						JSON.stringify({
-							type: 'MOVE_PADDLE',
-							payload: {
-								player: 'right',
-								direction: 'down',
-							},
-						}),
-					);
-					break;
-				case 'Escape':
-					navigate('/home');
-					break;
-				case 'Space':
-					ws.send(JSON.stringify({ type: 'TOGGLE_PAUSE' }));
-					break;
-			}
-		};
+  
 
-		window.addEventListener('keydown', handleKeyDown);
-		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [navigate]);
+  window.addEventListener('keydown', handleKeyDown);
+  return () => window.removeEventListener('keydown', handleKeyDown);
+}, [navigate]);
 
 	const handlePauseToggle = () => {
 		if (!wsRef.current) return;

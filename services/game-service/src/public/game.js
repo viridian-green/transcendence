@@ -8,16 +8,16 @@ let serveRight = true;
 let ball = { x: canvas.width/2, y: canvas.height/2, r: 8, dx: speed, dy: 4 }; 
 
 document.addEventListener("keydown", e => {
-  if (e.key === "ArrowUp") p2.dy = -6;
-  if (e.key === "ArrowDown") p2.dy =  6;
+  if (e.direction === "ArrowUp") p2.dy = -6;
+  if (e.direction === "ArrowDown") p2.dy =  6;
 
-  if (e.key === "w") p1.dy = -6;
-  if (e.key === "s") p1.dy =  6;
+  if (e.direction === "w") p1.dy = -6;
+  if (e.direction === "s") p1.dy =  6;
 });
 
 document.addEventListener("keyup", e => {
-  if (["ArrowUp","ArrowDown"].includes(e.key)) p2.dy = 0;
-  if (["w","s"].includes(e.key)) p1.dy = 0;
+  if (["ArrowUp","ArrowDown"].includes(e.direction)) p2.dy = 0;
+  if (["w","s"].includes(e.direction)) p1.dy = 0;
 });
 
 function update() {
