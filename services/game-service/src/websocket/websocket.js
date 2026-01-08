@@ -54,13 +54,16 @@ function handleWebSocketMessage(message) {
     case 'STOP_PADDLE':
       stopPaddle(game.state, payload.playerIndex);
       break;
+    case 'TOGGLE_PAUSE':
+      togglePause(game.state);
+      break;
     default:
       console.warn('[GAME WS] Unknown message type:', type);
   }
 }
 
 setInterval(() => {
-  GameLoop(game.state);
+GameLoop(game.state);
 
   const json = JSON.stringify({ type: 'STATE', payload: buildStateSnapshot() });
 

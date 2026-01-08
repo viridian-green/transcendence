@@ -66,6 +66,14 @@ const Canvas = ({ gameState }: CanvasProps) => {
 			ctx.fill();
 			}
 
+			if (gameState.phase === 'paused') {
+			ctx.fillStyle = '#d4d4d4';
+			ctx.font = '32px Retro, sans-serif';
+			ctx.textAlign = 'center';
+			ctx.textBaseline = 'middle';
+			ctx.fillText('Paused', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+			}
+
 			// Paddles
 			ctx.fillStyle = '#e60076';
 			ctx.fillRect(20, gameState.paddles.left.y, PADDLE_WIDTH, PADDLE_HEIGHT);
