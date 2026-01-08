@@ -16,8 +16,6 @@ export const GAME_CONFIG = {
   countdownStart: 3
 };
 
-// export type PlayerIndex = 0 | 1;
-
 function createInitialState() {
 
   return {
@@ -125,12 +123,12 @@ function moveBall(state) {
 });
 
   if (ball.x + ball.r < 0) {
-  // ball fully past left wall → right player scores
+
   state.score.player2 += 1;
   checkGameEnd(state);
   resetBall(state);
 } else if (ball.x - ball.r > canvas.width) {
-  // ball fully past right wall → left player scores
+
   state.score.player1 += 1;
   checkGameEnd(state);
   resetBall(state);
