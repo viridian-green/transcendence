@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import {
 	Home,
 	About,
@@ -11,6 +11,8 @@ import {
 	Registration,
 	ProtectedRoute,
 	PublicOnlyRoute,
+	PrivacyPolicy,
+	TermsOfService,
 	GameEnd,
 	GameStart,
 } from '@pages/index';
@@ -25,14 +27,14 @@ function App() {
 	}
 
 	return (
-		<div className='min-h-screen'>
+		<div className='flex min-h-screen flex-col'>
 			{isLoggedIn && (
 				<nav className='fixed top-0 right-0 z-50 p-6'>
 					<TopRightAvatar />
 				</nav>
 			)}
 
-			<main className='h-screen'>
+			<main className='flex-grow"'>
 				<Suspense fallback={<Loading />}>
 					<Routes>
 						<Route
@@ -93,10 +95,21 @@ function App() {
 						/>
 						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
+						<Route path='/privacy-policy' element={<PrivacyPolicy />} />
+						<Route path='/terms-of-service' element={<TermsOfService />} />
 						<Route path='*' element={<NotFound />} />
 					</Routes>
 				</Suspense>
 			</main>
+			<footer className='border-border text-text-muted space-x-2 border-t p-6 text-center'>
+				<Link to='/privacy-policy' className='hover:text-text-secondary'>
+					Privacy Policy
+				</Link>
+				<span>|</span>
+				<Link to='/terms-of-service' className='hover:text-text-secondary'>
+					Terms of Service
+				</Link>
+			</footer>
 		</div>
 	);
 }
