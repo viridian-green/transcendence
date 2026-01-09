@@ -43,6 +43,7 @@ services:
       - transcendence-network
 
   frontend:
+    container_name: frontend_dev
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
