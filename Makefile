@@ -42,7 +42,7 @@ down:
 
 # Restart with rebuild (base stack)
 restart:
-	docker compose up -d --build
+	docker compose up -d
 
 # Restart with rebuild (dev stack)
 restartdev:
@@ -64,6 +64,8 @@ clean:
 
 # Prune Docker cache/containers/networks (keeps volumes, e.g., database)
 prune:
+	docker ps -aq | xargs -r docker stop
+	docker ps -aq | xargs -r docker rm
 	docker system prune -af
 	docker image prune -af
 	docker network prune -f
