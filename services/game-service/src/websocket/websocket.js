@@ -1,8 +1,13 @@
-import {createInitialState, stopPaddle, movePaddle, moveBall, GameLoop} from '../game/game-logic.js'
+import { AIController } from '../game/AIController.js';
+import {createInitialState, stopPaddle, movePaddle, moveBall, GameLoop, GAME_CONFIG} from '../game/game-logic.js'
 
 const game = {
   state: createInitialState(),
   clients: new Set(),
+  // AI ---------------
+  ai: new AIController(),
+  isAIGame: true // see where to fit this - when user inputs single play
+  // ------------------
 };    
 
 export default async function gameWebsocket(fastify) {
@@ -63,7 +68,15 @@ function handleWebSocketMessage(message) {
 }
 
 setInterval(() => {
-GameLoop(game.state);
+  // AI ---------------
+  if (game.isAIGame) {
+      // AI plays as Player 1 (Left Paddle / index 0)
+      const aiMove = game.ai.getMove(game.state.ball, game.state.paddles[0], GAME_CONFIG.canvas.height);
+      game.state.paddles[0].dy = aiMove;
+  }
+  // ------------------
+
+  GameLoop(game.state);
 
   const json = JSON.stringify({ type: 'STATE', payload: buildStateSnapshot() });
 
