@@ -19,8 +19,8 @@ jobs:
       POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
       NGINX_HTTP_PORT: ${{ secrets.NGINX_HTTP_PORT }}
       NGINX_HTTPS_PORT: ${{ secrets.NGINX_HTTPS_PORT }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      COOKIE_SECRET: test_cookie_secret
 
     steps:
     - uses: actions/checkout@v6
