@@ -67,6 +67,18 @@ prune:
 	docker system prune -f
 	docker builder prune -f
 
+reset:
+    docker compose down -v --rmi all --remove-orphans
+    @echo "Pruning unused images, volumes and networks..."
+    docker image prune -af || true
+    docker volume prune -f || true
+    docker network prune -f || true
+    @echo "Removing SSL certs to force regeneration..."
+    rm -rf nginx/ssl/*.crt nginx/ssl/*.key || true
+    $(MAKE) setup
+    docker compose build --no-cache --pull
+    docker compose up --build -d
+
 # Rebuild from scratch
 rebuild: clean setup
 	docker compose up --build -d
