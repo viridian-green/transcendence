@@ -1,7 +1,7 @@
 services:
   database:
     image: postgres:16-alpine
-    container_name: postgres_db
+    container_name: postgres_db_dev
     restart: always
     env_file:
       - .env
@@ -25,13 +25,15 @@ services:
 
   nginx:
     image: nginx:alpine
+    container_name: nginx_dev
+
     env_file:
       - .env
     ports:
       - "${NGINX_HTTP_PORT:-8080}:80"
       - "${NGINX_HTTPS_PORT:-8443}:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
       api-gateway:
@@ -62,6 +64,7 @@ services:
       - CHOKIDAR_INTERVAL=300
 
   game:
+    container_name: game_dev
     build:
       context: ./services/game-service
       dockerfile: Dockerfile.dev
@@ -80,6 +83,7 @@ services:
       - transcendence-network
 
   user:
+    container_name: user_dev
     build:
       context: ./services/user-service
       dockerfile: Dockerfile.dev
@@ -104,6 +108,7 @@ services:
       - transcendence-network
 
   chat:
+    container_name: chat_dev
     build:
       context: ./services/chat-service
       dockerfile: Dockerfile.dev
@@ -125,6 +130,7 @@ services:
     command: ["npm", "run", "dev"]
 
   api-gateway:
+    container_name: api_gateway_dev
     build:
       context: ./api-gateway
       dockerfile: Dockerfile.dev

@@ -24,6 +24,7 @@ services:
 
   nginx:
     image: nginx:alpine
+    container_name: nginx
     env_file:
       - .env
     ports:
@@ -46,8 +47,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
-      - "5173:5173"
     working_dir: /app
     networks:
       - transcendence-network
@@ -55,6 +54,7 @@ services:
       - DOCKER=true
 
   game:
+    container_name: game
     build:
       context: ./services/game-service
       dockerfile: Dockerfile
@@ -73,6 +73,7 @@ services:
       - transcendence-network
 
   user:
+    container_name: user
     build:
       context: ./services/user-service
       dockerfile: Dockerfile
@@ -97,6 +98,7 @@ services:
       - transcendence-network
 
   chat:
+    container_name: chat
     build:
       context: ./services/chat-service
       dockerfile: Dockerfile
@@ -114,6 +116,7 @@ services:
       - transcendence-network
 
   api-gateway:
+    container_name: api-gateway
     build:
       context: ./api-gateway
       dockerfile: Dockerfile
