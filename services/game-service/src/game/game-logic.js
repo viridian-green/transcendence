@@ -3,7 +3,7 @@ export const GAME_CONFIG = {
   ball: { radius: 8, speed: 2 },
   canvas: { width: 800, height: 400 },
   scoreLimit: 11,
-  countdownStart: 27,
+  countdownStart: 3,
 };
 
 export function createInitialState() {
