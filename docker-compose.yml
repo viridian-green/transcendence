@@ -98,7 +98,7 @@ services:
   chat:
     build:
       context: ./services/chat-service
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     depends_on:
       database:
         condition: service_healthy
