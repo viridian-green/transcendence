@@ -13,7 +13,7 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ${INIT_SCRIPTS_PATH:-./init-scripts}:/docker-entrypoint-initdb.d # Modified to use INIT_SCRIPTS_PATH env variable for flexibility when running at 42 machines after script
+      - -./init-scripts:/docker-entrypoint-initdb.d
 
     networks:
       - transcendence-network
