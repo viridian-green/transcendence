@@ -6,7 +6,8 @@ const game = {
 };    
 
 export default async function gameWebsocket(fastify) {
-  fastify.get('/ws', { websocket: true }, (connection, req) => {
+  fastify.get('/ws/:gameId', { websocket: true }, (connection, req) => {
+    const { gameId } = req.params;
     const ws = connection.socket;
     game.clients.add(ws);
 

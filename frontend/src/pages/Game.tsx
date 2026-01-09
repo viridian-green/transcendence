@@ -1,12 +1,14 @@
 import { PinkButton } from '@/components';
 import Canvas from './Canvas';
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import type { GameState } from '@/shared.types';
 
 const Game = () => {
+  
   const navigate = useNavigate();
   const { state } = useLocation();
+  const { gameId } = useParams<{ gameId: string }>();
   const leftPlayer = state?.leftPlayer ?? 'Player 1';
   const rightPlayer = state?.rightPlayer ?? 'Player 2';
 
@@ -16,7 +18,12 @@ const Game = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const ws = new WebSocket('ws://localhost:3000/game');
+     if (!gameId) {
+    console.warn('No gameId in params');
+    return;
+  }
+
+    const ws = new WebSocket('ws://localhost:3000/game/${gameId}');
     wsRef.current = ws;
 
     ws.onopen = () => {
@@ -44,7 +51,7 @@ const Game = () => {
       ws.close();
       wsRef.current = null;
     };
-  }, []);
+  }, [gameId]);
 
   
 
