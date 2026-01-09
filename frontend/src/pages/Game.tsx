@@ -23,7 +23,7 @@ const Game = () => {
     return;
   }
 
-    const ws = new WebSocket('ws://localhost:3000/game/${gameId}');
+    const ws = new WebSocket(`ws://localhost:3000/game/${gameId}`);
     wsRef.current = ws;
 
     ws.onopen = () => {
