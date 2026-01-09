@@ -147,6 +147,14 @@ services:
       timeout: 3s
       retries: 10
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - transcendence-network
+
 networks:
   transcendence-network:
     driver: bridge
