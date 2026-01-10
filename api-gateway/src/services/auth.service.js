@@ -39,6 +39,11 @@ export async function authHook(request, reply) {
         // Verify JWT token from cookie - this automatically attaches payload to request.user
         // This works for both HTTP requests and WebSocket upgrade requests
         await request.jwtVerify();
+        if (request.user) {
+            ["id", "username", "email"].forEach((key) =>
+                reply.header(`x-user-${key}`, request.user[key])
+            );
+        }
 
         // Check for 2FA pending status
         if (

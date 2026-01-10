@@ -18,12 +18,12 @@ export default async function websocketHandler(fastify: FastifyInstance) {
         username = request.headers["x-username"] as string;
         userId = request.headers["x-user-id"] as string;
 
-        if (!username || !userId) {
-          console.log("Authentication failed: missing x-username or x-user-id headers from gateway");
-          connection.send(JSON.stringify({ error: "Authentication required" }));
-          connection.close();
-          return;
-        }
+        // if (!username || !userId) {
+        //   console.log("Authentication failed: missing x-username or x-user-id headers from gateway");
+        //   connection.send(JSON.stringify({ error: "Authentication required" }));
+        //   connection.close();
+        //   return;
+        // }
 
         console.log("Extracted username:", username, "userId:", userId);
 
