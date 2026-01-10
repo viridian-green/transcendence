@@ -8,7 +8,7 @@ import {
     parseLoginBody,
     ensureExistingUsername,
     ensureValidPassword
-} from "../services/auth.service.js";
+} from "../../services/auth.service.js";
 
 /**
  * Authentication routes
