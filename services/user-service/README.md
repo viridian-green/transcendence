@@ -12,6 +12,8 @@ It manages user credentials, authentication logic, and JWT issuance.
 - Password hashing and validation
 - JWT issuance and verification
 - Authenticated user data retrieval and update
+- User avatar management (upload and retrieval)
+- Public user resources (profile and avatar lookup)
 - User sign out (cookie invalidation)
 - Friend system (_in progress_)
 
@@ -19,21 +21,25 @@ It manages user credentials, authentication logic, and JWT issuance.
 
 ## Routes
 
-All routes are prefixed with:
-```bash
-/api/users
-```
+**Route Prefixes:**
+- Direct service access (port 3003): Routes shown below without `/api` prefix
+- API Gateway access (port 3000): Routes are prefixed with `/api` (e.g., `/api/auth/register`)
 
-| Method | Path        | Description                              | Status        |
-|-------:|-------------|------------------------------------------|---------------|
-| POST   | `/register`     | Register a new user                      | ✅ Implemented |
-| POST   | `/login`        | Authenticate user and issue JWT          | ✅ Implemented |
-| GET    | `/me`           | Get current authenticated us             | ✅ Implemented |
-| PUT    | `/me`           | Update current authenticated user        | ✅ Implemented |
-| POST   | `/signout`      | Clear authentication cookie              | ✅ Implemented |
-| POST   | `/friends/:id`  | Send a friend request                    | ✅ Implemented |
-| DELETE | `/friends/:id`  | Remove an existing friend                | ✅ Implemented |
-| GET    | `/friends`      | See friends list.                        | ✅ Implemented |
+| Method | Path                 | Description                              | Auth Required | Status        |
+|-------:|----------------------|------------------------------------------|---------------|---------------|
+| POST   | `/auth/register`     | Register a new user                      | ❌ No         | ✅ Implemented |
+| POST   | `/auth/login`        | Authenticate user and issue JWT          | ❌ No         | ✅ Implemented |
+| POST   | `/auth/signout`      | Clear authentication cookie              | ✅ Yes        | ✅ Implemented |
+| GET    | `/users/username/:username` | Get user by username (public profile) | ❌ No         | ✅ Implemented |
+| GET    | `/users/:id`         | Get user by ID (public profile)          | ❌ No         | ✅ Implemented |
+| GET    | `/users/:id/avatar`  | Get user avatar by ID                    | ❌ No         | ✅ Implemented |
+| GET    | `/users/me`          | Get current authenticated user           | ✅ Yes        | ✅ Implemented |
+| PUT    | `/users/me`          | Update current authenticated user        | ✅ Yes        | ✅ Implemented |
+| GET    | `/users/me/avatar`   | Get current user's avatar                | ✅ Yes        | ✅ Implemented |
+| POST   | `/users/me/avatar`   | Upload avatar for current user           | ✅ Yes        | ✅ Implemented |
+| GET    | `/users/friends`     | Get friends list                         | ✅ Yes        | ✅ Implemented |
+| POST   | `/users/friends/:id` | Send a friend request                    | ✅ Yes        | ✅ Implemented |
+| DELETE | `/users/friends/:id` | Remove an existing friend                | ✅ Yes        | ✅ Implemented |
 
 ---
 
@@ -151,6 +157,128 @@ PUT /api/users/me
 
 Only provided fields are updated, password are rehashed before storage.
 
+## User Avatar Management
+
+### Get current user's avatar
+
+```bash
+GET /api/users/me/avatar
+```
+
+Requires authentication via cookie. Returns the avatar image file for the current authenticated user.
+
+#### Response
+
+- `200 OK` - Avatar file streamed (image/jpeg, image/png, etc.)
+- `404 Not Found` - User has no avatar or avatar file not found
+
+### Upload current user's avatar
+
+```bash
+POST /api/users/me/avatar
+```
+
+Requires authentication via cookie. Uploads a new avatar image for the current authenticated user.
+
+#### Request
+
+- **Content-Type**: `multipart/form-data`
+- **Body**: File upload (max 5MB)
+
+#### Response
+
+```json
+{
+  "avatar": "user-123.jpg"
+}
+```
+
+- `200 OK` - Avatar uploaded successfully
+- `400 Bad Request` - No file uploaded or invalid file
+- `413 Payload Too Large` - File exceeds 5MB limit
+
+**Notes:**
+- File is automatically renamed to `user-{userId}.{extension}`
+- Old avatar files are overwritten
+- Supported formats: jpg, jpeg, png, gif (based on file extension)
+
+## Public User Resources
+
+### Get user by username
+
+```bash
+GET /api/users/username/:username
+```
+
+Retrieves public user information by username. Does not require authentication.
+
+#### Response
+
+```json
+{
+  "id": 123,
+  "username": "testuser",
+  "email": "test@example.com",
+  "avatar": "user-123.jpg"
+}
+```
+
+- `200 OK` - User found
+- `400 Bad Request` - Invalid username format
+- `404 Not Found` - User not found
+
+**Example:**
+```bash
+curl http://localhost:3003/users/username/testuser
+```
+
+### Get user by ID
+
+```bash
+GET /api/users/:id
+```
+
+Retrieves public user information by user ID. Does not require authentication.
+
+#### Response
+
+```json
+{
+  "id": 123,
+  "username": "testuser",
+  "email": "test@example.com",
+  "avatar": "user-123.jpg"
+}
+```
+
+- `200 OK` - User found
+- `400 Bad Request` - Invalid user ID format
+- `404 Not Found` - User not found
+
+**Example:**
+```bash
+curl http://localhost:3003/users/123
+```
+
+### Get user avatar by ID
+
+```bash
+GET /api/users/:id/avatar
+```
+
+Retrieves a user's avatar image by user ID. Does not require authentication.
+
+#### Response
+
+- `200 OK` - Avatar file streamed (image/jpeg, image/png, etc.)
+- `400 Bad Request` - Invalid user ID format
+- `404 Not Found` - User not found, user has no avatar, or avatar file not found
+
+**Notes:**
+- This endpoint allows public access to user avatars
+- Useful for displaying user avatars in the frontend without authentication
+- Returns the raw image file with appropriate content-type header
+
 ## Database migrations
 
 The service uses *Postgrator migrations*.
@@ -192,6 +320,8 @@ make up
 
 ### Testing
 
+#### Authentication Examples
+
 Example register test (direct service access):
 
 ```bash
@@ -208,7 +338,63 @@ curl -X POST http://localhost:3003/api/auth/login \
   -d '{"username":"test","password":"1234"}'
 ```
 
-Naturally, user must be registered prior to having a sucessfull login.
+Naturally, user must be registered prior to having a successful login.
+
+#### Public User Resources Examples
+
+Get user by username (direct service access):
+
+```bash
+curl http://localhost:3003/users/username/testuser
+```
+
+Get user by ID (direct service access):
+
+```bash
+curl http://localhost:3003/users/1
+```
+
+Get user avatar by ID (direct service access):
+
+```bash
+curl http://localhost:3003/users/1/avatar -o avatar.jpg
+```
+
+#### Authenticated User Examples
+
+Get current user profile (direct service access, requires auth cookie from login):
+
+```bash
+curl http://localhost:3003/users/me \
+  -H "Cookie: access_token=YOUR_JWT_TOKEN"
+```
+
+Update current user profile (direct service access):
+
+```bash
+curl -X PUT http://localhost:3003/users/me \
+  -H "Content-Type: application/json" \
+  -H "Cookie: access_token=YOUR_JWT_TOKEN" \
+  -d '{"username":"new_username","password":"newPassword123"}'
+```
+
+Get current user's avatar (direct service access):
+
+```bash
+curl http://localhost:3003/users/me/avatar \
+  -H "Cookie: access_token=YOUR_JWT_TOKEN" \
+  -o my_avatar.jpg
+```
+
+Upload avatar for current user (direct service access):
+
+```bash
+curl -X POST http://localhost:3003/users/me/avatar \
+  -H "Cookie: access_token=YOUR_JWT_TOKEN" \
+  -F "file=@/path/to/image.jpg"
+```
+
+**Note:** When accessing through the API Gateway (port 3000), routes are prefixed with `/api/` (e.g., `/api/users/me`). Direct service access (port 3003) uses routes without the `/api/` prefix.
 
 ## Validation
 
