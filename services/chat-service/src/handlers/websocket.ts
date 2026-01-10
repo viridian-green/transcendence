@@ -1,6 +1,5 @@
 import { FastifyInstance } from "fastify";
 import { WebSocket } from "ws";
-import jwt from "jsonwebtoken";
 
 // Store all connected clients with their usernames
 const clients = new Map<WebSocket, string>();
@@ -14,32 +13,19 @@ export default async function websocketHandler(fastify: FastifyInstance) {
       let userId: string | undefined;
 
       try {
-        // Debug: Log all headers
-        console.log("WebSocket connection headers:", request.headers);
-
         // Extract user info from headers (set by API gateway after JWT verification)
+        // The gateway handles all authentication - we only trust the headers it sets
         username = request.headers["x-username"] as string;
         userId = request.headers["x-user-id"] as string;
 
-        // Fallback: decode JWT from Cookie header if proxy headers are missing
-        if ((!username || !userId) && request.headers.cookie) {
-          const match = request.headers.cookie.match(/access_token=([^;]+)/);
-          const token = match ? match[1] : null;
-          if (token && process.env.JWT_SECRET) {
-            const decoded: any = jwt.verify(token, process.env.JWT_SECRET);
-            username = decoded.username;
-            userId = decoded.id?.toString();
-          }
-        }
-
-        console.log("Extracted username:", username, "userId:", userId);
-
         if (!username || !userId) {
-          console.log("Authentication failed: missing headers");
+          console.log("Authentication failed: missing x-username or x-user-id headers from gateway");
           connection.send(JSON.stringify({ error: "Authentication required" }));
           connection.close();
           return;
         }
+
+        console.log("Extracted username:", username, "userId:", userId);
 
         console.log(
           `User ${username} connected. Total clients:`,
