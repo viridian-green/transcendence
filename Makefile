@@ -64,6 +64,7 @@ clean:
 
 # Prune Docker cache/containers/networks (keeps volumes, e.g., database)
 prune:
+	docker stop $$(docker ps -aq) || true
 	docker system prune -af
 	docker image prune -af
 	docker network prune -f
@@ -71,6 +72,7 @@ prune:
 
 # Full reset: clean, prune, regenerate SSL certs, rebuild everything
 reset:
+	docker stop $$(docker ps -aq) || true
 	docker compose down -v --rmi all --remove-orphans
 	@echo "Pruning unused images, volumes and networks..."
 	docker image prune -af || true
