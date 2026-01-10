@@ -7,6 +7,10 @@ import {
     getFriendsList
 } from '../../services/friends.service.js'
 
+/**
+ * Friends routes
+ * Handles friend request management for authenticated users
+ */
 export default async function friendsRoute(app) {
     //add friend
     //POST /friends/:id
@@ -48,3 +52,4 @@ export default async function friendsRoute(app) {
         return reply.code(200).send(rows);
     })
 }
+

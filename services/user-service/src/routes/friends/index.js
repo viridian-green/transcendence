@@ -1,4 +1,4 @@
-import friendRoute from '../friends/friends.js'
+import friendRoute from '../friends/friends.routes.js'
 
 export default async function userRoutes(app) {
 
