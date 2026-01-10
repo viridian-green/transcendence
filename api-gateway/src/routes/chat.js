@@ -8,26 +8,13 @@ async function chatRoutes(fastify) {
     rewritePrefix: "", // strip /api/chat so upstream sees /websocket
     websocket: true,
     rewriteRequestHeaders: (originalReq, headers) => {
-      try {
-        // Parse cookies manually from Cookie header
-        const cookieHeader = originalReq.headers.cookie || "";
-
-        // Extract access_token from cookie string
-        const match = cookieHeader.match(/access_token=([^;]+)/);
-        const token = match ? match[1] : null;
-
-        if (token) {
-          try {
-            const decoded = fastify.jwt.verify(token);
-
-            headers["x-user-id"] = decoded.id.toString();
-            headers["x-username"] = decoded.username;
-          } catch (jwtErr) {
-            fastify.log.error("JWT verification failed:", jwtErr.message);
-          }
-        }
-      } catch (err) {
-        fastify.log.error("Error in rewriteRequestHeaders:", err.message);
+      // Forward user info from gateway auth to chat-service
+      // originalReq.user is set by the auth plugin after JWT verification
+      if (originalReq.user?.id) {
+        headers["x-user-id"] = String(originalReq.user.id);
+      }
+      if (originalReq.user?.username) {
+        headers["x-username"] = originalReq.user.username;
       }
       return headers;
     },
