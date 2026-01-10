@@ -7,6 +7,7 @@ const PUBLIC_ROUTES = [
     "/api/auth/register",
     "/api/auth/login",
     "/api/auth/signout",
+    "/api/chat",  // Chat handles authentication via cookies in rewriteRequestHeaders
     "/health"
 ];
 
