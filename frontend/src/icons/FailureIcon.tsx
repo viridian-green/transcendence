@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-export default function CircleCheck(props: SVGProps<SVGSVGElement>) {
+export default function FailureIcon(props: SVGProps<SVGSVGElement>) {
 	return (
 		<svg
 			xmlns='http://www.w3.org/2000/svg'
@@ -16,8 +16,8 @@ export default function CircleCheck(props: SVGProps<SVGSVGElement>) {
 				strokeLinejoin='round'
 				strokeWidth='2'
 			>
-				<path d='M21.801 10A10 10 0 1 1 17 3.335'></path>
-				<path d='m9 11l3 3L22 4'></path>
+				<circle cx='12' cy='12' r='10'></circle>
+				<path d='m15 9l-6 6m0-6l6 6'></path>
 			</g>
 		</svg>
 	);

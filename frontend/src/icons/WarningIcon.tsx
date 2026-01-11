@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-export default function Warning(props: SVGProps<SVGSVGElement>) {
+export default function WarningIcon(props: SVGProps<SVGSVGElement>) {
 	return (
 		<svg
 			xmlns='http://www.w3.org/2000/svg'
