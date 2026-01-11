@@ -1,4 +1,4 @@
-import ExclamationCircleOutline from './ExclamationCircleOutline';
+import { ExclamationCircleOutline } from '@/icons';
 
 const ErrorMessage = ({ message }: { message: string }) => (
 	<div className='text-accent-pink flex'>

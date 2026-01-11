@@ -29,8 +29,9 @@
 		"paths": {
 			"@/*": ["./src/*"],
 			"@pages/*": ["./src/pages/*"],
-			"@components/*": ["./src/components/*"],
-			"@hooks/*": ["./src/hooks/*"]
+			"@components/*": ["src/components/*"],
+			"@hooks/*": ["./src/hooks/*"],
+			"@icons": ["./src/icons/*"]
 		}
 	},
 	"include": ["src"],

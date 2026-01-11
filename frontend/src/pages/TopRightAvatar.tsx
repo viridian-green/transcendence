@@ -1,5 +1,6 @@
-import { Avatar, Exit, ProfileCircle } from '@/components';
+import { Avatar } from '@/components';
 import { useAuth } from '@/hooks/useAuth';
+import { ProfileCircle, Exit } from '@/icons';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
