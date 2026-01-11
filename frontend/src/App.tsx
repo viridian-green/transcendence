@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
 	Home,
 	About,
@@ -22,6 +22,8 @@ import { useAuth } from './hooks/useAuth';
 
 function App() {
 	const { isLoggedIn, isLoading } = useAuth();
+	const location = useLocation();
+	const showTopAvatar = location.pathname !== '/profile' && isLoggedIn;
 
 	if (isLoading) {
 		return <Loading />;
@@ -29,7 +31,7 @@ function App() {
 
 	return (
 		<div className='flex min-h-screen flex-col'>
-			{isLoggedIn && (
+			{showTopAvatar && (
 				<nav className='fixed top-0 right-0 z-50 p-6'>
 					<TopRightAvatar />
 				</nav>
@@ -94,13 +96,21 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
+						<Route
+							path='/profile'
+							element={
+								<ProtectedRoute>
+									<Profile />
+								</ProtectedRoute>
+							}
+						/>
 						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
 						<Route path='/privacy-policy' element={<PrivacyPolicy />} />
 						<Route path='/terms-of-service' element={<TermsOfService />} />
 						<Route path='*' element={<NotFound />} />
 						{/* test routes */}
-						<Route path='/profile' element={<Profile />} />
+						<Route path='/test/profile' element={<Profile />} />
 					</Routes>
 				</Suspense>
 			</main>
