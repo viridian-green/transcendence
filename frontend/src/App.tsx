@@ -72,9 +72,9 @@ function App() {
 						<Route
 							path='/game/:gameId'
 							element={
-								<PublicOnlyRoute>
+								<ProtectedRoute>
 									<Game />
-								</PublicOnlyRoute>
+								</ProtectedRoute>
 							}
 						/>
 						<Route
@@ -98,6 +98,8 @@ function App() {
 						<Route path='/privacy-policy' element={<PrivacyPolicy />} />
 						<Route path='/terms-of-service' element={<TermsOfService />} />
 						<Route path='*' element={<NotFound />} />
+						{/* test routes without login, remove when releasing */}
+						<Route path='/test/game' element={<Game />} />
 					</Routes>
 				</Suspense>
 			</main>

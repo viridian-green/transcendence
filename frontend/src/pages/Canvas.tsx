@@ -78,10 +78,10 @@ const Canvas = ({ gameState }: CanvasProps) => {
 			ctx.fillStyle = '#e60076';
 			ctx.fillRect(20, gameState.paddles.left.y, PADDLE_WIDTH, PADDLE_HEIGHT);
 			ctx.fillRect(
-			CANVAS_WIDTH - 20 - PADDLE_WIDTH,
-			gameState.paddles.right.y,
-			PADDLE_WIDTH,
-			PADDLE_HEIGHT,
+				CANVAS_WIDTH - 20 - PADDLE_WIDTH,
+				gameState.paddles.right.y,
+				PADDLE_WIDTH,
+				PADDLE_HEIGHT,
 			);
 
 			// Scores
