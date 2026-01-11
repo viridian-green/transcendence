@@ -1,7 +1,7 @@
 import { PinkButton } from '@/components';
 import Canvas from './Canvas';
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import type { GameState } from '@/shared.types';
 
 const Game = () => {

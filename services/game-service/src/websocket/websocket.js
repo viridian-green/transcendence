@@ -1,77 +1,85 @@
-import {createInitialState, stopPaddle, movePaddle, moveBall, GameLoop} from '../game/game-logic.js'
+import { createInitialState, stopPaddle, movePaddle, GameLoop } from '../game/game-logic.js';
 
-const game = {
-  state: createInitialState(),
-  clients: new Set(),
-};
+const rooms = new Map();
 
-
-setInterval(() => {
-  GameLoop(game.state);
-  const snapshot = {
-  paddles: {
-    left: game.state.paddles[0],
-    right: game.state.paddles[1],
-  },
-  ball: game.state.ball,
-  scores: {
-    left: game.state.score.player1,
-    right: game.state.score.player2,
-  },
-  phase: game.state.game.phase,
-  countdown: game.state.game.countdown,
-};
-
-  const json = JSON.stringify({ type: 'STATE', payload: snapshot });
-
-  for (const client of game.clients) {
-    if (client.readyState === 1) client.send(json);
+function getOrCreateRoom(gameId) {
+  let room = rooms.get(gameId);
+  if (!room) {
+    room = {
+      state: createInitialState(),
+      clients: new Set(),
+    };
+    rooms.set(gameId, room);
   }
-}, 1000 / 60);
-
-
-      
+  return room;
+}
 
 export default async function gameWebsocket(fastify) {
-  fastify.get('/ws', { websocket: true }, (connection, req) => {
+  fastify.get('/ws/:gameId', { websocket: true }, (connection, req) => {
+    const { gameId } = req.params;
     const ws = connection.socket;
-    game.clients.add(ws);
 
-    const snapshot = {
-  paddles: {
-    left: game.state.paddles[0],
-    right: game.state.paddles[1],
-  },
-  ball: game.state.ball,
-  scores: {
-    left: game.state.score.player1,
-    right: game.state.score.player2,
-  },
-  phase: game.state.game.phase,
-  countdown: game.state.game.countdown,
-};
+    const room = getOrCreateRoom(gameId);
+    room.clients.add(ws);
 
-    ws.send(JSON.stringify({ type: 'STATE', payload: snapshot }));
+    ws.send(JSON.stringify({ type: 'STATE', payload: buildStateSnapshot(room.state) }));
 
     ws.on('message', (msg) => {
       try {
-      const { type, payload } = JSON.parse(msg);
-      switch (type) {
-        case 'MOVE_PADDLE':
-          movePaddle(game.state, payload.playerIndex, payload.direction);
-          break;
-        case 'STOP_PADDLE':
-          stopPaddle(game.state, payload.playerIndex);
-          break;
+        const message = JSON.parse(msg.toString());
+        handleWebSocketMessage(message, room.state);
+      } catch (err) {
+        console.error('[GAME WS] WS parse error', err);
       }
-    } catch (err) {
-      console.error('[GAME WS] WS parse error', err);
-  }
     });
-    
+
     ws.on('close', () => {
-      console.log('[GAME WS] Player disconnected');
-      game.clients.delete(ws);
+      console.log('[GAME WS] Player disconnected from room', gameId);
+      room.clients.delete(ws);
+      if (room.clients.size === 0) rooms.delete(gameId); // optional cleanup
     });
   });
 }
+
+function buildStateSnapshot(state) {
+  return {
+    paddles: {
+      left: state.paddles[0],
+      right: state.paddles[1],
+    },
+    ball: state.ball,
+    scores: {
+      left: state.score.player1,
+      right: state.score.player2,
+    },
+    phase: state.game.phase,
+    countdown: state.game.countdown,
+  };
+}
+
+function handleWebSocketMessage(message, state) {
+  const { type, payload } = message;
+  switch (type) {
+    case 'MOVE_PADDLE':
+      movePaddle(state, payload.playerIndex, payload.direction);
+      break;
+    case 'STOP_PADDLE':
+      stopPaddle(state, payload.playerIndex);
+      break;
+    case 'TOGGLE_PAUSE':
+      togglePause(state);
+      break;
+    default:
+      console.warn('[GAME WS] Unknown message type:', type);
+  }
+}
+
+setInterval(() => {
+  for (const [, room] of rooms) {
+    GameLoop(room.state);
+    const json = JSON.stringify({ type: 'STATE', payload: buildStateSnapshot(room.state) });
+    for (const client of room.clients) {
+      if (client.readyState === 1) client.send(json);
+    }
+  }
+}, 1000 / 60);
