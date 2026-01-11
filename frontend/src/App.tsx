@@ -104,7 +104,7 @@ function App() {
 					</Routes>
 				</Suspense>
 			</main>
-			<footer className='border-border text-text-muted space-x-2 border-t p-6 text-center'>
+			<footer className='border-border bg-surface text-text-muted space-x-2 border-t p-6 text-center text-sm'>
 				<Link to='/privacy-policy' className='hover:text-text-secondary'>
 					Privacy Policy
 				</Link>
