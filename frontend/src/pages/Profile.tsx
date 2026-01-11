@@ -2,6 +2,7 @@ import { Avatar, Toast } from '@components/index';
 import { ArrowLeft } from '@/icons';
 import type { Friend, UserProfile } from '@/shared.types';
 import { useState } from 'react';
+import { ProfileCard } from './ProfileCard';
 
 const MOCK_FRIENDS: Friend[] = [
 	{
@@ -30,23 +31,40 @@ const Profile = () => {
 		id: 1,
 		username: 'test',
 		email: 'test@example.com',
-		avatar: '/default-avatar.png',
+		avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent('test')}&size=128`,
 		bio: 'This is a sample bio.',
 	});
 
 	const [friends, setFriends] = useState<Friend[]>(MOCK_FRIENDS);
+	const [toast, setToast] = useState<{ show: boolean; message: string; type: string } | null>({
+		show: false,
+		message: '',
+		type: '',
+	});
 
 	console.log(friends, setFriends, setProfile);
+
+	const handleProfileUpdate = (updatedProfile: UserProfile) => {
+		// TODO connect to backend to update profile data
+		setProfile(updatedProfile);
+		setToast({ show: true, message: 'Profile updated successfully!', type: 'success' });
+	};
 
 	return (
 		<div className='bg-bg min-h-screen'>
 			{/* TODO create sonner or toaster component */}
-			<Toast message='Test toast' type='success' onClose={() => {}} />
+			{toast?.show && (
+				<Toast
+					message={toast.message}
+					type={toast.type}
+					onClose={() => setToast({ show: false, message: '', type: '' })}
+				/>
+			)}
 			<header className='border-border bg-surface border-b'>
 				<div className='mx-auto max-w-6xl px-6 py-6'>
 					<div className='flex items-center justify-between'>
 						<div className='flex items-center gap-4'>
-							<Avatar size={64} />
+							<Avatar size={64} className='hover:opacity-100' url={profile.avatar} />
 							<div>
 								<h1 className='text-accent-pink'>{profile.username}</h1>
 								<p className='text-text-secondary'>{profile.email}</p>
@@ -58,7 +76,7 @@ const Profile = () => {
 							className='text-text-secondary hover:bg-elevated hover:text-accent-pink rounded-lg px-2 py-1.5'
 							onClick={() => window.history.back()}
 						>
-							<div className='flex items-center gap-2'>
+							<div className='flex items-center gap-2 hover:cursor-pointer'>
 								<ArrowLeft className='h-5 w-5' />
 								Back
 							</div>
@@ -69,7 +87,7 @@ const Profile = () => {
 
 			<main className='mx-auto max-w-6xl px-6 py-8'>
 				<div className='grid gap-6 md:grid-cols-2'>
-					{/* <ProfileCard profile={profile} onUpdate={handleProfileUpdate} /> */}
+					<ProfileCard profile={profile} onUpdate={handleProfileUpdate} />
 					{/* <FriendsCard
 						friends={friends}
 						onAddFriend={handleAddFriend}

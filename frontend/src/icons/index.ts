@@ -6,3 +6,5 @@ export { default as CloseIcon } from './CloseIcon';
 export { default as WarningIcon } from './WarningIcon';
 export { default as SuccessIcon } from './SuccessIcon';
 export { default as FailureIcon } from './FailureIcon';
+export { default as Camera } from './Camera';
+export { default as Save } from './Save';
