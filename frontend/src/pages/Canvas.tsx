@@ -52,12 +52,12 @@ const Canvas = ({ gameState }: CanvasProps) => {
 			// Countdown overlay
 			if (gameState.phase === 'countdown') {
 				if (gameState.phase === 'countdown') {
-				ctx.fillStyle = '#e60076';
-				ctx.font = '96px Retro, sans-serif';
-				ctx.textAlign = 'center';
-				ctx.textBaseline = 'middle';
-				ctx.fillText(String(gameState.countdown), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
-}
+					ctx.fillStyle = '#e60076';
+					ctx.font = '96px Retro, sans-serif';
+					ctx.textAlign = 'center';
+					ctx.textBaseline = 'middle';
+					ctx.fillText(String(gameState.countdown), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+				}
 			}
 
 			// Ball (hide during countdown)
@@ -72,10 +72,10 @@ const Canvas = ({ gameState }: CanvasProps) => {
 			ctx.fillStyle = '#e60076';
 			ctx.fillRect(20, gameState.paddles.left.y, PADDLE_WIDTH, PADDLE_HEIGHT);
 			ctx.fillRect(
-			CANVAS_WIDTH - 20 - PADDLE_WIDTH,
-			gameState.paddles.right.y,
-			PADDLE_WIDTH,
-			PADDLE_HEIGHT,
+				CANVAS_WIDTH - 20 - PADDLE_WIDTH,
+				gameState.paddles.right.y,
+				PADDLE_WIDTH,
+				PADDLE_HEIGHT,
 			);
 
 			// Scores
