@@ -1,4 +1,5 @@
-import { ArrowLeft, Avatar } from '@/components';
+import { Avatar, Toast } from '@components/index';
+import { ArrowLeft } from '@/icons';
 import type { Friend, UserProfile } from '@/shared.types';
 import { useState } from 'react';
 
@@ -40,7 +41,7 @@ const Profile = () => {
 	return (
 		<div className='bg-bg min-h-screen'>
 			{/* TODO create sonner or toaster component */}
-			{/* <Toaster position='top-right' /> */}
+			<Toast message='Test toast' type='success' onClose={() => {}} />
 			<header className='border-border bg-surface border-b'>
 				<div className='mx-auto max-w-6xl px-6 py-6'>
 					<div className='flex items-center justify-between'>
@@ -55,6 +56,7 @@ const Profile = () => {
 						<button
 							type='button'
 							className='text-text-secondary hover:bg-elevated hover:text-accent-pink rounded-lg px-2 py-1.5'
+							onClick={() => window.history.back()}
 						>
 							<div className='flex items-center gap-2'>
 								<ArrowLeft className='h-5 w-5' />
