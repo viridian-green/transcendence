@@ -55,7 +55,7 @@ jobs:
         chmod +x init-scripts/test-scripts/user-service/login.sh
         ./init-scripts/test-scripts/user-service/login.sh
 
-            - name: Run user-service signout tests
+    - name: Run user-service signout tests
       run: |
         chmod +x init-scripts/test-scripts/user-service/signout.sh
         ./init-scripts/test-scripts/user-service/signout.sh
