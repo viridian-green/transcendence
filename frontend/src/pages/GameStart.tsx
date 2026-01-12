@@ -9,9 +9,7 @@ type AliasAndPosition = {
 	alias: string;
 };
 
-// TODO the logic here is that the logged in user always plays with w and s keys, maybe randomize logic
 const GameStart = () => {
-	const gameId = nanoid();
 	const navigate = useNavigate();
 	const { user } = useAuth();
 	const [opponent, setOpponent] = useState<AliasAndPosition>({ position: 'right', alias: '' });
@@ -35,6 +33,7 @@ const GameStart = () => {
 			setError('Please provide a different alias');
 			return;
 		}
+		const gameId = nanoid(); 
 		navigate(`/game/${gameId}`, { state: { leftPlayer, rightPlayer } });
 	};
 

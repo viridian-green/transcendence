@@ -3,6 +3,7 @@ import Canvas from './Canvas';
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import type { GameState } from '@/shared.types';
+import { nanoid } from 'nanoid';
 
 const Game = () => {
   
@@ -19,9 +20,18 @@ const Game = () => {
     if (typeof window === 'undefined') return;
 
      if (!gameId) {
-    console.warn('No gameId in params');
-    return;
-  }
+      navigate('/game-start', { replace: true });
+      console.warn('No gameId in params');
+     }
+  }, [gameId, navigate]);
+
+    useEffect(() => {
+
+    if (typeof window === 'undefined') return;
+
+    if (!gameId) return;
+
+    setGameState(null);
 
     const ws = new WebSocket(`ws://localhost:3000/game/${gameId}`);
     wsRef.current = ws;

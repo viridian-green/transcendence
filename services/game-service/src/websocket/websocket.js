@@ -22,6 +22,11 @@ export default async function gameWebsocket(fastify) {
     const room = getOrCreateRoom(gameId);
     room.clients.add(ws);
 
+    if (room.clients.size === 0) {
+      room.state = createInitialState();
+      console.log('[GAME WS] Reset state for new gameId', gameId);
+    }
+
     ws.send(JSON.stringify({ type: 'STATE', payload: buildStateSnapshot(room.state) }));
 
     ws.on('message', (msg) => {
@@ -36,7 +41,8 @@ export default async function gameWebsocket(fastify) {
     ws.on('close', () => {
       console.log('[GAME WS] Player disconnected from room', gameId);
       room.clients.delete(ws);
-      if (room.clients.size === 0) rooms.delete(gameId); // optional cleanup
+      if (room.clients.size === 0) rooms.delete(gameId);
+      
     });
   });
 }
