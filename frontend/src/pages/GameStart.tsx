@@ -2,13 +2,13 @@ import { ErrorMessage, PinkButton } from '@/components';
 import { useAuth } from '@/hooks/useAuth';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { nanoid } from 'nanoid'; 
 
 type AliasAndPosition = {
 	position: 'left' | 'right';
 	alias: string;
 };
 
-// TODO the logic here is that the logged in user always plays with w and s keys, maybe randomize logic
 const GameStart = () => {
 	const navigate = useNavigate();
 	const { user } = useAuth();
@@ -33,7 +33,8 @@ const GameStart = () => {
 			setError('Please provide a different alias');
 			return;
 		}
-		navigate('/game', { state: { leftPlayer, rightPlayer } });
+		const gameId = nanoid(); 
+		navigate(`/game/${gameId}`, { state: { leftPlayer, rightPlayer } });
 	};
 
 	const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,7 +114,7 @@ const GameStart = () => {
 						</div>
 					</div>
 				</div>
-				<p className='text-xl'>First to X points wins!</p>
+				<p className='text-xl'>First to 11 points wins!</p>
 				{error && <ErrorMessage message={error} />}
 				<PinkButton
 					text='Start Game'

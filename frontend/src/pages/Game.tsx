@@ -1,12 +1,15 @@
 import { PinkButton } from '@/components';
 import Canvas from './Canvas';
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import type { GameState } from '@/shared.types';
+import { nanoid } from 'nanoid';
 
 const Game = () => {
+  
   const navigate = useNavigate();
   const { state } = useLocation();
+  const { gameId } = useParams<{ gameId: string }>();
   const leftPlayer = state?.leftPlayer ?? 'Player 1';
   const rightPlayer = state?.rightPlayer ?? 'Player 2';
 
@@ -16,11 +19,26 @@ const Game = () => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const ws = new WebSocket('ws://localhost:3000/game');
+     if (!gameId) {
+      navigate('/game-start', { replace: true });
+      console.warn('No gameId in params');
+     }
+  }, [gameId, navigate]);
+
+    useEffect(() => {
+
+    if (typeof window === 'undefined') return;
+
+    if (!gameId) return;
+
+    setGameState(null);
+
+    const ws = new WebSocket(`ws://localhost:3000/game/${gameId}`);
     wsRef.current = ws;
 
     ws.onopen = () => {
       console.log('Connected to game server');
+       ws.send(JSON.stringify({ type: 'RESET_GAME' }));
     };
 
     ws.onmessage = (event) => {
@@ -44,7 +62,7 @@ const Game = () => {
       ws.close();
       wsRef.current = null;
     };
-  }, []);
+  }, [gameId]);
 
   
 

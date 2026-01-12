@@ -70,7 +70,7 @@ function App() {
 							}
 						/>
 						<Route
-							path='/game/*'
+							path='/game/:gameId'
 							element={
 								<PublicOnlyRoute>
 									<Game />
@@ -80,17 +80,17 @@ function App() {
 						<Route
 							path='/game-start'
 							element={
-								<ProtectedRoute>
+								<PublicOnlyRoute>
 									<GameStart />
-								</ProtectedRoute>
+								</PublicOnlyRoute>
 							}
 						/>
 						<Route
 							path='/game-end'
 							element={
-								<ProtectedRoute>
+								<PublicOnlyRoute>
 									<GameEnd />
-								</ProtectedRoute>
+								</PublicOnlyRoute>
 							}
 						/>
 						{/* TODO: create about page and put it in a footer or navbar */}

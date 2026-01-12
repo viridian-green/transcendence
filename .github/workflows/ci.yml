@@ -55,6 +55,25 @@ jobs:
         chmod +x init-scripts/test-scripts/user-service/login.sh
         ./init-scripts/test-scripts/user-service/login.sh
 
+            - name: Run user-service signout tests
+      run: |
+        chmod +x init-scripts/test-scripts/user-service/signout.sh
+        ./init-scripts/test-scripts/user-service/signout.sh
+
+    - name: Run game-service running tests
+      run: |
+       chmod +x init-scripts/test-scripts/game-service/game-running.sh
+       ./init-scripts/test-scripts/game-running.sh
+
+    - name: Run game-service reset tests
+      run: |
+       chmod +x init-scripts/test-scripts/game-reset.sh
+       ./init-scripts/test-scripts/game-service/game-reset.sh
+
+    - name: Dump logs on failure
+      if: failure()
+      run: docker compose logs
+
     # - name: Run user-service update tests ---- not working in CI environment due to cookies being actually reliable for browsers and not CI
     #   run: |
     #     chmod +x init-scripts/test-scripts/user-service/update.sh
