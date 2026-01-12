@@ -13,10 +13,6 @@ const Home: FC = () => {
 		navigate('/game-start');
 	};
 
-	const handleChat = () => {
-		navigate('/chat');
-	};
-
 	const [showWelcome, setShowWelcome] = useState(true);
 	const [fadeIn, setFadeIn] = useState(true);
 	const [showRest, setShowRest] = useState(false);
@@ -104,9 +100,6 @@ const Home: FC = () => {
 								alert('TBD');
 							}}
 						/>
-					</div>
-					<div className='mt-4'>
-						<PinkButton text='Chat' onClick={handleChat} />
 					</div>
 				</section>
 			)}
