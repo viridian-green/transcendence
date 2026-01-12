@@ -38,6 +38,7 @@ const Game = () => {
 
     ws.onopen = () => {
       console.log('Connected to game server');
+       ws.send(JSON.stringify({ type: 'RESET_GAME' }));
     };
 
     ws.onmessage = (event) => {
