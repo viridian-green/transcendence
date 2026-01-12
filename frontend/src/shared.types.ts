@@ -9,31 +9,31 @@ export type GamePhase = 'countdown' | 'playing' | 'paused' | 'ended';
 
 // Game state structure that will be received from server
 export interface GameState {
-	ball: {
-		x: number;
-		y: number;
-		r: number;
-		dx: number;
-		dy: number;
-	};
-	paddles: {
-		left: {
-			x: number;
-			y: number;
-			dy: number;
-		};
-		right: {
-			x: number;
-			y: number;
-			dy: number;
-		};
-	};
-	phase: GamePhase;
-	scores: {
-		left: number;
-		right: number;
-	};
-	countdown: number;
+  ball: {
+    x: number;
+    y: number;
+    r: number;
+    dx: number;
+    dy: number;
+  };
+  paddles: {
+    left: {
+      x: number;
+      y: number;
+      dy: number;
+    };
+    right: {
+      x: number;
+      y: number;
+      dy: number;
+    };
+  };
+  phase: GamePhase;
+  scores: {
+    left: number;
+    right: number;
+  };
+  countdown: number;
 }
 
 // WebSocket message types (examples)
@@ -49,11 +49,12 @@ export interface GameStateMessage extends WSMessage<GameState> {
 }
 
 export interface PaddlePayload {
-	playerIndex: 0 | 1;
-	direction: 'up' | 'down';
+  playerIndex: 0 | 1;
+  direction: 'up' | 'down';
 }
 
 export interface PaddleMoveMessage extends WSMessage<PaddlePayload> {
-	type: 'MOVE_PADDLE';
-	payload: PaddlePayload;
+  type: 'MOVE_PADDLE';
+  payload: PaddlePayload;
 }
+
