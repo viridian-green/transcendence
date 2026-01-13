@@ -107,7 +107,7 @@ usertest:
 		-k
 	@echo ""
 
-usertest2:
+user2:
 	@curl -X POST https://localhost:8443/api/auth/register \
 		-H "Content-Type: application/json" \
 		-d '{"email":"user2@example.com","username":"2user","password":"Password123!"}' \
