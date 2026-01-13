@@ -32,6 +32,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
+      - frontend_dist:/usr/share/nginx/html:ro
     depends_on:
       api-gateway:
         condition: service_healthy
@@ -45,9 +46,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    ports:
-      - "5173:5173"
     working_dir: /app
+    volumes:
+      - frontend_dist:/app/dist
     networks:
       - transcendence-network
     environment:
@@ -65,7 +66,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/game_db
-
     ports:
       - "3002:3002"
     networks:
@@ -94,24 +94,6 @@ services:
       - "3003:3003"
     networks:
       - transcendence-network
-
-  # chat:
-  #   build:
-  #     context: ./services/chat-service
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     database:
-  #       condition: service_healthy
-  #   environment:
-  #     POSTGRES_USER: ${POSTGRES_USER}
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  #     POSTGRES_DB: ${POSTGRES_DB}
-  #     JWT_SECRET: ${JWT_SECRET}
-  #   ports:
-  #     - "3004:3004"
-  #   networks:
-  #     - transcendence-network
-  #   command: ["npm", "run", "dev"]
 
   api-gateway:
     build:
@@ -143,3 +125,4 @@ networks:
 
 volumes:
   postgres_data:
+  frontend_dist:

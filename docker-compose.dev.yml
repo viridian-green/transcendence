@@ -31,21 +31,24 @@ services:
       - "${NGINX_HTTP_PORT:-8080}:80"
       - "${NGINX_HTTPS_PORT:-8443}:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf.dev:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
       api-gateway:
         condition: service_healthy
       database:
         condition: service_healthy
-      #frontend add a healthcheck
+      frontend:
+        condition: service_started
     networks:
       - transcendence-network
+    restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
+    entrypoint: []  # Override any entrypoint from base Dockerfile
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -101,27 +104,6 @@ services:
       - "3003:3003"
     networks:
       - transcendence-network
-
-  # chat:
-  # build:
-  #   context: ./services/chat-service
-  #   dockerfile: Dockerfile.dev
-  # depends_on:
-  #   database:
-  #     condition: service_healthy
-  # environment:
-  #   POSTGRES_USER: ${POSTGRES_USER}
-  #   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  #   POSTGRES_DB: ${POSTGRES_DB}
-  #   JWT_SECRET: ${JWT_SECRET}
-  # ports:
-  #   - "3004:3004"
-  # networks:
-  #   - transcendence-network
-  # volumes:
-  #   - ./services/chat-service:/app
-  #   - /app/node_modules
-  # command: ["npm","run","dev"]
 
   api-gateway:
     build:

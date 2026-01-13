@@ -13,6 +13,7 @@ import {
 	PublicOnlyRoute,
 	GameEnd,
 	GameStart,
+	Chat,
 } from '@pages/index';
 import TopRightAvatar from './pages/TopRightAvatar';
 import { useAuth } from './hooks/useAuth';
@@ -93,6 +94,12 @@ function App() {
 						/>
 						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
+						<Route path='/chat' element={
+								<ProtectedRoute>
+									<Chat />
+								</ProtectedRoute>
+							}
+						/>
 						<Route path='*' element={<NotFound />} />
 					</Routes>
 				</Suspense>
