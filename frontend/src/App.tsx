@@ -72,9 +72,9 @@ function App() {
 						{/* <Route
 							path='/game/:gameId'
 							element={
-								<ProtectedRoute>
+								<PublicOnlyRoute>
 									<Game />
-								</ProtectedRoute>
+								</PublicOnlyRoute>
 							}
 						/>
 						<Route

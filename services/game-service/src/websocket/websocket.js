@@ -20,6 +20,7 @@ export default async function gameWebsocket(fastify) {
     const ws = connection.socket;
 
     const room = getOrCreateRoom(gameId);
+
     room.clients.add(ws);
 
     ws.send(JSON.stringify({ type: 'STATE', payload: buildStateSnapshot(room.state) }));
@@ -36,7 +37,7 @@ export default async function gameWebsocket(fastify) {
     ws.on('close', () => {
       console.log('[GAME WS] Player disconnected from room', gameId);
       room.clients.delete(ws);
-      if (room.clients.size === 0) rooms.delete(gameId); // optional cleanup
+      
     });
   });
 }
@@ -60,6 +61,15 @@ function buildStateSnapshot(state) {
 function handleWebSocketMessage(message, state) {
   const { type, payload } = message;
   switch (type) {
+case 'RESET_GAME':
+  {
+  const fresh = createInitialState();
+  state.paddles = fresh.paddles;
+  state.ball = fresh.ball;
+  state.score = fresh.score;
+  state.game = fresh.game;
+  break;
+    }
     case 'MOVE_PADDLE':
       movePaddle(state, payload.playerIndex, payload.direction);
       break;

@@ -3,6 +3,7 @@ import Canvas from './Canvas';
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import type { GameState } from '@/shared.types';
+import { nanoid } from 'nanoid';
 
 const Game = () => {
 	const navigate = useNavigate();
@@ -11,8 +12,7 @@ const Game = () => {
 	const rightPlayer = state?.rightPlayer ?? 'Player 2';
 	const { gameId } = useParams<{ gameId: string }>();
 
-	const [gameState, setGameState] = useState<GameState | null>(null);
-	const wsRef = useRef<WebSocket | null>(null);
+  
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
@@ -122,6 +122,7 @@ const Game = () => {
 	}, [navigate]);
 
 	const handlePauseToggle = () => {
+		if (!wsRef.current) return;
 		wsRef.current?.send(JSON.stringify({ type: 'TOGGLE_PAUSE' }));
 	};
 
