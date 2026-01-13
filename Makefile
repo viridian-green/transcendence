@@ -26,6 +26,7 @@ up: setup
 
 # Start services with dev overrides
 dev: setup
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml build frontend
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 # Tail logs (base stack)
@@ -41,11 +42,11 @@ down:
 	docker compose down
 
 # Restart with rebuild (base stack)
-restart:
-	docker compose up -d
+restart: setup
+	docker compose up -d --build
 
 # Restart with rebuild (dev stack)
-restartdev:
+restartdev: setup
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 
 
@@ -64,8 +65,7 @@ clean:
 
 # Prune Docker cache/containers/networks (keeps volumes, e.g., database)
 prune:
-	docker ps -aq | xargs -r docker stop
-	docker ps -aq | xargs -r docker rm
+	docker stop $$(docker ps -aq) || true
 	docker system prune -af
 	docker image prune -af
 	docker network prune -f
@@ -73,6 +73,7 @@ prune:
 
 # Full reset: clean, prune, regenerate SSL certs, rebuild everything
 reset:
+	docker stop $$(docker ps -aq) || true
 	docker compose down -v --rmi all --remove-orphans
 	@echo "Pruning unused images, volumes and networks..."
 	docker image prune -af || true
