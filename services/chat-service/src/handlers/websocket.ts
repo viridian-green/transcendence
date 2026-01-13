@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { WebSocket } from "ws";
+import jwt from "jsonwebtoken";
 
 // Store all connected clients with their usernames
 const clients = new Map<WebSocket, string>();
@@ -61,6 +62,31 @@ export default async function websocketHandler(fastify: FastifyInstance) {
         );
         connection.close();
         return;
+      }
+
+      // Extract cookies if present
+      const cookieHeader = request.headers["cookie"] as string | undefined;
+      let cookies: Record<string, string> = {};
+      if (cookieHeader) {
+        cookieHeader.split(";").forEach((cookie) => {
+          const parts = cookie.split("=");
+          if (parts.length === 2) {
+            cookies[parts[0].trim()] = decodeURIComponent(parts[1].trim());
+          }
+        });
+      }
+      const accessToken = cookies["access_token"];
+      if (accessToken) {
+        try {
+          const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+          if (decoded.username) username = decoded.username;
+          if (decoded.id) userId = decoded.id;
+          console.log("Decoded from JWT:", { username, userId });
+        } catch (err) {
+          console.error("Invalid JWT:", err);
+        }
+      } else {
+        console.log("No access_token cookie found (undefined)");
       }
 
       // Handle incoming messages
