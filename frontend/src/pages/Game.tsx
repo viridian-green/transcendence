@@ -9,6 +9,7 @@ const Game = () => {
 	const { state } = useLocation();
 	const leftPlayer = state?.leftPlayer ?? 'Player 1';
 	const rightPlayer = state?.rightPlayer ?? 'Player 2';
+	const { gameId } = useParams<{ gameId: string }>();
 
 	const [gameState, setGameState] = useState<GameState | null>(null);
 	const wsRef = useRef<WebSocket | null>(null);
@@ -18,7 +19,12 @@ const Game = () => {
 		// Prevent scrolling while in game -> hide overflow
 		// document.body.style.overflow = 'hidden';
 
-		const ws = new WebSocket('ws://localhost:3000/game');
+		if (!gameId) {
+			console.warn('No gameId in params');
+			return;
+		}
+
+		const ws = new WebSocket(`ws://localhost:3000/game/${gameId}`);
 		wsRef.current = ws;
 
 		ws.onopen = () => {
