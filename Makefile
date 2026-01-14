@@ -100,17 +100,17 @@ open:
 
 ## === Testing ===
 # Create test user
-usertest:
+user1:
 	@curl -X POST https://localhost:8443/api/auth/register \
 		-H "Content-Type: application/json" \
-		-d '{"email":"user@example.com","username":"user","password":"Password123!"}' \
+		-d '{"email":"user@example.com","username":"u1","password":"Password123!"}' \
 		-k
 	@echo ""
 
 user2:
 	@curl -X POST https://localhost:8443/api/auth/register \
 		-H "Content-Type: application/json" \
-		-d '{"email":"user2@example.com","username":"2user","password":"Password123!"}' \
+		-d '{"email":"user2@example.com","username":"u2","password":"Password123!"}' \
 		-k
 	@echo ""
 
