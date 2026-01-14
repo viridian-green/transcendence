@@ -1,5 +1,6 @@
 import { WebSocket } from "ws";
 import jwt from "jsonwebtoken";
+import { updateUserState } from "../utils/userStateApi.js";
 
 export interface User {
   id: string;
@@ -55,6 +56,8 @@ function extractUserFromJWT(request: any): User | null {
 
 function handleConnection(connection: WebSocket, user: User) {
   clients.set(connection, user);
+  user.state = "online";
+  updateUserState(user.id, user.state);
   console.log(
     `User ${user.username} connected. Total clients: ${clients.size}`
   );
@@ -62,13 +65,13 @@ function handleConnection(connection: WebSocket, user: User) {
     JSON.stringify({
       type: "welcome",
       message: `Welcome, ${user.username}!`,
-      user: { id: user.id, username: user.username },
+      user: { id: user.id, username: user.username, state: user.state },
     })
   );
-  // Broadcast to all other clients that this user joined
+  // Broadcast to all other clients that this user joined and is online
   broadcastToOthers(connection, {
     type: "user_joined",
-    user: { id: user.id, username: user.username },
+    user: { id: user.id, username: user.username, state: user.state },
   });
 }
 
@@ -89,13 +92,20 @@ function handleMessage(
 
 function handleDisconnect(connection: WebSocket, user: User) {
   clients.delete(connection);
+  user.state = "offline";
+  updateUserState(user.id, user.state);
   console.log(
     `User ${user.username} disconnected. Total clients: ${clients.size}`
   );
-  // Notify others that user left
+  // Notify others that user left and is now offline
   broadcastAll({
     type: "user_left",
-    user: { id: user.id, username: user.username },
+    user: { id: user.id, username: user.username, state: user.state },
+  });
+  // Optionally broadcast state change
+  broadcastAll({
+    type: "user_state",
+    user: { id: user.id, username: user.username, state: user.state },
   });
 }
 
