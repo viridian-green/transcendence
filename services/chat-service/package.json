@@ -18,7 +18,8 @@
     "@fastify/websocket": "^11.2.0",
     "fastify": "^5.6.2",
     "ioredis": "^5.9.1",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.9",
