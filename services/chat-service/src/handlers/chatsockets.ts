@@ -1,0 +1,118 @@
+import { WebSocket } from "ws";
+import jwt from "jsonwebtoken";
+
+export interface User {
+  id: string;
+  username: string;
+}
+
+// Map to keep track of connected clients and their user info
+const clients: Map<WebSocket, User> = new Map();
+
+// Main WebSocket handler function (not exported directly)
+function chatsocketsHandler(connection: WebSocket, request: any) {
+  const user = extractUserFromJWT(request);
+  if (!user) {
+    connection.send(JSON.stringify({ error: "Authentication required" }));
+    connection.close();
+    return;
+  }
+  handleConnection(connection, user);
+  connection.on("message", (message: string | Buffer) =>
+    handleMessage(connection, user, message)
+  );
+  connection.on("close", () => handleDisconnect(connection, user));
+}
+
+function extractUserFromJWT(request: any): User | null {
+  const cookieHeader = request.headers["cookie"] as string | undefined;
+  let cookies: Record<string, string> = {};
+  if (cookieHeader) {
+    cookieHeader.split(";").forEach((cookie) => {
+      const parts = cookie.split("=");
+      if (parts.length === 2) {
+        cookies[parts[0].trim()] = decodeURIComponent(parts[1].trim());
+      }
+    });
+  }
+  const accessToken = cookies["access_token"];
+  const jwtSecret = process.env.JWT_SECRET;
+  if (accessToken && jwtSecret) {
+    try {
+      const decoded = jwt.verify(accessToken, jwtSecret) as any;
+      if (decoded.username && decoded.id) {
+        return { username: decoded.username, id: String(decoded.id) };
+      }
+    } catch (err) {
+      console.error("Invalid JWT:", err);
+      return null;
+    }
+  }
+  return null;
+}
+
+function handleConnection(connection: WebSocket, user: User) {
+  clients.set(connection, user);
+  console.log(
+    `User ${user.username} connected. Total clients: ${clients.size}`
+  );
+  connection.send(
+    JSON.stringify({
+      type: "welcome",
+      message: `Welcome, ${user.username}!`,
+      user: { id: user.id, username: user.username },
+    })
+  );
+  // Broadcast to all other clients that this user joined
+  broadcastToOthers(connection, {
+    type: "user_joined",
+    user: { id: user.id, username: user.username },
+  });
+}
+
+function handleMessage(
+  connection: WebSocket,
+  user: User,
+  message: string | Buffer
+) {
+  const text = typeof message === "string" ? message : message.toString();
+  console.log(`Received from ${user.username}:`, text);
+  // Broadcast to all connected clients
+  broadcastAll({
+    type: "message",
+    user: { id: user.id, username: user.username },
+    text,
+  });
+}
+
+function handleDisconnect(connection: WebSocket, user: User) {
+  clients.delete(connection);
+  console.log(
+    `User ${user.username} disconnected. Total clients: ${clients.size}`
+  );
+  // Notify others that user left
+  broadcastAll({
+    type: "user_left",
+    user: { id: user.id, username: user.username },
+  });
+}
+
+// Helper to broadcast to all clients
+function broadcastAll(payload: any) {
+  for (const [client] of clients) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(payload));
+    }
+  }
+}
+
+// Helper to broadcast to all except one
+function broadcastToOthers(except: WebSocket, payload: any) {
+  for (const [client] of clients) {
+    if (client !== except && client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(payload));
+    }
+  }
+}
+
+export default chatsocketsHandler;
