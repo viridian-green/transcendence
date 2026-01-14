@@ -21,16 +21,19 @@ export function useChatSocket(enabled: boolean) {
         const data: ChatServerMessage = JSON.parse(event.data);
         switch (data.type) {
           case 'message':
-            setMessages((prev) => [...prev, { kind: 'chat', username: data.username, text: data.text }]);
+            setMessages((prev) => [
+              ...prev,
+              { kind: 'chat', username: data.user?.username ?? data.username ?? 'unknown', text: data.text }
+            ]);
             return;
           case 'welcome':
             setMessages((prev) => [...prev, { kind: 'system', text: data.message }]);
             return;
           case 'user_joined':
-            setMessages((prev) => [...prev, { kind: 'system', text: `${data.username} joined` }]);
+            setMessages((prev) => [...prev, { kind: 'system', text: `${data.user.username} joined` }]);
             return;
           case 'user_left':
-            setMessages((prev) => [...prev, { kind: 'system', text: `${data.username} left` }]);
+            setMessages((prev) => [...prev, { kind: 'system', text: `${data.user.username} left` }]);
             return;
           default:
             setMessages((prev) => [...prev, { kind: 'raw', text: event.data }]);
