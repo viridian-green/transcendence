@@ -78,6 +78,7 @@ function App() {
 						<Route path='/game/:gameId' element={<Game />} />
 						<Route path='/game-start' element={<GameStart />} />
 						<Route path='/game-end' element={<GameEnd />} />
+						<Route path='/test/home' element={<Home />} />
 					</Routes>
 				</Suspense>
 			</main>
