@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 export interface User {
   id: string;
   username: string;
+  state?: string; // e.g., "online", "offline", "busy"
 }
 
 // Map to keep track of connected clients and their user info
@@ -24,6 +25,7 @@ function chatsocketsHandler(connection: WebSocket, request: any) {
   connection.on("close", () => handleDisconnect(connection, user));
 }
 
+// Helpers
 function extractUserFromJWT(request: any): User | null {
   const cookieHeader = request.headers["cookie"] as string | undefined;
   let cookies: Record<string, string> = {};
