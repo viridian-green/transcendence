@@ -1,8 +1,7 @@
 import fetch from "node-fetch";
 
 export async function updateUserState(id: string, state: string) {
-  const url =
-    process.env.USER_SERVICE_URL || "http://user-service:3003/api/users/state";
+  const url = process.env.USER_SERVICE_URL || "http://user:3003/state";
   try {
     const res = await fetch(url, {
       method: "PATCH",
