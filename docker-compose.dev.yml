@@ -100,6 +100,8 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/user_db
       JWT_SECRET: ${JWT_SECRET}
       COOKIE_SECRET: ${COOKIE_SECRET}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://user:3003/health"]
       interval: 5s
@@ -155,7 +157,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: redis
+    container_name: redis_dev
     ports:
       - "6379:6379"
     networks:
