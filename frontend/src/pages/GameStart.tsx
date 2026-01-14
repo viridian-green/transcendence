@@ -2,7 +2,7 @@ import { ErrorMessage, PinkButton } from '@/components';
 import { useAuth } from '@/hooks/useAuth';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { nanoid } from 'nanoid'; 
+import { nanoid } from 'nanoid';
 
 type AliasAndPosition = {
 	position: 'left' | 'right';
@@ -33,7 +33,7 @@ const GameStart = () => {
 			setError('Please provide a different alias');
 			return;
 		}
-		const gameId = nanoid(); 
+		const gameId = nanoid();
 		navigate(`/game/${gameId}`, { state: { leftPlayer, rightPlayer } });
 	};
 

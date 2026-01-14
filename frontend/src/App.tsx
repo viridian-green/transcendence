@@ -69,35 +69,16 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
-						<Route
-							path='/game/:gameId'
-							element={
-								<PublicOnlyRoute>
-									<Game />
-								</PublicOnlyRoute>
-							}
-						/>
-						<Route
-							path='/game-start'
-							element={
-								<PublicOnlyRoute>
-									<GameStart />
-								</PublicOnlyRoute>
-							}
-						/>
-						<Route
-							path='/game-end'
-							element={
-								<PublicOnlyRoute>
-									<GameEnd />
-								</PublicOnlyRoute>
-							}
-						/>
 						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
 						<Route path='/privacy-policy' element={<PrivacyPolicy />} />
 						<Route path='/terms-of-service' element={<TermsOfService />} />
 						<Route path='*' element={<NotFound />} />
+						{/* test routes without login, TODO: remove when releasing */}
+						<Route path='/game/:gameId' element={<Game />} />
+						<Route path='/game-start' element={<GameStart />} />
+						<Route path='/game-end' element={<GameEnd />} />
+						<Route path='/test/home' element={<Home />} />
 					</Routes>
 				</Suspense>
 			</main>

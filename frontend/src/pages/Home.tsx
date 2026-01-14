@@ -13,7 +13,6 @@ const Home: FC = () => {
 		navigate('/game-start');
 	};
 
-
 	const handleRemoteGameStart = () => {
 		navigate('/remote');
 	};
@@ -99,9 +98,7 @@ const Home: FC = () => {
 							}}
 						/>
 						<PinkButton text='Local' onClick={handleLocalGameStart} />
-						<PinkButton
-							text='Remote'
-							onClick={alert(handleRemoteGameStart)}/>
+						<PinkButton text='Remote' onClick={handleRemoteGameStart} />
 					</div>
 				</section>
 			)}

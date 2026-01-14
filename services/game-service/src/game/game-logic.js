@@ -1,6 +1,6 @@
 export const GAME_CONFIG = {
   paddle: { width: 10, height: 80, speed: 15 },
-  ball: { radius: 8, speed: 2 },
+  ball: { radius: 8, speed: 2, serveSpeed: 0.5, serveFrames: 30 },
   canvas: { width: 800, height: 400 },
   scoreLimit: 11,
   countdownStart: 3,
@@ -26,6 +26,7 @@ export function createInitialState() {
       r: GAME_CONFIG.ball.radius,
       dx: GAME_CONFIG.ball.speed,
       dy: GAME_CONFIG.ball.speed,
+      _serveFrame: 0,
     },
     serveRight: true,
     score: { player1: 0, player2: 0 },
@@ -45,6 +46,8 @@ function resetBall(state) {
   ball.y = ballCfg.radius + Math.random() * (canvas.height - 2 * ballCfg.radius);
   ball.dx = state.serveRight ? Math.abs(ball.dx) : -Math.abs(ball.dx);
   state.serveRight = !state.serveRight;
+
+  ball._serveFrame = 0;
 }
 
 export function stopPaddle(state, playerIndex) {
@@ -74,16 +77,27 @@ export function togglePause(state) {
 }
 
 export function moveBall(state) {
+  const { ball: ballCfg } = GAME_CONFIG;
+  const ball = state.ball;
+
+  // Apply serve speed multiplier if in serve phase
+  let speedMultiplier = 1;
+  if (ball._serveFrame < ballCfg.serveFrames) {
+
+    // Ramp from serveSpeed to 1.0 over serveFrames
+    speedMultiplier = ballCfg.serveSpeed + 
+      (1 - ballCfg.serveSpeed) * (ball._serveFrame / ballCfg.serveFrames);
+    ball._serveFrame += 1;
+  }
   state.paddles.forEach((p) => {
     p.y += p.dy;
     clampPaddle(p);
   });
 
   const { canvas, paddle } = GAME_CONFIG;
-  const ball = state.ball;
 
-  ball.x += ball.dx;
-  ball.y += ball.dy;
+  ball.x += ball.dx * speedMultiplier;
+  ball.y += ball.dy * speedMultiplier;
 
   if (ball.y - ball.r < 0 || ball.y + ball.r > canvas.height) {
     ball.dy *= -1;
