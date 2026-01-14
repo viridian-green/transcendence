@@ -1,5 +1,5 @@
-import { AIController } from '../game/AIController.js'; 
-import { createInitialState, stopPaddle, movePaddle, GameLoop } from '../game/game-logic.js';
+import { AIController } from '../game/AIController.js';
+import { createInitialState, stopPaddle, movePaddle, GameLoop, GAME_CONFIG } from '../game/game-logic.js';
 
 const rooms = new Map();
 
@@ -11,7 +11,7 @@ function getOrCreateRoom(gameId) {
       clients: new Set(),
       // AI ---------------
       ai: new AIController(),
-      isAIGame: true // see where to fit this - when user inputs single play
+      isAIGame: true // Enabled for testing/integration
       // ------------------
     };
     rooms.set(gameId, room);
@@ -92,10 +92,10 @@ case 'RESET_GAME':
 setInterval(() => {
   for (const [, room] of rooms) {
     // AI ---------------
-    if (game.isAIGame) {
+    if (room.isAIGame) {
         // AI plays as Player 1 (Left Paddle / index 0)
-        const aiMove = game.ai.getMove(game.state.ball, game.state.paddles[0], GAME_CONFIG.canvas.height);
-        game.state.paddles[0].dy = aiMove;
+        const aiMove = room.ai.getMove(room.state.ball, room.state.paddles[0], GAME_CONFIG.canvas.height);
+        room.state.paddles[0].dy = aiMove;
     }
     // ------------------
     GameLoop(room.state);
