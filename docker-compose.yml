@@ -57,6 +57,10 @@ services:
     build:
       context: ./services/game-service
       dockerfile: Dockerfile.dev
+    volumes:
+      - ./services/game-service:/app
+      - /app/node_modules
+    command: npm run dev
     depends_on:
       database:
         condition: service_healthy
