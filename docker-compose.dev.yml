@@ -14,6 +14,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
+
     networks:
       - transcendence-network
     healthcheck:
@@ -30,34 +31,42 @@ services:
       - "${NGINX_HTTP_PORT:-8080}:80"
       - "${NGINX_HTTPS_PORT:-8443}:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf.dev:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
-      - frontend_dist:/usr/share/nginx/html:ro
     depends_on:
       api-gateway:
         condition: service_healthy
       database:
         condition: service_healthy
-      #frontend add a healthcheck
+      frontend:
+        condition: service_started
     networks:
       - transcendence-network
+    restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-    working_dir: /app
+      dockerfile: Dockerfile.dev
+    entrypoint: []  # Override any entrypoint from base Dockerfile
     volumes:
-      - frontend_dist:/app/dist
+      - ./frontend:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
+    ports:
+      - "5173:5173"
+    working_dir: /app
     networks:
       - transcendence-network
     environment:
       - DOCKER=true
+      - CHOKIDAR_USEPOLLING=1
+      - CHOKIDAR_INTERVAL=300
 
   game:
     build:
       context: ./services/game-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     depends_on:
       database:
         condition: service_healthy
@@ -66,6 +75,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/game_db
+
     ports:
       - "3002:3002"
     networks:
@@ -74,7 +84,7 @@ services:
   user:
     build:
       context: ./services/user-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     depends_on:
       database:
         condition: service_healthy
@@ -98,7 +108,7 @@ services:
   api-gateway:
     build:
       context: ./api-gateway
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     env_file:
       - .env
     environment:
@@ -125,4 +135,3 @@ networks:
 
 volumes:
   postgres_data:
-  frontend_dist:

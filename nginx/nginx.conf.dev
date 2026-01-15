@@ -26,8 +26,9 @@ http {
     gzip_min_length 256;
     gzip_vary on;
 
+    # Dev: Frontend runs on Vite dev server port 5173
     upstream frontend {
-        server frontend:8080;
+        server frontend:5173;
     }
 
     upstream gateway {
@@ -36,7 +37,7 @@ http {
 
     # Redirect HTTP to HTTPS
     server {
-        listen 8080;
+        listen 80;
         server_name localhost;
         return 301 https://$server_name$request_uri;
     }
@@ -59,14 +60,12 @@ http {
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
             proxy_set_header Host $host;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection 'upgrade';
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
         }
 
-        # Proxy all other requests to frontend
+        # Proxy all other requests to frontend (Vite dev server)
         location / {
             proxy_pass http://frontend/;
             proxy_http_version 1.1;
@@ -80,3 +79,4 @@ http {
         }
     }
 }
+
