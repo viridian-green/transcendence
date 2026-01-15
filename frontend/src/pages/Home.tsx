@@ -2,12 +2,24 @@ import { useEffect, useState, type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PinkButton } from '@components/index';
 import { useAuth } from '@hooks/useAuth';
+import { nanoid } from 'nanoid';
 import './Home.css';
 
 const Home: FC = () => {
 	const navigate = useNavigate();
 	const { user } = useAuth();
 	const welcomeMessage = user ? `Welcome, ${user.username}!` : 'Welcome!';
+
+	const handleAIGameStart = () => {
+		const gameId = nanoid();
+		navigate(`/game/${gameId}`, {
+			state: {
+				leftPlayer: "Computer",
+				rightPlayer: "You", // or logged-in user's name - "You" seems easier
+				mode: 'AI'
+			}
+		}); // or `navigate('/AI');` to allow user to pick sides 
+	};
 
 	const handleLocalGameStart = () => {
 		navigate('/game-start');
@@ -91,12 +103,7 @@ const Home: FC = () => {
 				<section className='animate-fade-in flex flex-col items-center justify-center gap-6'>
 					<p className='text-2xl'>Choose your game mode:</p>
 					<div className='flex flex-row justify-center gap-20 text-center text-xl'>
-						<PinkButton
-							text='AI Opponent'
-							onClick={() => {
-								alert('TBD');
-							}}
-						/>
+						<PinkButton text='AI Opponent' onClick={handleAIGameStart} />
 						<PinkButton text='Local' onClick={handleLocalGameStart} />
 						<PinkButton text='Remote' onClick={handleRemoteGameStart} />
 					</div>
