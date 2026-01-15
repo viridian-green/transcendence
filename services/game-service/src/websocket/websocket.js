@@ -3,15 +3,16 @@ import { createInitialState, stopPaddle, movePaddle, GameLoop, GAME_CONFIG } fro
 
 const rooms = new Map();
 
-function getOrCreateRoom(gameId) {
+function getOrCreateRoom(gameId, mode) {
   let room = rooms.get(gameId);
   if (!room) {
+    const isAI = mode === 'AI';
     room = {
       state: createInitialState(),
       clients: new Set(),
       // AI ---------------
-      ai: new AIController(),
-      isAIGame: true // Enabled for testing/integration
+      ai: isAI ? new AIController() : null,
+      isAIGame: isAI
       // ------------------
     };
     rooms.set(gameId, room);
@@ -22,9 +23,10 @@ function getOrCreateRoom(gameId) {
 export default async function gameWebsocket(fastify) {
   fastify.get('/ws/:gameId', { websocket: true }, (connection, req) => {
     const { gameId } = req.params;
+    const { mode } = req.query;
     const ws = connection.socket;
 
-    const room = getOrCreateRoom(gameId);
+    const room = getOrCreateRoom(gameId, mode);
 
     room.clients.add(ws);
 
