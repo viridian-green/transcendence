@@ -68,30 +68,6 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
-						<Route
-							path='/game/*'
-							element={
-								<ProtectedRoute>
-									<Game />
-								</ProtectedRoute>
-							}
-						/>
-						<Route
-							path='/game-start'
-							element={
-								<ProtectedRoute>
-									<GameStart />
-								</ProtectedRoute>
-							}
-						/>
-						<Route
-							path='/game-end'
-							element={
-								<ProtectedRoute>
-									<GameEnd />
-								</ProtectedRoute>
-							}
-						/>
 						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
 						<Route path='/chat' element={
@@ -101,6 +77,11 @@ function App() {
 							}
 						/>
 						<Route path='*' element={<NotFound />} />
+						{/* test routes without login, TODO: remove when releasing */}
+						<Route path='/game/:gameId' element={<Game />} />
+						<Route path='/game-start' element={<GameStart />} />
+						<Route path='/game-end' element={<GameEnd />} />
+						<Route path='/test/home' element={<Home />} />
 					</Routes>
 				</Suspense>
 			</main>

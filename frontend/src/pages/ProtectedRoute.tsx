@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@hooks/useAuth';
 import Loading from './Loading';
 
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
+export default function PublicOnlyRouteProtectedRoute({ children }: { children: React.ReactNode }) {
 	const { user, isLoading } = useAuth();
 
 	if (isLoading) {
