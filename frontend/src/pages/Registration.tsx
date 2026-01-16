@@ -180,17 +180,10 @@ export default function Registration() {
 							<label htmlFor='terms' className='ml-2 text-sm'>
 								I agree to the{' '}
 								<a
-									href='/terms-of-service'
+									href='/terms'
 									className='text-accent-purple-dark hover:text-accent-purple-light'
 								>
-									Terms
-								</a>
-								{' & '}
-								<a
-									href='/privacy-policy'
-									className='text-accent-purple-dark hover:text-accent-purple-light'
-								>
-									Policy
+									Terms and Policy
 								</a>
 							</label>
 						</div>
