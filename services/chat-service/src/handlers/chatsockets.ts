@@ -29,29 +29,41 @@ function chatsocketsHandler(connection: WebSocket, request: any) {
 
 // Helpers
 function extractUserFromJWT(request: any): User | null {
-  const cookieHeader = request.headers["cookie"] as string | undefined;
-  let cookies: Record<string, string> = {};
-  if (cookieHeader) {
-    cookieHeader.split(";").forEach((cookie) => {
-      const parts = cookie.split("=");
-      if (parts.length === 2) {
-        cookies[parts[0].trim()] = decodeURIComponent(parts[1].trim());
-      }
-    });
+  // const cookieHeader = request.headers["cookie"] as string | undefined;
+
+  const url = new URL(request.url, 'http://localhost');
+  const fakeUser = url.searchParams.get('user');
+
+  if (fakeUser === 'alice') {
+    return { id: 'u1', username: 'alice' };
   }
-  const accessToken = cookies["access_token"];
-  const jwtSecret = process.env.JWT_SECRET;
-  if (accessToken && jwtSecret) {
-    try {
-      const decoded = jwt.verify(accessToken, jwtSecret) as any;
-      if (decoded.username && decoded.id) {
-        return { username: decoded.username, id: String(decoded.id) };
-      }
-    } catch (err) {
-      console.error("Invalid JWT:", err);
-      return null;
-    }
+  if (fakeUser === 'user2') {
+    return { id: 'u2', username: 'user2' };
   }
+
+  // Fallback if no param / unknown
+  // let cookies: Record<string, string> = {};
+  // if (cookieHeader) {
+  //   cookieHeader.split(";").forEach((cookie) => {
+  //     const parts = cookie.split("=");
+  //     if (parts.length === 2) {
+  //       cookies[parts[0].trim()] = decodeURIComponent(parts[1].trim());
+  //     }
+  //   });
+  // }
+  // const accessToken = cookies["access_token"];
+  // const jwtSecret = process.env.JWT_SECRET;
+  // if (accessToken && jwtSecret) {
+  //   try {
+  //     const decoded = jwt.verify(accessToken, jwtSecret) as any;
+  //     if (decoded.username && decoded.id) {
+  //       return { username: decoded.username, id: String(decoded.id) };
+  //     }
+  //   } catch (err) {
+  //     console.error("Invalid JWT:", err);
+  //     return null;
+  //   }
+  // }
   return null;
 }
 
@@ -167,34 +179,39 @@ function handleDisconnect(connection: WebSocket, user: User) {
     user: { id: user.id, username: user.username },
   });
 }
-
 function handleMessage(
   connection: WebSocket,
   user: User,
-  message: string | Buffer
+  message: string | Buffer,
 ) {
-  const text = typeof message === "string" ? message : message.toString();
-  console.log(`Received from ${user.username}:`, text);
+  const text = typeof message === 'string' ? message : message.toString();
+  console.log('WS raw from', user.username, ':', text);
 
-  // try to parse JSON
   let data: any;
   try {
     data = JSON.parse(text);
   } catch {
-    // fallback: treat as simple chat text
+    // plain chat text
     broadcastAll({
-      type: "message",
+      type: 'message',
       user: { id: user.id, username: user.username },
       text,
     });
     return;
   }
-
+  
   // switch on type
-  if (data.type === "INVITE") {
+  if (data.type === 'INVITE') {
     const toUserId = String(data.toUserId);
+    console.log('Handling INVITE from', user.id, 'to', toUserId);
+
     const targets = socketsByUserId.get(toUserId);
-    if (!targets) return;
+    console.log('Targets for', toUserId, ':', targets?.size ?? 0);
+    if (!targets) {
+      console.log('No sockets for target', toUserId);
+      return;
+    }
+
 
     for (const sock of targets) {
       if (sock.readyState === WebSocket.OPEN) {

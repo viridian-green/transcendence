@@ -12,13 +12,35 @@ export function useChatSocket(enabled: boolean) {
   useEffect(() => {
     if (!enabled) return;
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/api/chat/websocket`;
+    const search = new URLSearchParams(window.location.search);
+    
+    const userParam = search.get('user') ?? 'alice'; // default for dev
+
+    const wsUrl = `${protocol}//${window.location.host}/api/chat/websocket?user=${encodeURIComponent(
+      userParam,
+    )}`;
+
+     console.log('[CHAT SOCKET] connecting to', wsUrl);
     const socket = new WebSocket(wsUrl);
     ws.current = socket;
 
-    socket.onopen = () => setIsConnected(true);
-    socket.onclose = () => setIsConnected(false);
-    socket.onerror = () => setIsConnected(false);
+    
+  socket.onopen = () => {
+    console.log('[CHAT SOCKET] connected');
+    setIsConnected(true);
+  };
+  socket.onclose = () => {
+    console.log('[CHAT SOCKET] closed');
+    setIsConnected(false);
+  };
+  socket.onerror = (err) => {
+    console.error('[CHAT SOCKET] error', err);
+    setIsConnected(false);
+  };
+  socket.onmessage = (event) => {
+    console.log('[CHAT SOCKET] raw message', event.data);
+    // existing parsing / setMessages...
+  };
 
     socket.onmessage = (event) => {
       try {
@@ -77,11 +99,15 @@ export function useChatSocket(enabled: boolean) {
   }, [enabled]);
 
   const send = (payload: unknown) => {
-    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
-    const asString =
-      typeof payload === 'string' ? payload : JSON.stringify(payload);
-    ws.current.send(asString);
-  };
+  if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
+    console.warn('[CHAT SOCKET] send while not open', payload);
+    return;
+  }
+  console.log('[CHAT SOCKET] sending', payload);
+  ws.current.send(
+    typeof payload === 'string' ? payload : JSON.stringify(payload),
+  );
+};
 
   const sendMessage = (text: string) => {
     send(text);

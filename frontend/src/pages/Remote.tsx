@@ -10,8 +10,8 @@ type Friend = {
 
 const MOCK_FRIENDS: Friend[] = [
   { id: 'u1', username: 'alice', status: 'online' },
-  { id: 'u2', username: 'bob', status: 'ingame' },
-  { id: 'u3', username: 'charlie', status: 'offline' },
+  { id: 'u2', username: 'user2', status: 'online' },
+  { id: 'u3', username: 'charlie', status: 'ingame' },
 ];
 
 type InvitePopupState = {
@@ -42,18 +42,24 @@ const Remote = () => {
   }, [lastRawMessage]);
 
   const handleChallenge = (friend: Friend) => {
-    if (friend.status !== 'online') return;
-    if (!isConnected) {
-      console.warn('[REMOTE] cannot send INVITE, socket not connected');
-      return;
-    }
+  if (friend.status !== 'online') return;
+  if (!isConnected) {
+    console.warn('[REMOTE] cannot send INVITE, socket not connected');
+    return;
+  }
 
-    send({
-      type: 'INVITE',
-      toUserId: friend.id,
-      gameMode: 'pong',
-    });
-  };
+  console.log('[REMOTE] sending INVITE', {
+    type: 'INVITE',
+    toUserId: friend.id,
+    gameMode: 'pong',
+  });
+
+  send({
+    type: 'INVITE',
+    toUserId: friend.id,
+    gameMode: 'pong',
+  });
+};
 
   const handleInviteAccept = () => {
     if (!incomingInvite || !isConnected) {
