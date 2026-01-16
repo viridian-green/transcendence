@@ -66,11 +66,11 @@ jobs:
     - name: Run game-service running tests
       run: |
        chmod +x init-scripts/test-scripts/game-service/game-running.sh
-       ./init-scripts/test-scripts/game-running.sh
+       ./init-scripts/test-scripts/game-service/game-running.sh
 
     - name: Run game-service reset tests
       run: |
-       chmod +x init-scripts/test-scripts/game-reset.sh
+       chmod +x init-scripts/test-scripts/game-service/game-reset.sh
        ./init-scripts/test-scripts/game-service/game-reset.sh
 
     - name: Dump logs on failure
