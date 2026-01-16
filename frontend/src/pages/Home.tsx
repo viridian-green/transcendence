@@ -13,8 +13,8 @@ const Home: FC = () => {
 		navigate('/game-start');
 	};
 
-	const handleChat = () => {
-		navigate('/chat');
+	const handleRemoteGameStart = () => {
+		navigate('/remote');
 	};
 
 	const [showWelcome, setShowWelcome] = useState(true);
@@ -98,15 +98,7 @@ const Home: FC = () => {
 							}}
 						/>
 						<PinkButton text='Local' onClick={handleLocalGameStart} />
-						<PinkButton
-							text='Remote'
-							onClick={() => {
-								alert('TBD');
-							}}
-						/>
-					</div>
-					<div className='mt-4'>
-						<PinkButton text='Chat' onClick={handleChat} />
+						<PinkButton text='Remote' onClick={handleRemoteGameStart} />
 					</div>
 				</section>
 			)}

@@ -14,6 +14,7 @@ import {
 	GameEnd,
 	GameStart,
 	Chat,
+	Remote,
 } from '@pages/index';
 import TopRightAvatar from './pages/TopRightAvatar';
 import { useAuth } from './hooks/useAuth';
@@ -50,6 +51,14 @@ function App() {
 								<PublicOnlyRoute>
 									<Login />
 								</PublicOnlyRoute>
+							}
+						/>
+						<Route
+							path='/remote'
+							element={
+								<ProtectedRoute>
+									<Remote />
+								</ProtectedRoute>
 							}
 						/>
 						<Route

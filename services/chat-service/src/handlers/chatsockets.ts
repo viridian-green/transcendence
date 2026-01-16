@@ -10,6 +10,8 @@ export interface User {
 // Map to keep track of connected clients and their user info
 const clients: Map<WebSocket, User> = new Map();
 
+const socketsByUserId: Map<string, Set<WebSocket>> = new Map();
+
 // Main WebSocket handler function (not exported directly)
 function chatsocketsHandler(connection: WebSocket, request: any) {
   const user = extractUserFromJWT(request);
@@ -53,51 +55,51 @@ function extractUserFromJWT(request: any): User | null {
   return null;
 }
 
-function handleConnection(connection: WebSocket, user: User) {
-  clients.set(connection, user);
-  console.log(
-    `User ${user.username} connected. Total clients: ${clients.size}`
-  );
-  connection.send(
-    JSON.stringify({
-      type: "welcome",
-      message: `Welcome, ${user.username}!`,
-      user: { id: user.id, username: user.username },
-    })
-  );
-  // Broadcast to all other clients that this user joined
-  broadcastToOthers(connection, {
-    type: "user_joined",
-    user: { id: user.id, username: user.username },
-  });
-}
+// function handleConnection(connection: WebSocket, user: User) {
+//   clients.set(connection, user);
+//   console.log(
+//     `User ${user.username} connected. Total clients: ${clients.size}`
+//   );
+//   connection.send(
+//     JSON.stringify({
+//       type: "welcome",
+//       message: `Welcome, ${user.username}!`,
+//       user: { id: user.id, username: user.username },
+//     })
+//   );
+//   // Broadcast to all other clients that this user joined
+//   broadcastToOthers(connection, {
+//     type: "user_joined",
+//     user: { id: user.id, username: user.username },
+//   });
+// }
 
-function handleMessage(
-  connection: WebSocket,
-  user: User,
-  message: string | Buffer
-) {
-  const text = typeof message === "string" ? message : message.toString();
-  console.log(`Received from ${user.username}:`, text);
-  // Broadcast to all connected clients
-  broadcastAll({
-    type: "message",
-    user: { id: user.id, username: user.username },
-    text,
-  });
-}
+// function handleMessage(
+//   connection: WebSocket,
+//   user: User,
+//   message: string | Buffer
+// ) {
+//   const text = typeof message === "string" ? message : message.toString();
+//   console.log(`Received from ${user.username}:`, text);
+//   // Broadcast to all connected clients
+//   broadcastAll({
+//     type: "message",
+//     user: { id: user.id, username: user.username },
+//     text,
+//   });
+// }
 
-function handleDisconnect(connection: WebSocket, user: User) {
-  clients.delete(connection);
-  console.log(
-    `User ${user.username} disconnected. Total clients: ${clients.size}`
-  );
-  // Notify others that user left
-  broadcastAll({
-    type: "user_left",
-    user: { id: user.id, username: user.username },
-  });
-}
+// function handleDisconnect(connection: WebSocket, user: User) {
+//   clients.delete(connection);
+//   console.log(
+//     `User ${user.username} disconnected. Total clients: ${clients.size}`
+//   );
+//   // Notify others that user left
+//   broadcastAll({
+//     type: "user_left",
+//     user: { id: user.id, username: user.username },
+//   });
+// }
 
 // Helper to broadcast to all clients
 function broadcastAll(payload: any) {
@@ -118,3 +120,101 @@ function broadcastToOthers(except: WebSocket, payload: any) {
 }
 
 export default chatsocketsHandler;
+
+
+
+function handleConnection(connection: WebSocket, user: User) {
+  clients.set(connection, user);
+
+  // index by userId for direct messaging
+  let set = socketsByUserId.get(user.id);
+  if (!set) {
+    set = new Set();
+    socketsByUserId.set(user.id, set);
+  }
+  set.add(connection);
+
+  console.log(
+    `User ${user.username} connected. Total clients: ${clients.size}`
+  );
+  connection.send(
+    JSON.stringify({
+      type: "welcome",
+      message: `Welcome, ${user.username}!`,
+      user: { id: user.id, username: user.username },
+    })
+  );
+  broadcastToOthers(connection, {
+    type: "user_joined",
+    user: { id: user.id, username: user.username },
+  });
+}
+
+function handleDisconnect(connection: WebSocket, user: User) {
+  clients.delete(connection);
+
+  const set = socketsByUserId.get(user.id);
+  if (set) {
+    set.delete(connection);
+    if (set.size === 0) socketsByUserId.delete(user.id);
+  }
+
+  console.log(
+    `User ${user.username} disconnected. Total clients: ${clients.size}`
+  );
+  broadcastAll({
+    type: "user_left",
+    user: { id: user.id, username: user.username },
+  });
+}
+
+function handleMessage(
+  connection: WebSocket,
+  user: User,
+  message: string | Buffer
+) {
+  const text = typeof message === "string" ? message : message.toString();
+  console.log(`Received from ${user.username}:`, text);
+
+  // try to parse JSON
+  let data: any;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    // fallback: treat as simple chat text
+    broadcastAll({
+      type: "message",
+      user: { id: user.id, username: user.username },
+      text,
+    });
+    return;
+  }
+
+  // switch on type
+  if (data.type === "INVITE") {
+    const toUserId = String(data.toUserId);
+    const targets = socketsByUserId.get(toUserId);
+    if (!targets) return;
+
+    for (const sock of targets) {
+      if (sock.readyState === WebSocket.OPEN) {
+        sock.send(
+          JSON.stringify({
+            type: "INVITE_RECEIVED",
+            fromUserId: user.id,
+            fromUsername: user.username,
+            gameMode: data.gameMode ?? "pong",
+          })
+        );
+      }
+    }
+    return;
+  }
+
+  // default: normal chat broadcast
+  broadcastAll({
+    type: "message",
+    user: { id: user.id, username: user.username },
+    text: data.text ?? text,
+  });
+}
