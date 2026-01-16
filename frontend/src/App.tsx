@@ -70,18 +70,21 @@ function App() {
 						/>
 						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
-						<Route path='/chat' element={
+						<Route
+							path='/chat'
+							element={
 								<ProtectedRoute>
 									<Chat />
 								</ProtectedRoute>
 							}
 						/>
-						<Route path='*' element={<NotFound />} />
 						{/* test routes without login, TODO: remove when releasing */}
 						<Route path='/game/:gameId' element={<Game />} />
 						<Route path='/game-start' element={<GameStart />} />
 						<Route path='/game-end' element={<GameEnd />} />
 						<Route path='/test/home' element={<Home />} />
+						{/* TODO keep it at the bottom */}
+						<Route path='*' element={<NotFound />} />
 					</Routes>
 				</Suspense>
 			</main>
