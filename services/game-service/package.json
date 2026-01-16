@@ -1,10 +1,11 @@
 {
   "name": "transcendence",
   "version": "1.0.0",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/viridian-green/transcendence.git"
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon src/server.js"
   },
   "keywords": [],
   "author": "",
@@ -32,9 +33,5 @@
     "postgrator": "^8.0.0",
     "zod": "^4.2.1"
   },
-  "type": "module",
-  "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
-  }
+  "type": "module"
 }
