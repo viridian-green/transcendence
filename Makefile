@@ -26,7 +26,7 @@ up: setup
 
 # Start services with dev overrides
 dev: setup
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml build frontend
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml build
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 # Tail logs (base stack)
