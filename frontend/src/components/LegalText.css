@@ -1,10 +1,18 @@
 .legal-text-wrapper {
 	width: 100%;
+	flex: 1 1 auto;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	padding: 18px;
+}
+
+.legal-text-header {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .legal-text {
@@ -15,7 +23,7 @@
 	width: 80ch;
 	background: var(--color-surface);
 	border: 0px solid;
-	padding: 2rem;
+	padding: 1rem 2rem;
 	border-radius: 1rem;
 	color: var(--color-text-secondary);
 }
