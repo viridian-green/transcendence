@@ -140,3 +140,6 @@ curl -X POST https://localhost:8443/api/auth/login \
 curl https://localhost:8443/api/users/me -k -b cookies.txt
 ```
 
+"Tests remote user"
+url = remote?user=alice
+url = remote?user=user2

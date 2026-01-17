@@ -201,37 +201,79 @@ function handleMessage(
   }
   
   // switch on type
-  if (data.type === 'INVITE') {
-    const toUserId = String(data.toUserId);
-    console.log('Handling INVITE from', user.id, 'to', toUserId);
+// switch on type
+if (data.type === 'INVITE') {
+  const toUserId = String(data.toUserId);
+  console.log('Handling INVITE from', user.id, 'to', toUserId);
 
-    const targets = socketsByUserId.get(toUserId);
-    console.log('Targets for', toUserId, ':', targets?.size ?? 0);
-    if (!targets) {
-      console.log('No sockets for target', toUserId);
-      return;
-    }
-
-
-    for (const sock of targets) {
-      if (sock.readyState === WebSocket.OPEN) {
-        sock.send(
-          JSON.stringify({
-            type: "INVITE_RECEIVED",
-            fromUserId: user.id,
-            fromUsername: user.username,
-            gameMode: data.gameMode ?? "pong",
-          })
-        );
-      }
-    }
+  const targets = socketsByUserId.get(toUserId);
+  console.log('Targets for', toUserId, ':', targets?.size ?? 0);
+  if (!targets) {
+    console.log('No sockets for target', toUserId);
     return;
   }
 
-  // default: normal chat broadcast
-  broadcastAll({
-    type: "message",
-    user: { id: user.id, username: user.username },
-    text: data.text ?? text,
-  });
+  for (const sock of targets) {
+    if (sock.readyState === WebSocket.OPEN) {
+      sock.send(
+        JSON.stringify({
+          type: 'INVITE_RECEIVED',
+          fromUserId: user.id,
+          fromUsername: user.username,
+          gameMode: data.gameMode ?? 'pong',
+        }),
+      );
+    }
+  }
+
+  return; // stop here for INVITE
+}
+
+if (data.type === 'INVITE_ACCEPT') {
+  // user = the one who clicked Accept
+  const invitedId = user.id;
+  const inviterId = String(data.fromUserId); // original challenger
+
+  const gameId = `game-${Date.now()}`;
+
+  console.log(
+    'INVITE_ACCEPT from',
+    invitedId,
+    'for inviter',
+    inviterId,
+    'gameId',
+    gameId,
+  );
+
+  const notifyUser = (userId: string, payload: any) => {
+    const targets = socketsByUserId.get(userId);
+    console.log('Targets for', userId, ':', targets?.size ?? 0);
+    if (!targets) return;
+    for (const sock of targets) {
+      if (sock.readyState === WebSocket.OPEN) {
+        sock.send(JSON.stringify(payload));
+      }
+    }
+  };
+
+  const payload = {
+    type: 'GAME_START',
+    gameId,
+    leftPlayerId: inviterId,
+    rightPlayerId: invitedId,
+  };
+
+  notifyUser(inviterId, payload);
+  notifyUser(invitedId, payload);
+
+  return; // stop here for INVITE_ACCEPT
+}
+
+// default: normal chat broadcast
+broadcastAll({
+  type: 'message',
+  user: { id: user.id, username: user.username },
+  text: data.text ?? text,
+});
+
 }
