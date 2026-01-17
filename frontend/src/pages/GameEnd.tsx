@@ -7,7 +7,6 @@ import { nanoid } from 'nanoid';
 
 const GameEnd = () => {
 	const navigate = useNavigate();
-	// TODO replace fake data by state from location
 	const state = useLocation().state;
 	const winnerAlias = state?.gameEndData?.winner;
 	const leftPlayerScore = state?.gameEndData?.scores?.left;
