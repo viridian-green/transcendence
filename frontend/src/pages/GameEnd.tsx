@@ -23,22 +23,18 @@ const GameEnd = () => {
 		navigate('/home');
 	};
 
-	useEffect(
-		() =>
-			confetti({
-				count: 200,
-				size: 1,
-				velocity: 300,
-				fade: true,
-			}),
-		[],
-	);
-
 	useEffect(() => {
 		if (!state || !state.gameEndData) {
 			// If no state is passed, redirect to home
 			navigate('/home', { replace: true });
+			return;
 		}
+		confetti({
+			count: 200,
+			size: 1,
+			velocity: 300,
+			fade: true,
+		});
 	}, [navigate, state]);
 
 	if (!state || !state.gameEndData) {
@@ -50,11 +46,7 @@ const GameEnd = () => {
 			<section className='flex flex-col items-center justify-center gap-6'>
 				<p className='text-accent-pink font-retro text-6xl font-bold'>Winner</p>
 				<p className='text-accent-amber text-2xl'>{winnerAlias}</p>
-				<p className='text-2xl'>
-					{`${leftPlayerScore} : ${rightPlayerScore}`}
-				</p>
-
-				</p>
+				<p className='text-2xl'>{`${leftPlayerScore} : ${rightPlayerScore}`}</p>
 				<div className='flex flex-row justify-center gap-20 text-center text-xl'>
 					<PinkButton text='Home' onClick={handleHome} />
 					<PinkButton text='New Game' onClick={handleGameStart} />
