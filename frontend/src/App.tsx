@@ -77,30 +77,7 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
-						<Route
-							path='/game/*'
-							element={
-								<ProtectedRoute>
-									<Game />
-								</ProtectedRoute>
-							}
-						/>
-						<Route
-							path='/game-start'
-							element={
-								<ProtectedRoute>
-									<GameStart />
-								</ProtectedRoute>
-							}
-						/>
-						<Route
-							path='/game-end'
-							element={
-								<ProtectedRoute>
-									<GameEnd />
-								</ProtectedRoute>
-							}
-						/>
+						{/* TODO: create about page and put it in a footer or navbar */}
 						<Route path='/about' element={<About />} />
 						<Route
 							path='/chat'
