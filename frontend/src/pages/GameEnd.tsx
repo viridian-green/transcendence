@@ -47,9 +47,9 @@ const GameEnd = () => {
 				<p className='text-accent-pink font-retro text-6xl font-bold'>Winner</p>
 				<p className='text-accent-amber text-2xl'>{winnerAlias}</p>
 				<p className='text-2xl'>
-					{leftPlayer === winnerAlias
-						? `${leftPlayerScore} : ${rightPlayerScore}`
-						: `${rightPlayerScore} : ${leftPlayerScore}`}
+					{`${leftPlayerScore} : ${rightPlayerScore}`}
+				</p>
+
 				</p>
 				<div className='flex flex-row justify-center gap-20 text-center text-xl'>
 					<PinkButton text='Home' onClick={handleHome} />
