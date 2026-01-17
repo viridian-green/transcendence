@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import {
 	Home,
-	About,
 	NotFound,
 	Loading,
 	Game,
@@ -68,8 +67,6 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
-						{/* TODO: create about page and put it in a footer or navbar */}
-						<Route path='/about' element={<About />} />
 						<Route
 							path='/chat'
 							element={
@@ -78,12 +75,32 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
-						{/* test routes without login, TODO: remove when releasing */}
-						<Route path='/game/:gameId' element={<Game />} />
-						<Route path='/game-start' element={<GameStart />} />
-						<Route path='/game-end' element={<GameEnd />} />
-						<Route path='/test/home' element={<Home />} />
-						{/* TODO keep it at the bottom */}
+						<Route
+							path='/game-start'
+							element={
+								<ProtectedRoute>
+									<GameStart />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path='/game/:gameId'
+							element={
+								<ProtectedRoute>
+									<Game />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path='/game-end'
+							element={
+								<ProtectedRoute>
+									<GameEnd />
+								</ProtectedRoute>
+							}
+						/>
+						{/* Keep here the test routes without login, TODO: remove when releasing */}
+						{/* Keep catchall (*) at the bottom */}
 						<Route path='*' element={<NotFound />} />
 					</Routes>
 				</Suspense>
