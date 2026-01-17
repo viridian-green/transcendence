@@ -35,9 +35,14 @@ const GameEnd = () => {
 		[],
 	);
 
+	useEffect(() => {
+		if (!state || !state.gameEndData) {
+			// If no state is passed, redirect to home
+			navigate('/home', { replace: true });
+		}
+	}, [navigate, state]);
+
 	if (!state || !state.gameEndData) {
-		// If no state is passed, redirect to home
-		navigate('/home', { replace: true });
 		return null;
 	}
 
