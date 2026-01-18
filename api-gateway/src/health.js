@@ -1,5 +1,7 @@
 export default async function (app) {
-    app.get('/health', async () => {
+    app.get('/health', {
+        logLevel: 'silent'
+    }, async () => {
         return { status: "ok"};
     });
 }
