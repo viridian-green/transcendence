@@ -46,16 +46,17 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 				bio: formData.bio,
 				avatar: formData.avatar,
 			});
+			onUpdate(formData);
 		} catch (err) {
 			if (err instanceof ZodError) {
 				setError(err.issues[0].message);
 				return;
 			}
+			setError('An unexpected error occurred.');
 		}
 		if (error) {
 			setError(null);
 		}
-		onUpdate(formData);
 	};
 
 	return (

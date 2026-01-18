@@ -1,8 +1,10 @@
-import { Avatar, Toast, type ToastType } from '@components/index';
+import { Avatar, Card, CardTitle, Toast, type ToastType } from '@components/index';
 import { ArrowLeft } from '@/icons';
 import type { Friend, UserProfile } from '@/shared.types';
 import { useState } from 'react';
 import { ProfileCard } from './ProfileCard';
+import { useAuth } from '@/hooks/useAuth';
+import { StatsCard } from './StatsCard';
 
 const MOCK_FRIENDS: Friend[] = [
 	{
@@ -26,14 +28,14 @@ const MOCK_FRIENDS: Friend[] = [
 ];
 
 const Profile = () => {
-	// TODO later connect to backend to fetch real profile data
-	const [profile, setProfile] = useState<UserProfile>({
-		id: 1,
-		username: 'test',
-		email: 'test@example.com',
-		avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent('test')}&size=128`,
-		bio: 'This is a sample bio.',
-	});
+	const { user } = useAuth();
+	const profile: UserProfile = {
+		id: user?.id as number,
+		username: user?.username as string,
+		email: user?.email as string,
+		avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username as string)}&size=128`,
+		bio: 'This is a sample bio.', // TODO backend bio field
+	};
 
 	const [friends, setFriends] = useState<Friend[]>(MOCK_FRIENDS);
 	const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType } | null>({
@@ -42,13 +44,11 @@ const Profile = () => {
 		type: 'success',
 	});
 
-	console.log(friends, setFriends, setProfile);
+	console.log(friends, setFriends);
 
-	const handleProfileUpdate = (updatedProfile: UserProfile) => {
-		// TODO connect to backend to update profile data
-		setProfile(updatedProfile);
-		setToast({ show: true, message: 'Profile updated successfully!', type: 'success' });
-	};
+	if (!user) {
+		return null;
+	}
 
 	return (
 		<div className='bg-bg min-h-screen'>
@@ -61,7 +61,7 @@ const Profile = () => {
 				/>
 			)}
 			<header className='border-border bg-surface border-b'>
-				<div className='mx-auto max-w-6xl px-6 py-6'>
+				<div className='mx-auto max-w-6xl px-6 py-4'>
 					<div className='flex items-center justify-between'>
 						<div className='flex items-center gap-4'>
 							<Avatar size={64} className='hover:opacity-100' url={profile.avatar} />
@@ -87,12 +87,16 @@ const Profile = () => {
 
 			<main className='mx-auto max-w-6xl px-6 py-8'>
 				<div className='grid gap-6 md:grid-cols-2'>
-					<ProfileCard profile={profile} onUpdate={handleProfileUpdate} />
+					<ProfileCard profile={profile} />
 					{/* <FriendsCard
 						friends={friends}
 						onAddFriend={handleAddFriend}
 						onRemoveFriend={handleRemoveFriend}
 					/> */}
+					<Card>
+						<CardTitle>Friends</CardTitle>
+					</Card>
+					<StatsCard />
 				</div>
 
 				<div className='mt-6 grid gap-6 md:grid-cols-2'>

@@ -59,7 +59,7 @@ const ProfileSettings = () => {
 				/>
 			)}
 			<header className='border-border bg-surface border-b'>
-				<div className='mx-auto max-w-6xl px-6 py-6'>
+				<div className='mx-auto max-w-6xl px-6 py-4'>
 					<div className='flex items-center justify-between'>
 						<div className='flex items-center gap-4'>
 							<Avatar size={64} className='hover:opacity-100' url={profile.avatar} />
