@@ -37,7 +37,7 @@ function App() {
 				</nav>
 			)}
 
-			<main className='flex-grow'>
+			<main className='grow'>
 				<Suspense fallback={<Loading />}>
 					<Routes>
 						<Route
@@ -104,13 +104,20 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
+						<Route
+							path='/profile'
+							element={
+								<ProtectedRoute>
+									<Profile />
+								</ProtectedRoute>
+							}
+						/>
 						<Route path='/privacy-policy' element={<PrivacyPolicy />} />
 						<Route path='/terms-of-service' element={<TermsOfService />} />
 						{/* Keep here the test routes without login, TODO: remove when releasing */}
+						<Route path='/test/profile' element={<Profile />} />
 						{/* Keep catchall (*) at the bottom */}
 						<Route path='*' element={<NotFound />} />
-						{/* test routes */}
-						<Route path='/test/profile' element={<Profile />} />
 					</Routes>
 				</Suspense>
 			</main>
