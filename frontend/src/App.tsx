@@ -16,6 +16,7 @@ import {
 	TermsOfService,
 	PrivacyPolicy,
 	Profile,
+	ProfileSettings,
 } from '@pages/index';
 import TopRightAvatar from './pages/TopRightAvatar';
 import { useAuth } from './hooks/useAuth';
@@ -23,7 +24,8 @@ import { useAuth } from './hooks/useAuth';
 function App() {
 	const { isLoggedIn, isLoading } = useAuth();
 	const location = useLocation();
-	const showTopAvatar = location.pathname !== '/profile' && isLoggedIn;
+	const showTopAvatar =
+		location.pathname !== '/profile' && location.pathname !== '/settings' && isLoggedIn;
 
 	if (isLoading) {
 		return <Loading />;
@@ -112,10 +114,17 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
+						<Route
+							path='/settings'
+							element={
+								<ProtectedRoute>
+									<ProfileSettings />
+								</ProtectedRoute>
+							}
+						/>
 						<Route path='/privacy-policy' element={<PrivacyPolicy />} />
 						<Route path='/terms-of-service' element={<TermsOfService />} />
 						{/* Keep here the test routes without login, TODO: remove when releasing */}
-						<Route path='/test/profile' element={<Profile />} />
 						{/* Keep catchall (*) at the bottom */}
 						<Route path='*' element={<NotFound />} />
 					</Routes>

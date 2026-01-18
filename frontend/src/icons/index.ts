@@ -10,3 +10,6 @@ export { default as Camera } from './Camera';
 export { default as Save } from './Save';
 export { default as SettingsIcon } from './SettingsIcon';
 export { HomeIcon } from './HomeIcon';
+export { Lock } from './Lock';
+export { Eye } from './Eye';
+export { EyeOff } from './EyeOff';

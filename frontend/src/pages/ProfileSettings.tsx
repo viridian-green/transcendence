@@ -3,6 +3,7 @@ import { ArrowLeft } from '@/icons';
 import type { UserProfile } from '@/shared.types';
 import { useState } from 'react';
 import { ProfileSettingsCard } from './ProfileSettingsCard';
+import { ChangePasswordCard } from './ChangePasswordCard';
 
 const ProfileSettings = () => {
 	// TODO later connect to backend to fetch real profile data
@@ -24,6 +25,13 @@ const ProfileSettings = () => {
 		// TODO connect to backend to update profile data
 		setProfile(updatedProfile);
 		setToast({ show: true, message: 'Profile updated successfully!', type: 'success' });
+	};
+
+	const handlePasswordUpdate = (newPassword: string) => {
+		// Implement password update logic here
+		console.log(newPassword);
+		// On success:
+		setToast({ show: true, message: 'Password updated successfully!', type: 'success' });
 	};
 
 	return (
@@ -64,7 +72,9 @@ const ProfileSettings = () => {
 			<main className='mx-auto max-w-6xl px-6 py-8'>
 				<div className='grid gap-6 md:grid-cols-2'>
 					<ProfileSettingsCard profile={profile} onUpdate={handleProfileUpdate} />
-					{/* <PasswordCard onUpdate={handlePasswordUpdate} /> */}
+					<div>
+						<ChangePasswordCard onUpdate={handlePasswordUpdate} />
+					</div>
 				</div>
 			</main>
 		</div>
