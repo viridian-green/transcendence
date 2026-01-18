@@ -6,7 +6,7 @@ The user state system manages user online status. User states are stored in Redi
 
 User states are stored in Redis with the key pattern: `user:state:<user_id>`
 
-- States are automatically initialized to `offline` when a user registers or logs in
+- States are automatically initialized to `offline` when a user registers and `online` logs in
 - If a state doesn't exist in Redis, it defaults to `offline`
 - The database `users` table also has a `state` column with default `offline` for consistency
 
@@ -79,6 +79,6 @@ Retrieves a user's current state from Redis.
 
 ## Notes
 
-- User states are automatically initialized to `offline` on registration and login
+- User states are automatically initialized to `offline` on registration and `online` login
 - If a state key doesn't exist in Redis, the endpoint returns `offline` as the default value
 - States are ephemeral and stored only in Redis (for performance), though the database maintains a default column for reference
