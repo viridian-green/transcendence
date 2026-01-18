@@ -10,11 +10,10 @@ export default fp(async function uploadsPlugin(app) {
         }
     });
 
-    // app.register(fastifyStatic, {
-    //     root: path.join(process.cwd(), 'uploads/avatars'),
-    //     prefix: '/api/users/avatars',
-    // });
-
-
+    app.register(fastifyStatic, {
+    	root: path.join(process.cwd(), "uploads/avatars"),
+    	prefix: "/avatars/", // PUBLIC URL
+    	decorateReply: false,
+  	});
 });
 
