@@ -1,4 +1,4 @@
-import redis from "../redis/index";
+import redis from "../redis/index.js";
 
 /**
  * Get a list of online user IDs from Redis.
