@@ -4,15 +4,18 @@ import type { UserProfile } from '@/shared.types';
 import { useState } from 'react';
 import { ProfileSettingsCard } from './ProfileSettingsCard';
 import { ChangePasswordCard } from './ChangePasswordCard';
+import { useAuth } from '@/hooks/useAuth';
+import { useUserProfile } from '@/hooks/useUserProfile';
 
 const ProfileSettings = () => {
-	// TODO later connect to backend to fetch real profile data
+	const { user } = useAuth();
+	const { updateProfile, updatePassword } = useUserProfile();
 	const [profile, setProfile] = useState<UserProfile>({
-		id: 1,
-		username: 'test',
-		email: 'test@example.com',
-		avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent('test')}&size=128`,
-		bio: 'This is a sample bio.',
+		id: user?.id as number,
+		username: user?.username as string,
+		email: user?.email as string,
+		avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username as string)}&size=128`,
+		bio: 'This is a sample bio.', // TODO backend bio field
 	});
 
 	const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType } | null>({
@@ -21,18 +24,29 @@ const ProfileSettings = () => {
 		type: 'success',
 	});
 
-	const handleProfileUpdate = (updatedProfile: UserProfile) => {
-		// TODO connect to backend to update profile data
-		setProfile(updatedProfile);
-		setToast({ show: true, message: 'Profile updated successfully!', type: 'success' });
+	const handleProfileUpdate = async (updatedProfile: UserProfile) => {
+		try {
+			const user = await updateProfile(updatedProfile);
+			setProfile(user);
+			setToast({ show: true, message: 'Profile updated successfully!', type: 'success' });
+		} catch {
+			setToast({ show: true, message: 'Failed to update profile.', type: 'failure' });
+		}
 	};
 
-	const handlePasswordUpdate = (newPassword: string) => {
-		// Implement password update logic here
-		console.log(newPassword);
-		// On success:
-		setToast({ show: true, message: 'Password updated successfully!', type: 'success' });
+	const handlePasswordUpdate = async (newPassword: string) => {
+		try {
+			const user = await updatePassword(newPassword);
+			setProfile(user);
+			setToast({ show: true, message: 'Profile updated successfully!', type: 'success' });
+		} catch {
+			setToast({ show: true, message: 'Failed to update profile.', type: 'failure' });
+		}
 	};
+
+	if (!user) {
+		return null;
+	}
 
 	return (
 		<div className='bg-bg min-h-screen'>
