@@ -1,4 +1,4 @@
-import { Avatar } from '@/components';
+import { Avatar, Card, CardTitle } from '@/components';
 import { Camera, Save } from '@/icons';
 import type { UserProfile } from '@/shared.types';
 import React, { useState } from 'react';
@@ -31,8 +31,8 @@ export function ProfileCard({ profile, onUpdate }: ProfileCardProps) {
 	};
 
 	return (
-		<div className='text-text-secondary rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8'>
-			<h2 className='mb-6 text-[var(--color-accent-pink)]'>Profile Settings</h2>
+		<Card>
+			<CardTitle>Profile Settings</CardTitle>
 
 			<form onSubmit={handleSubmit} className='space-y-6'>
 				{/* Avatar Upload */}
@@ -41,9 +41,9 @@ export function ProfileCard({ profile, onUpdate }: ProfileCardProps) {
 						<Avatar size={128} className='hover:opacity-100' url={previewUrl} />
 						<label
 							htmlFor='avatar-upload'
-							className='absolute right-0 bottom-0 cursor-pointer rounded-full bg-[var(--color-accent-pink)] p-2 transition-colors hover:bg-[var(--color-accent-pink-hover)]'
+							className='hover:bg-accent-pink-hover absolute right-0 bottom-0 cursor-pointer rounded-full bg-(--color-accent-pink) p-2 transition-colors'
 						>
-							<Camera className='h-5 w-5 text-[var(--color-text-inverse)]' />
+							<Camera className='h-5 w-5 text-(--color-text-inverse)' />
 							<input
 								id='avatar-upload'
 								type='file'
@@ -63,7 +63,7 @@ export function ProfileCard({ profile, onUpdate }: ProfileCardProps) {
 						id='username'
 						value={formData.username}
 						onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-						className='rounded-md border-[var(--color-border)] bg-[var(--color-elevated)] px-2 py-1 focus:border-[var(--color-accent-pink)]'
+						className='border-border bg-elevated rounded-md px-2 py-1 focus:border-(--color-accent-pink)'
 					/>
 				</div>
 
@@ -75,7 +75,7 @@ export function ProfileCard({ profile, onUpdate }: ProfileCardProps) {
 						id='email'
 						value={formData.email}
 						onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-						className='rounded-md border-[var(--color-border)] bg-[var(--color-elevated)] px-2 py-1 focus:border-[var(--color-accent-pink)]'
+						className='border-border bg-elevated rounded-md px-2 py-1 focus:border-(--color-accent-pink)'
 					/>
 				</div>
 
@@ -87,7 +87,7 @@ export function ProfileCard({ profile, onUpdate }: ProfileCardProps) {
 						value={formData.bio}
 						onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
 						rows={4}
-						className='resize-none rounded-md border-[var(--color-border)] bg-[var(--color-elevated)] px-2 py-1 focus:border-[var(--color-accent-pink)]'
+						className='border-border bg-elevated resize-none rounded-md px-2 py-1 focus:border-(--color-accent-pink)'
 						placeholder='Tell us about yourself...'
 					/>
 				</div>
@@ -95,12 +95,12 @@ export function ProfileCard({ profile, onUpdate }: ProfileCardProps) {
 				{/* Save Button */}
 				<button
 					type='submit'
-					className='flex w-full items-center justify-center rounded-lg bg-[var(--color-accent-pink)] px-4 py-2 text-[var(--color-text-inverse)] hover:bg-[var(--color-accent-pink-hover)]'
+					className='hover:bg-accent-pink-hover flex w-full items-center justify-center rounded-lg bg-(--color-accent-pink) px-4 py-2 text-(--color-text-inverse)'
 				>
 					<Save className='mr-2 h-4 w-4' />
 					Save Changes
 				</button>
 			</form>
-		</div>
+		</Card>
 	);
 }

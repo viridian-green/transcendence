@@ -60,4 +60,4 @@ const Toast = ({ message, type, position = 'top-right', onClose, duration = 3000
 	);
 };
 
-export default Toast;
+export { Toast, type ToastType, type ToastPosition };

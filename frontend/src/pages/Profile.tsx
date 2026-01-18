@@ -1,4 +1,4 @@
-import { Avatar, Toast } from '@components/index';
+import { Avatar, Toast, type ToastType } from '@components/index';
 import { ArrowLeft } from '@/icons';
 import type { Friend, UserProfile } from '@/shared.types';
 import { useState } from 'react';
@@ -36,10 +36,10 @@ const Profile = () => {
 	});
 
 	const [friends, setFriends] = useState<Friend[]>(MOCK_FRIENDS);
-	const [toast, setToast] = useState<{ show: boolean; message: string; type: string } | null>({
+	const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType } | null>({
 		show: false,
 		message: '',
-		type: '',
+		type: 'success',
 	});
 
 	console.log(friends, setFriends, setProfile);
@@ -57,7 +57,7 @@ const Profile = () => {
 				<Toast
 					message={toast.message}
 					type={toast.type}
-					onClose={() => setToast({ show: false, message: '', type: '' })}
+					onClose={() => setToast({ show: false, message: '', type: 'success' })}
 				/>
 			)}
 			<header className='border-border bg-surface border-b'>
