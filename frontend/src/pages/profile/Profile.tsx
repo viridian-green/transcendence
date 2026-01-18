@@ -1,10 +1,11 @@
-import { Avatar, Card, CardTitle, Toast, type ToastType } from '@components/index';
+import { Avatar, Toast, type ToastType } from '@components/index';
 import { ArrowLeft } from '@/icons';
 import type { Friend, UserProfile } from '@/shared.types';
 import { useState } from 'react';
 import { ProfileCard } from './ProfileCard';
 import { useAuth } from '@/hooks/useAuth';
 import { StatsCard } from './StatsCard';
+import { FriendsCard } from './FriendsCard';
 
 const MOCK_FRIENDS: Friend[] = [
 	{
@@ -45,6 +46,26 @@ const Profile = () => {
 	});
 
 	console.log(friends, setFriends);
+
+	const handleAddFriend = (username: string) => {
+		// TODO implement actual add friend logic
+		setFriends((prev) => [
+			...prev,
+			{
+				id: prev.length + 1,
+				username,
+				avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&size=128`,
+				status: 'offline',
+			},
+		]);
+		setToast({ show: true, message: `Friend request sent to ${username}`, type: 'success' });
+	};
+
+	const handleRemoveFriend = (id: number) => {
+		// TODO implement actual remove friend logic
+		setFriends((prev) => prev.filter((friend) => friend.id !== id));
+		setToast({ show: true, message: `Friend removed`, type: 'success' });
+	};
 
 	if (!user) {
 		return null;
@@ -88,14 +109,11 @@ const Profile = () => {
 			<main className='mx-auto max-w-6xl px-6 py-8'>
 				<div className='grid gap-6 md:grid-cols-2'>
 					<ProfileCard profile={profile} />
-					{/* <FriendsCard
+					<FriendsCard
 						friends={friends}
 						onAddFriend={handleAddFriend}
 						onRemoveFriend={handleRemoveFriend}
-					/> */}
-					<Card>
-						<CardTitle>Friends</CardTitle>
-					</Card>
+					/>
 					<StatsCard />
 				</div>
 

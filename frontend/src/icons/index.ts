@@ -13,3 +13,6 @@ export { HomeIcon } from './HomeIcon';
 export { Lock } from './Lock';
 export { Eye } from './Eye';
 export { EyeOff } from './EyeOff';
+export { Search } from './Search';
+export { X } from './X';
+export { UserPlus } from './UserPlus';
