@@ -42,29 +42,30 @@ export function useUserProfile() {
 		return user;
 	};
 
-	const updateUserAvatar = async (payload: UserProfile) => {
-		const response = await fetch('/api/users/me/avatar', {
+	const updateAvatar = async (file: File) => {
+		const formData = new FormData();
+		formData.append('avatar', file);
+
+		const res = await fetch('/api/users/me/avatar', {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			// credentials: 'include',
-			body: JSON.stringify({ avatar: payload.avatar }), // TODO add bio
+			body: formData,
+			credentials: 'include',
 		});
 
-		if (!response.ok) {
-			const error = await response.json();
-			throw new Error(error.error || 'Failed to upload avatar');
+		if (!res.ok) {
+			const err = await res.json();
+			throw new Error(err.error || 'Failed to upload avatar');
 		}
 
-		const user = await response.json();
-		setUser(user);
-		return user;
+		const updatedUser = await res.json();
+		setUser(updatedUser);
+
+		return updatedUser;
 	};
 
 	return {
 		updateProfile,
-		updateUserAvatar,
+		updateAvatar,
 		updatePassword,
 	};
 }
