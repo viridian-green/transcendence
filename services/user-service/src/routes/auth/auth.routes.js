@@ -8,7 +8,8 @@ import {
     parseLoginBody,
     ensureExistingUsername,
     ensureValidPassword
-} from "../services/auth.service.js";
+} from "../../services/auth.service.js";
+import { updateUserState, getUserState } from "../../services/state.service.js";
 
 /**
  * Authentication routes
@@ -24,6 +25,7 @@ export default async function authRoutes(app) {
 
         const hashedPassword = await hashPassword(password);
         const user = await insertUserInDb(app, username, hashedPassword, email);
+        await updateUserState(user.id, 'offline');
         const token = await signToken(app, user);
 
         return reply
@@ -44,7 +46,10 @@ export default async function authRoutes(app) {
         const user = await ensureExistingUsername(app, username);
         await ensureValidPassword(password, user);
 
-        // TODO: Add 2FA check
+        const existingState = await getUserState(user.id);
+        if (!existingState) {
+            await updateUserState(user.id, 'offline');
+        }
 
         const token = await signToken(app, user);
 

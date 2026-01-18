@@ -4,6 +4,5 @@ CREATE TABLE IF NOT EXISTS users (
             password TEXT NOT NULL,
             email TEXT NOT NULL,
             avatar TEXT NOT NULL DEFAULT 'default.png',
-            created_at TIMESTAMP DEFAULT NOW(),
-            state TEXT DEFAULT 'offline'
+            created_at TIMESTAMP DEFAULT NOW()
 );
