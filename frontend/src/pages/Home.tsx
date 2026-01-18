@@ -3,41 +3,45 @@ import { useNavigate } from 'react-router-dom';
 import { PinkButton } from '@components/index';
 import { useAuth } from '@hooks/useAuth';
 import './Home.css';
+import { loginSessionStorageKey } from '@/const';
 
 const Home: FC = () => {
 	const navigate = useNavigate();
 	const { user } = useAuth();
 	const welcomeMessage = user ? `Welcome, ${user.username}!` : 'Welcome!';
+	const isFirstSession = !sessionStorage.getItem(loginSessionStorageKey);
+	// states
+	const [showWelcome, setShowWelcome] = useState(isFirstSession);
+	const [fadeIn, setFadeIn] = useState(false);
+	const [showRest, setShowRest] = useState(!isFirstSession);
 
 	const handleLocalGameStart = () => {
 		navigate('/game-start');
 	};
 
-	const [showWelcome, setShowWelcome] = useState(true);
-	const [fadeIn, setFadeIn] = useState(true);
-	const [showRest, setShowRest] = useState(false);
+	const handleRemoteGameStart = () => {
+		navigate('/remote');
+	};
 
 	useEffect(() => {
-		// Wait for slideIn and slideOut animation to finish
-		const timer1 = setTimeout(() => {
+		if (!showWelcome) return;
+
+		// Persist session (external system)
+		sessionStorage.setItem(loginSessionStorageKey, 'true');
+
+		const t1 = setTimeout(() => setFadeIn(true), 50);
+		const t2 = setTimeout(() => setFadeIn(false), 1050);
+		const t3 = setTimeout(() => {
 			setShowWelcome(false);
-		}, 1200); // 0.6s animation + 0.6s delay
-
-		const timer2 = setTimeout(() => {
-			setFadeIn(false); // triggers slideOut
-		}, 600);
-
-		// Show rest after welcome disappears
-		const timer3 = setTimeout(() => {
 			setShowRest(true);
-		}, 1800);
+		}, 1650);
 
 		return () => {
-			clearTimeout(timer1);
-			clearTimeout(timer2);
-			clearTimeout(timer3);
+			clearTimeout(t1);
+			clearTimeout(t2);
+			clearTimeout(t3);
 		};
-	}, []);
+	}, [showWelcome]);
 
 	return (
 		<div className='flex min-h-screen flex-col items-center justify-center gap-6'>
@@ -94,12 +98,7 @@ const Home: FC = () => {
 							}}
 						/>
 						<PinkButton text='Local' onClick={handleLocalGameStart} />
-						<PinkButton
-							text='Remote'
-							onClick={() => {
-								alert('TBD');
-							}}
-						/>
+						<PinkButton text='Remote' onClick={handleRemoteGameStart} />
 					</div>
 				</section>
 			)}

@@ -2,8 +2,7 @@ import LegalText from '@components/LegalText';
 
 export default function PrivacyPolicy() {
 	return (
-		<LegalText>
-			<h1>Privacy Policy</h1>
+		<LegalText title='Privacy Policy'>
 			<p className='date'>
 				<strong>Last updated:</strong> 1.1.2026
 			</p>

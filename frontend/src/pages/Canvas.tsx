@@ -50,12 +50,12 @@ const Canvas = ({ gameState }: CanvasProps) => {
 			}
 
 			// Countdown overlay
-			if (gameState.phase === 'countdown' && gameState.countdownText) {
+			if (gameState.phase === 'countdown') {
 				ctx.fillStyle = '#e60076';
 				ctx.font = '96px Retro, sans-serif';
 				ctx.textAlign = 'center';
 				ctx.textBaseline = 'middle';
-				ctx.fillText(gameState.countdownText, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+				ctx.fillText(String(gameState.countdown), CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
 			}
 
 			// Ball (hide during countdown)
@@ -64,6 +64,14 @@ const Canvas = ({ gameState }: CanvasProps) => {
 				ctx.beginPath();
 				ctx.arc(gameState.ball.x, gameState.ball.y, BALL_RADIUS, 0, Math.PI * 2);
 				ctx.fill();
+			}
+
+			if (gameState.phase === 'paused') {
+				ctx.fillStyle = '#d4d4d4';
+				ctx.font = '32px Retro, sans-serif';
+				ctx.textAlign = 'center';
+				ctx.textBaseline = 'middle';
+				ctx.fillText('Paused', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
 			}
 
 			// Paddles

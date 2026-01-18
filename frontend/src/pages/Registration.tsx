@@ -185,7 +185,7 @@ export default function Registration() {
 								>
 									Terms
 								</a>
-								{' & '}
+								<span className='text-accent-purple-dark'>{' & '}</span>
 								<a
 									href='/privacy-policy'
 									className='text-accent-purple-dark hover:text-accent-purple-light'

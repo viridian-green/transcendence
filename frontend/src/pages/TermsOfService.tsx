@@ -2,8 +2,7 @@ import LegalText from '@components/LegalText';
 
 export default function TermsOfService() {
 	return (
-		<LegalText>
-			<h1>Terms of Service</h1>
+		<LegalText title='Terms of Service'>
 			<p className='date'>
 				<strong>Last updated:</strong> 1.1.2026
 			</p>

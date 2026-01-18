@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
 	Home,
-	About,
 	NotFound,
 	Loading,
 	Game,
@@ -11,10 +10,11 @@ import {
 	Registration,
 	ProtectedRoute,
 	PublicOnlyRoute,
-	PrivacyPolicy,
-	TermsOfService,
 	GameEnd,
 	GameStart,
+	Chat,
+	TermsOfService,
+	PrivacyPolicy,
 	Profile,
 } from '@pages/index';
 import TopRightAvatar from './pages/TopRightAvatar';
@@ -37,7 +37,7 @@ function App() {
 				</nav>
 			)}
 
-			<main className='flex-grow"'>
+			<main className='flex-grow'>
 				<Suspense fallback={<Loading />}>
 					<Routes>
 						<Route
@@ -73,10 +73,10 @@ function App() {
 							}
 						/>
 						<Route
-							path='/game/*'
+							path='/chat'
 							element={
 								<ProtectedRoute>
-									<Game />
+									<Chat />
 								</ProtectedRoute>
 							}
 						/>
@@ -89,6 +89,14 @@ function App() {
 							}
 						/>
 						<Route
+							path='/game/:gameId'
+							element={
+								<ProtectedRoute>
+									<Game />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
 							path='/game-end'
 							element={
 								<ProtectedRoute>
@@ -96,18 +104,10 @@ function App() {
 								</ProtectedRoute>
 							}
 						/>
-						<Route
-							path='/profile'
-							element={
-								<ProtectedRoute>
-									<Profile />
-								</ProtectedRoute>
-							}
-						/>
-						{/* TODO: create about page and put it in a footer or navbar */}
-						<Route path='/about' element={<About />} />
 						<Route path='/privacy-policy' element={<PrivacyPolicy />} />
 						<Route path='/terms-of-service' element={<TermsOfService />} />
+						{/* Keep here the test routes without login, TODO: remove when releasing */}
+						{/* Keep catchall (*) at the bottom */}
 						<Route path='*' element={<NotFound />} />
 						{/* test routes */}
 						<Route path='/test/profile' element={<Profile />} />
