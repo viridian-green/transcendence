@@ -1,8 +1,28 @@
 import { Avatar } from '@/components';
 import { useAuth } from '@/hooks/useAuth';
-import { ProfileCircle, Exit } from '@/icons';
+import { ProfileCircle, Exit, SettingsIcon, HomeIcon } from '@/icons';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+interface MenuButtonProps {
+	onclick: () => void;
+	icon: React.ReactNode;
+	description: string;
+}
+
+const MenuButton = ({ onclick, icon, description }: MenuButtonProps) => {
+	return (
+		<button
+			type='button'
+			role='menuitem'
+			onClick={onclick}
+			className='hover:bg-accent-blue flex cursor-pointer items-center justify-between rounded-lg border-0 px-2'
+		>
+			<p>{description}</p>
+			{icon}
+		</button>
+	);
+};
 
 const ProfileCard = () => {
 	const { user, signout } = useAuth();
@@ -15,38 +35,35 @@ const ProfileCard = () => {
 
 	return (
 		<div
-			className='bg-surface shadow-elevated absolute top-14 right-0 flex flex-col rounded-lg p-4 whitespace-nowrap shadow-sm'
+			className='bg-surface shadow-elevated absolute top-14 right-0 flex flex-col gap-2 rounded-lg p-4 whitespace-nowrap shadow-sm'
 			id='profile-menu'
 			role='menu'
 			aria-label='User account menu'
 		>
 			<p className='text-accent-pink text-center'>{user?.username}</p>
-			<p className='text-text-secondary mb-2 text-center text-sm'>{user?.email}</p>
-			<button
-				type='button'
-				role='menuitem'
-				onClick={() => navigate('/profile')}
-				className='hover:bg-accent-blue cursor-pointer rounded-lg border-0 px-2'
-			>
-				<p className='inline-block'>view profile</p>
-				<ProfileCircle
-					className='stroke-text-primary ml-2 inline-block h-4 w-4'
-					aria-hidden='true'
-				/>
-			</button>
+			<p className='text-text-secondary text-center text-sm'>{user?.email}</p>
 			<hr className='border-border my-2 w-full' />
-			<button
-				type='button'
-				role='menuitem'
-				onClick={handleSignout}
-				className='hover:bg-accent-blue cursor-pointer rounded-lg border-0 px-2'
-			>
-				<p className='inline-block'>signout</p>
-				<Exit
-					className='stroke-text-primary ml-2 inline-block h-4 w-4'
-					aria-hidden='true'
-				/>
-			</button>
+			<MenuButton
+				onclick={() => navigate('/profile')}
+				icon={<ProfileCircle className='stroke-text-primary h-4 w-4' aria-hidden='true' />}
+				description='view profile'
+			/>
+			<MenuButton
+				onclick={() => navigate('/settings')}
+				icon={<SettingsIcon className='stroke-text-primary h-4 w-4' aria-hidden='true' />}
+				description='settings'
+			/>
+			<MenuButton
+				onclick={() => navigate('/home')}
+				icon={<HomeIcon className='stroke-text-primary h-4 w-4' aria-hidden='true' />}
+				description='home'
+			/>
+			<hr className='border-border my-2 w-full' />
+			<MenuButton
+				onclick={handleSignout}
+				icon={<Exit className='stroke-text-primary h-4 w-4' aria-hidden='true' />}
+				description='signout'
+			/>
 		</div>
 	);
 };

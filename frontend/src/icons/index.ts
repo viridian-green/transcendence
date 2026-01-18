@@ -8,3 +8,5 @@ export { default as SuccessIcon } from './SuccessIcon';
 export { default as FailureIcon } from './FailureIcon';
 export { default as Camera } from './Camera';
 export { default as Save } from './Save';
+export { default as SettingsIcon } from './SettingsIcon';
+export { HomeIcon } from './HomeIcon';
