@@ -38,7 +38,13 @@ const Game = () => {
 			if (msg.type === 'STATE') {
 				setGameState(msg.payload);
 			}
-		};
+
+			if (msg.type === 'OPPONENT_LEFT') {
+				alert('Opponent left the game.');
+				navigate('/remote');
+				return;
+			};
+  			}
 
 		ws.onerror = (error) => {
 			console.error('WebSocket error:', error);

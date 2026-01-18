@@ -38,7 +38,20 @@ export default async function gameWebsocket(fastify) {
       console.log('[GAME WS] Player disconnected from room', gameId);
       room.clients.delete(ws);
       
-    });
+    if (room.clients.size === 0) {
+      console.log('[GAME WS] No clients left, deleting room', gameId);
+      rooms.delete(gameId);
+
+      console.log('[GAME WS] Opponent left, notifying remaining client(s)', gameId);
+  const payload = JSON.stringify({ type: 'OPPONENT_LEFT' });
+
+  for (const client of room.clients) {
+    if (client.readyState === 1)
+      client.send(payload);
+    }
+  room.state.game.phase = 'ended';
+    };
+  });
   });
 }
 
