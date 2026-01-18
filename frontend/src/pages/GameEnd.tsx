@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PinkButton } from '@components/index';
-import '../Home.css';
+import './Home.css';
 import confetti from '@hiseb/confetti';
 import { useEffect } from 'react';
 import { nanoid } from 'nanoid';
