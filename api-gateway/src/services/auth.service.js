@@ -7,7 +7,9 @@ const PUBLIC_ROUTES = [
     "/api/auth/register",
     "/api/auth/login",
     "/api/auth/signout",
-    "/health"
+    "/health",
+    "/game",
+    "/game-start",
 ];
 
 /**
@@ -33,6 +35,10 @@ export async function authHook(request, reply) {
     // Skip authentication for public routes
     if (isPublicRoute(pathname)) {
         return;
+    }
+
+    if (pathname.startsWith('/game/')) {
+    return;
     }
 
     try {

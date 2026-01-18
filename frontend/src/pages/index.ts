@@ -1,6 +1,5 @@
 export { default as Game } from './Game';
 export { default as Home } from './Home';
-export { default as About } from './About';
 export { default as NotFound } from './NotFound';
 export { default as Loading } from './Loading';
 export { default as Landing } from './Landing';
@@ -13,3 +12,5 @@ export { default as PublicOnlyRoute } from './PublicOnlyRoute';
 export { default as Canvas } from './Canvas';
 export { default as GameEnd } from './GameEnd';
 export { default as GameStart } from './GameStart';
+export { default as PrivacyPolicy } from './PrivacyPolicy';
+export { default as TermsOfService } from './TermsOfService';

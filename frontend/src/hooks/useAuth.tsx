@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { User } from '@/shared.types';
+import { loginSessionStorageKey } from '@/const';
 
 interface AuthContextType {
 	user: User | null;
@@ -28,15 +29,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			const response = await fetch('/api/users/me', {
 				credentials: 'include',
 			});
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || 'No user found');
+
+			// NOT logged in → normal state
+			if (response.status === 401) {
+				setUser(null);
+				setIsLoggedIn(false);
+				return;
 			}
+
+			if (!response.ok) {
+				throw new Error('Failed to check auth');
+			}
+
 			const data = await response.json();
 			setUser(data);
 			setIsLoggedIn(true);
 		} catch (error) {
-			console.error('Failed to check auth status:', error);
+			console.error('Auth check failed:', error);
 			setUser(null);
 			setIsLoggedIn(false);
 		} finally {
@@ -93,6 +102,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			credentials: 'include',
 		});
 		setUser(null);
+		sessionStorage.removeItem(loginSessionStorageKey);
 		setIsLoggedIn(false);
 	};
 

@@ -1,0 +1,56 @@
+.legal-text-wrapper {
+	width: 100%;
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding: 18px;
+}
+
+.legal-text-header {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.legal-text {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+	width: 80ch;
+	background: var(--color-surface);
+	border: 0px solid;
+	padding: 1rem 2rem;
+	border-radius: 1rem;
+	color: var(--color-text-secondary);
+}
+
+.legal-text h1 {
+	/* font-family: 'Retro', sans-serif; */
+	font-weight: bold;
+	font-size: var(--text-3xl);
+	color: var(--color-accent-pink);
+}
+
+.legal-text h2 {
+	margin-top: 12px;
+	font-size: var(--text-xl);
+	font-weight: bold;
+	color: var(--color-text-primary);
+}
+
+.legal-text ul {
+	list-style: inside;
+}
+
+.legal-text a {
+	color: var(--color-accent-blue);
+}
+
+.legal-text .date {
+	padding: 12px 0px 12px;
+	color: var(--color-text-primary);
+}
