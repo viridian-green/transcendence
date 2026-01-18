@@ -7,7 +7,9 @@ const PUBLIC_ROUTES = [
     "/api/auth/register",
     "/api/auth/login",
     "/api/auth/signout",
-    "/health"
+    "/health",
+    "/game",
+    "/game-start",
 ];
 
 /**
@@ -35,9 +37,12 @@ export async function authHook(request, reply) {
         return;
     }
 
+    if (pathname.startsWith('/game/')) {
+    return;
+    }
+
     try {
         // Verify JWT token from cookie - this automatically attaches payload to request.user
-        // This works for both HTTP requests and WebSocket upgrade requests
         await request.jwtVerify();
         if (request.user) {
             ["id", "username", "email"].forEach((key) =>
@@ -55,9 +60,8 @@ export async function authHook(request, reply) {
         }
 
         // User info is already in request.user (set by jwtVerify)
-        // The proxy will read it and forward via headers to downstream services
+        // The proxy will read it and forward via headers
     } catch (err) {
-        // Reject both HTTP requests and WebSocket upgrade attempts with 401
         reply.code(401).send({ message: "Invalid or missing authentication token" });
         return;
     }

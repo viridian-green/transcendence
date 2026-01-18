@@ -1,0 +1,48 @@
+import LegalText from '@components/LegalText';
+
+export default function PrivacyPolicy() {
+	return (
+		<LegalText title='Privacy Policy'>
+			<p className='date'>
+				<strong>Last updated:</strong> 1.1.2026
+			</p>
+			<p>
+				This online Pong game is an educational project and is not publicly deployed or used
+				for commercial purposes.
+			</p>
+			<h2>Information We Collect</h2>
+			<p>The game may store the following information:</p>
+			<ul>
+				<li>Username</li>
+				<li>Profile picture</li>
+				<li>Email address</li>
+			</ul>
+			<h2>How We Use the Information</h2>
+			<p>The collected data is used only to:</p>
+			<ul>
+				<li>Identify players in the game</li>
+				<li>Test and develop game features</li>
+				<li>Support learning and educational goals</li>
+			</ul>
+			<h2>Data Sharing</h2>
+			<p>We do not sell, share, or distribute personal data to third parties.</p>
+			<h2>Data Storage</h2>
+			<p>
+				All data is stored only for development and testing purposes. Data may be deleted or
+				reset at any time. Users should not provide sensitive or real personal information.
+			</p>
+			<h2>Cookies</h2>
+			<p>
+				We use authentication cookies to maintain your login session. These cookies are
+				essential for the game to function and are not used for tracking or advertising
+				purposes.
+			</p>
+			<h2>Contact</h2>
+			<p>If you have questions about this project, you may contact the developer at:</p>
+			<p>
+				<strong>Email: </strong>
+				<a href='mailto:retroscendence@mail.com'>retroscendence@mail.com</a>
+			</p>
+		</LegalText>
+	);
+}

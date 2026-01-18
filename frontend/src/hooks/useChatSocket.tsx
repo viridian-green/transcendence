@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ChatServerMessage, ChatRenderMessage } from '@/types/chat';
 
-type ChatMessage = any;
-
 export function useChatSocket(enabled: boolean) {
   const [messages, setMessages] = useState<ChatRenderMessage[]>([]);
   const [isConnected, setIsConnected] = useState(false);

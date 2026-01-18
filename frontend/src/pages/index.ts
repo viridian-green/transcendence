@@ -14,3 +14,5 @@ export { default as PublicOnlyRoute } from './PublicOnlyRoute';
 export { default as Canvas } from './Canvas';
 export { default as GameEnd } from './GameEnd';
 export { default as GameStart } from './GameStart';
+export { default as PrivacyPolicy } from './PrivacyPolicy';
+export { default as TermsOfService } from './TermsOfService';

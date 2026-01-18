@@ -63,7 +63,7 @@ clean:
 	docker compose down -v
 	rm -rf nginx/ssl/*.crt nginx/ssl/*.key
 
-# Prune Docker cache/containers/networks (keeps volumes, e.g., database)
+# Prune Docker cache/containers/networks (keeps certs and volumes, e.g., database)
 prune:
 	docker stop $$(docker ps -aq) || true
 	docker system prune -af
@@ -71,14 +71,21 @@ prune:
 	docker network prune -f
 	docker builder prune -af
 
-# Full reset: clean, prune, regenerate SSL certs, rebuild everything
+# Full destructive reset: removes ALL containers, images, networks, and VOLUMES (data loss), regenerates SSL certs, rebuilds everything
 reset:
+	@echo "Stopping all containers..."
 	docker stop $$(docker ps -aq) || true
-	docker compose down -v --rmi all --remove-orphans
-	@echo "Pruning unused images, volumes and networks..."
-	docker image prune -af || true
+	@echo "Removing all containers..."
+	docker rm -f $$(docker ps -aq) || true
+	@echo "Removing all volumes (data loss)..."
 	docker volume prune -f || true
+	docker volume rm -f $$(docker volume ls -q) || true
+	@echo "Removing all images..."
+	docker rmi -f $$(docker images -aq) || true
+	@echo "Removing all networks..."
 	docker network prune -f || true
+	@echo "Removing all builders..."
+	docker builder prune -af || true
 	@echo "Removing SSL certs to force regeneration..."
 	rm -rf nginx/ssl/*.crt nginx/ssl/*.key || true
 	$(MAKE) setup
