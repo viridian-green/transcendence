@@ -121,6 +121,13 @@ user2:
 		-k
 	@echo ""
 
+user3:
+	@curl -X POST https://localhost:8443/api/auth/register \
+		-H "Content-Type: application/json" \
+		-d '{"email":"user3@example.com","username":"u3","password":"Password123!"}' \
+		-k
+	@echo ""
+
 # Check for existing users in table
 usertable:
 	docker exec postgres_db psql -U myuser -d user_db -c "SELECT id, username, email, created_at FROM users ORDER BY id;"
