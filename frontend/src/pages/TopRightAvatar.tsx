@@ -35,13 +35,15 @@ const ProfileCard = () => {
 
 	return (
 		<div
-			className='bg-surface shadow-elevated absolute top-14 right-0 flex flex-col gap-2 rounded-lg p-4 whitespace-nowrap shadow-sm'
+			className='text-text-secondary border-border bg-surface absolute top-14 right-0 flex min-w-36 flex-col gap-2 rounded-lg border p-4 whitespace-nowrap shadow-sm'
 			id='profile-menu'
 			role='menu'
 			aria-label='User account menu'
 		>
-			<p className='text-accent-pink text-center'>{user?.username}</p>
-			<p className='text-text-secondary text-center text-sm'>{user?.email}</p>
+			<div>
+				<p className='text-accent-pink text-center'>{user?.username}</p>
+				<p className='text-text-secondary text-center text-sm'>{user?.email}</p>
+			</div>
 			<hr className='border-border my-2 w-full' />
 			<MenuButton
 				onClick={() => navigate('/profile')}
