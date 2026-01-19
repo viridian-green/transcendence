@@ -105,6 +105,27 @@ services:
     networks:
       - transcendence-network
 
+  chat:
+    build:
+      context: ./services/chat-service
+      dockerfile: Dockerfile.dev
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "3004:3004"
+    networks:
+      - transcendence-network
+    volumes:
+      - ./services/chat-service:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev"]
+
   api-gateway:
     build:
       context: ./api-gateway
