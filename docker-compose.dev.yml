@@ -128,6 +128,9 @@ services:
     volumes:
       - ./services/chat-service:/app
       - /app/node_modules
+      - ./nginx/ssl/nginx.crt:/etc/ssl/certs/nginx.crt:ro
+    environment:
+      - NODE_EXTRA_CA_CERTS=/etc/ssl/certs/nginx.crt
     command: ["npm", "run", "dev"]
 
   api-gateway:
@@ -142,10 +145,13 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET}
+      NODE_EXTRA_CA_CERTS: /etc/ssl/certs/nginx.crt
     ports:
       - "3000:3000"
     networks:
       - transcendence-network
+    volumes:
+      - ./nginx/ssl/nginx.crt:/etc/ssl/certs/nginx.crt:ro
     depends_on:
       user:
         condition: service_healthy
