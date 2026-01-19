@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { PinkButton } from '@components/index';
-import './index.css';
 import BlackSphere from '../components/BlackSphere';
 import PinkSphere from '../components/PinkSphere';
 import './Landing.css';

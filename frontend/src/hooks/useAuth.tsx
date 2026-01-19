@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { User } from '@/shared.types';
+import { loginSessionStorageKey } from '@/const';
 
 interface AuthContextType {
 	user: User | null;
@@ -101,6 +102,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			credentials: 'include',
 		});
 		setUser(null);
+		sessionStorage.removeItem(loginSessionStorageKey);
 		setIsLoggedIn(false);
 	};
 
