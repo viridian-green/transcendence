@@ -46,7 +46,7 @@ const ProfileCard = () => {
 			<MenuButton
 				onClick={() => navigate('/profile')}
 				icon={<ProfileCircle className='stroke-text-primary h-4 w-4' aria-hidden='true' />}
-				description='view profile'
+				description='profile'
 			/>
 			<MenuButton
 				onClick={() => navigate('/settings')}
