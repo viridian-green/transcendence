@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev":"node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,7 +17,9 @@
     "@fastify/static": "^9.0.0",
     "@fastify/websocket": "^11.2.0",
     "fastify": "^5.6.2",
-    "jsonwebtoken": "^9.0.2"
+    "ioredis": "^5.9.1",
+    "jsonwebtoken": "^9.0.2",
+    "node-fetch": "^3.3.2"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.9",

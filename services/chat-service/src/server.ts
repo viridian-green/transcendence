@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import websocket from "@fastify/websocket";
 import ChatsocketsRoute from "./routes/chatsockets.js";
+import OnlineUsersRoute from "./routes/onlineUsers.js";
 
 const fastify = Fastify({
   logger: true,
@@ -9,8 +10,9 @@ const fastify = Fastify({
 // Register WebSocket @fastify/websocket plugin
 await fastify.register(websocket);
 
-// Register ChatSockets WebSocket route
+// Register ChatSockets WebSockets routes
 await fastify.register(ChatsocketsRoute);
+await fastify.register(OnlineUsersRoute);
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3004;
 

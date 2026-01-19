@@ -22,10 +22,11 @@ const start = async () => {
     try {
         await fastify.register(cookie);
         await fastify.register(authPlugin);
-        await fastify.register(userRoutes);
         await fastify.register(chatRoutes);
         await fastify.register(healthRoute);
         await fastify.register(gameRoutes);
+        await fastify.register(userRoutes);
+
 
         //DEBUGGING - This is needed to print the routes
         await fastify.ready();

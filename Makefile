@@ -60,7 +60,7 @@ nocache:
 
 # Clean everything including volumes
 clean:
-	docker compose down -v
+	docker compose down -v --remove-orphans
 	rm -rf nginx/ssl/*.crt nginx/ssl/*.key
 
 # Prune Docker cache/containers/networks (keeps certs and volumes, e.g., database)
@@ -118,6 +118,13 @@ user2:
 	@curl -X POST https://localhost:8443/api/auth/register \
 		-H "Content-Type: application/json" \
 		-d '{"email":"user2@example.com","username":"u2","password":"Password123!"}' \
+		-k
+	@echo ""
+
+user3:
+	@curl -X POST https://localhost:8443/api/auth/register \
+		-H "Content-Type: application/json" \
+		-d '{"email":"user3@example.com","username":"u3","password":"Password123!"}' \
 		-k
 	@echo ""
 

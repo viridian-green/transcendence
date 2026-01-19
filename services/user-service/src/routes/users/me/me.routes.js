@@ -1,4 +1,4 @@
-import { parseUpdateUserBody, updateUser, getUserById, updateUserAvatar } from "../../services/user.service.js";
+import { parseUpdateUserBody, updateUser, getUserById, updateUserAvatar } from "../../../services/user.service.js";
 import path from "path";
 import fs from "fs";
 import { pipeline } from "stream/promises";

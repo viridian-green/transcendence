@@ -18,12 +18,14 @@ services:
       - transcendence-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d game_db"]
-      interval: 5s
+      interval: 30s      # Changed from 5s - default Docker interval
       timeout: 5s
-      retries: 5
+      retries: 3         # Changed from 5 - fewer retries needed with longer interval
+      start_period: 10s
 
   nginx:
     image: nginx:alpine
+    container_name: nginx
     env_file:
       - .env
     ports:
@@ -43,6 +45,7 @@ services:
       - transcendence-network
 
   frontend:
+    container_name: frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -55,6 +58,7 @@ services:
       - DOCKER=true
 
   game:
+    container_name: game
     build:
       context: ./services/game-service
       dockerfile: Dockerfile
@@ -72,6 +76,7 @@ services:
       - transcendence-network
 
   user:
+    container_name: user
     build:
       context: ./services/user-service
       dockerfile: Dockerfile
@@ -85,34 +90,35 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/user_db
       JWT_SECRET: ${JWT_SECRET}
       COOKIE_SECRET: ${COOKIE_SECRET}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://user:3003/health"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      interval: 30s      # Changed from 5s
+      timeout: 5s        # Changed from 3s
+      retries: 3         # Changed from 10
+      start_period: 30s  # Grace period for service startup
     ports:
       - "3003:3003"
     networks:
       - transcendence-network
 
   chat:
+    container_name: chat
     build:
       context: ./services/chat-service
       dockerfile: Dockerfile
     depends_on:
       database:
         condition: service_healthy
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      JWT_SECRET: ${JWT_SECRET}
+    env_file: ./services/chat-service/.env
     ports:
       - "3004:3004"
     networks:
       - transcendence-network
 
   api-gateway:
+    container_name: api-gateway
     build:
       context: ./api-gateway
       dockerfile: Dockerfile
@@ -132,9 +138,18 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://api-gateway:3000/health"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      interval: 30s      # Changed from 5s
+      timeout: 5s        # Changed from 3s
+      retries: 3         # Changed from 10
+      start_period: 30s  # Grace period for service startup
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6378:6378"
+    networks:
+      - transcendence-network
 
 networks:
   transcendence-network:
