@@ -6,9 +6,15 @@ interface FriendsCardProps {
 	friends: Friend[];
 	onAddFriend: (username: string) => void;
 	onRemoveFriend: (id: number) => void;
+	onChallengeFriend: (id: number) => void;
 }
 
-export function FriendsCard({ friends, onAddFriend, onRemoveFriend }: FriendsCardProps) {
+export function FriendsCard({
+	friends,
+	onAddFriend,
+	onRemoveFriend,
+	onChallengeFriend,
+}: FriendsCardProps) {
 	const [searchQuery, setSearchQuery] = useState('');
 
 	const handleAddFriend = () => {
@@ -84,7 +90,7 @@ export function FriendsCard({ friends, onAddFriend, onRemoveFriend }: FriendsCar
 							{/* Challenge Button */}
 							<button
 								type='button'
-								onClick={() => onRemoveFriend(friend.id)}
+								onClick={() => onChallengeFriend(friend.id)}
 								className='text-text-muted hover:bg-accent-pink/10 hover:text-accent-pink'
 							>
 								Challenge

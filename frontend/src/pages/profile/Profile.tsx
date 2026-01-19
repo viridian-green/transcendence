@@ -45,8 +45,6 @@ const Profile = () => {
 		type: 'success',
 	});
 
-	console.log(friends, setFriends);
-
 	const handleAddFriend = (username: string) => {
 		// TODO implement actual add friend logic
 		setFriends((prev) => [
@@ -65,6 +63,11 @@ const Profile = () => {
 		// TODO implement actual remove friend logic
 		setFriends((prev) => prev.filter((friend) => friend.id !== id));
 		setToast({ show: true, message: `Friend removed`, type: 'success' });
+	};
+
+	const handleChallengeFriend = (id: number) => {
+		// TODO implement actual challenge friend logic
+		alert(`Challenge sent to friend with ID: ${id}`);
 	};
 
 	if (!user) {
@@ -113,6 +116,7 @@ const Profile = () => {
 						friends={friends}
 						onAddFriend={handleAddFriend}
 						onRemoveFriend={handleRemoveFriend}
+						onChallengeFriend={handleChallengeFriend}
 					/>
 					<StatsCard />
 				</div>

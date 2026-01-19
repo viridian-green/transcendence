@@ -11,7 +11,7 @@ const profileUpdateSchema = z.object({
 		.min(1, 'Username is required')
 		.max(15, 'Username must be at most 15 characters'),
 	bio: z.string().max(160, 'Bio must be at most 160 characters'),
-	avatar: z.string().url('Invalid avatar URL'),
+	avatar: z.string(),
 });
 
 interface ProfileSettingsCardProps {
@@ -47,15 +47,15 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 				avatar: formData.avatar,
 			});
 			onUpdate(formData);
+			if (error) {
+				setError(null);
+			}
 		} catch (err) {
 			if (err instanceof ZodError) {
 				setError(err.issues[0].message);
-				return;
+			} else {
+				setError('An unexpected error occurred.');
 			}
-			setError('An unexpected error occurred.');
-		}
-		if (error) {
-			setError(null);
 		}
 	};
 

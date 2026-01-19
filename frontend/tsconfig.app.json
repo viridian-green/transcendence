@@ -29,7 +29,7 @@
 		"paths": {
 			"@/*": ["./src/*"],
 			"@pages/*": ["./src/pages/*"],
-			"@components/*": ["src/components/*"],
+			"@components/*": ["./src/components/*"],
 			"@hooks/*": ["./src/hooks/*"],
 			"@icons": ["./src/icons/*"]
 		}

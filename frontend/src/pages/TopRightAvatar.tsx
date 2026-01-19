@@ -5,17 +5,17 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface MenuButtonProps {
-	onclick: () => void;
+	onClick: () => void;
 	icon: React.ReactNode;
 	description: string;
 }
 
-const MenuButton = ({ onclick, icon, description }: MenuButtonProps) => {
+const MenuButton = ({ onClick, icon, description }: MenuButtonProps) => {
 	return (
 		<button
 			type='button'
 			role='menuitem'
-			onClick={onclick}
+			onClick={onClick}
 			className='hover:bg-accent-blue flex cursor-pointer items-center justify-between rounded-lg border-0 px-2'
 		>
 			<p>{description}</p>
@@ -44,23 +44,23 @@ const ProfileCard = () => {
 			<p className='text-text-secondary text-center text-sm'>{user?.email}</p>
 			<hr className='border-border my-2 w-full' />
 			<MenuButton
-				onclick={() => navigate('/profile')}
+				onClick={() => navigate('/profile')}
 				icon={<ProfileCircle className='stroke-text-primary h-4 w-4' aria-hidden='true' />}
 				description='view profile'
 			/>
 			<MenuButton
-				onclick={() => navigate('/settings')}
+				onClick={() => navigate('/settings')}
 				icon={<SettingsIcon className='stroke-text-primary h-4 w-4' aria-hidden='true' />}
 				description='settings'
 			/>
 			<MenuButton
-				onclick={() => navigate('/home')}
+				onClick={() => navigate('/home')}
 				icon={<HomeIcon className='stroke-text-primary h-4 w-4' aria-hidden='true' />}
 				description='home'
 			/>
 			<hr className='border-border my-2 w-full' />
 			<MenuButton
-				onclick={handleSignout}
+				onClick={handleSignout}
 				icon={<Exit className='stroke-text-primary h-4 w-4' aria-hidden='true' />}
 				description='signout'
 			/>

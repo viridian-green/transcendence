@@ -42,20 +42,20 @@ export function ChangePasswordCard({ onUpdate }: ChangePasswordCardProps) {
 				confirmPassword: formData.confirmPassword,
 			});
 			onUpdate(formData.newPassword);
+			if (error) {
+				setError(null);
+			}
+			setFormData({
+				newPassword: '',
+				confirmPassword: '',
+			});
 		} catch (err) {
 			if (err instanceof z.ZodError) {
 				setError(err.issues[0].message);
-				return;
+			} else {
+				setError('An unexpected error occurred.');
 			}
-			setError('An unexpected error occurred.');
 		}
-		if (error) {
-			setError(null);
-		}
-		setFormData({
-			newPassword: '',
-			confirmPassword: '',
-		});
 	};
 
 	return (
