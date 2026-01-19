@@ -1,6 +1,6 @@
 export const GAME_CONFIG = {
-  paddle: { width: 10, height: 80, speed: 15 },
-  ball: { radius: 8, speed: 4, serveSpeed: 0.5, serveFrames: 30 },
+  paddle: { width: 10, height: 80, speed: 10 },
+  ball: { radius: 8, speed: 6, serveSpeed: 0.5, serveFrames: 30 },
   canvas: { width: 800, height: 400 },
   scoreLimit: 11,
   countdownStart: 3,
