@@ -24,6 +24,7 @@ services:
 
   nginx:
     image: nginx:alpine
+    container_name: nginx
     env_file:
       - .env
     ports:
@@ -43,6 +44,7 @@ services:
       - transcendence-network
 
   frontend:
+    container_name: frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -55,6 +57,7 @@ services:
       - DOCKER=true
 
   game:
+    container_name: game
     build:
       context: ./services/game-service
       dockerfile: Dockerfile
@@ -72,6 +75,7 @@ services:
       - transcendence-network
 
   user:
+    container_name: user
     build:
       context: ./services/user-service
       dockerfile: Dockerfile
@@ -85,6 +89,8 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/user_db
       JWT_SECRET: ${JWT_SECRET}
       COOKIE_SECRET: ${COOKIE_SECRET}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://user:3003/health"]
       interval: 5s
@@ -95,7 +101,22 @@ services:
     networks:
       - transcendence-network
 
+  chat:
+    container_name: chat
+    build:
+      context: ./services/chat-service
+      dockerfile: Dockerfile
+    depends_on:
+      database:
+        condition: service_healthy
+    env_file: ./services/chat-service/.env
+    ports:
+      - "3004:3004"
+    networks:
+      - transcendence-network
+
   api-gateway:
+    container_name: api-gateway
     build:
       context: ./api-gateway
       dockerfile: Dockerfile
@@ -118,6 +139,14 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - transcendence-network
 
 networks:
   transcendence-network:

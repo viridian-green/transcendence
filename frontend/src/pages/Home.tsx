@@ -19,6 +19,10 @@ const Home: FC = () => {
 		navigate('/game-start');
 	};
 
+	const handleChat = () => {
+		navigate('/chat');
+	};
+
 	const handleRemoteGameStart = () => {
 		navigate('/remote');
 	};
