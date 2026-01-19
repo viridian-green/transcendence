@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { z, ZodError } from 'zod';
 import { ErrorMessage } from '@components/index';
 import { useAuth } from '@hooks/useAuth.tsx';
+import { Eye } from '@/icons/Eye';
+import { EyeOff } from '@/icons/EyeOff';
 
 const logInSchema = z.object({
 	username: z.string('Invalid username').min(1, 'Username required'),
@@ -22,6 +24,7 @@ export default function Login() {
 		submit?: string;
 	}>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 	const navigate = useNavigate();
 	const { login } = useAuth();
 
@@ -96,20 +99,31 @@ export default function Login() {
 							/>
 							{errors.username && <ErrorMessage message={errors.username} />}
 						</div>
-						<div className='flex flex-col space-y-2'>
+						<div className='relative flex flex-col space-y-2'>
 							<label htmlFor='password' className='text-md font-medium'>
 								Password
 							</label>
 							<input
 								id='password'
 								name='password'
-								type='password'
+								type={showPassword ? 'text' : 'password'}
 								value={formData.password}
 								onChange={handleChange}
 								required
 								placeholder='Enter your password'
 								className='border-border text-text-secondary rounded-md border-2 p-2 text-sm'
 							/>
+							<button
+								type='button'
+								onClick={() => setShowPassword(!showPassword)}
+								className='text-text-muted absolute top-2/3 right-3 -translate-y-1/2 hover:text-(--color-text-primary)'
+							>
+								{showPassword ? (
+									<EyeOff className='h-4 w-4' />
+								) : (
+									<Eye className='h-4 w-4' />
+								)}
+							</button>
 							{errors.password && <ErrorMessage message={errors.password} />}
 						</div>
 						{errors.submit && (
