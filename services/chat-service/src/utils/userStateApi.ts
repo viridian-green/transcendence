@@ -1,7 +1,10 @@
 import fetch from "node-fetch";
 
+const PRESENCE_BASE_URL =
+  process.env.PRESENCE_SERVICE_URL || "http://presence:3005";
+
 export async function updateUserState(id: string, state: string) {
-  const url = process.env.USER_SERVICE_URL || "http://user:3003/state";
+  const url = `${PRESENCE_BASE_URL}/state`;
   try {
     const res = await fetch(url, {
       method: "PATCH",
@@ -10,10 +13,10 @@ export async function updateUserState(id: string, state: string) {
     });
     if (!res.ok) {
       console.error(
-        `[userStateApi] Failed to update user state: ${res.status} ${res.statusText}`
+        `[userStateApi] Failed to update user state in presence service: ${res.status} ${res.statusText}`
       );
     }
   } catch (err) {
-    console.error("[userStateApi] Error updating user state:", err);
+    console.error("[userStateApi] Error updating user state via presence service:", err);
   }
 }

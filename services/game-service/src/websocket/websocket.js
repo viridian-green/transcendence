@@ -1,13 +1,19 @@
-import { createInitialState, stopPaddle, movePaddle, GameLoop } from '../game/game-logic.js';
+import { AIController } from '../game/AIController.js';
+import { createInitialState, stopPaddle, movePaddle, GameLoop, GAME_CONFIG } from '../game/game-logic.js';
 
 const rooms = new Map();
 
-function getOrCreateRoom(gameId) {
+function getOrCreateRoom(gameId, mode) {
   let room = rooms.get(gameId);
   if (!room) {
+    const isAI = mode === 'AI';
     room = {
       state: createInitialState(),
       clients: new Set(),
+      // AI ---------------
+      ai: isAI ? new AIController() : null,
+      isAIGame: isAI
+      // ------------------
     };
     rooms.set(gameId, room);
   }
@@ -17,9 +23,10 @@ function getOrCreateRoom(gameId) {
 export default async function gameWebsocket(fastify) {
   fastify.get('/ws/:gameId', { websocket: true }, (connection, req) => {
     const { gameId } = req.params;
+    const { mode } = req.query;
     const ws = connection.socket;
 
-    const room = getOrCreateRoom(gameId);
+    const room = getOrCreateRoom(gameId, mode);
 
     room.clients.add(ws);
 
@@ -99,6 +106,13 @@ case 'RESET_GAME':
 
 setInterval(() => {
   for (const [, room] of rooms) {
+    // AI ---------------
+    if (room.isAIGame) {
+        // AI plays as Player 1 (Left Paddle / index 0)
+        const aiMove = room.ai.getMove(room.state.ball, room.state.paddles[0], GAME_CONFIG.canvas.height);
+        room.state.paddles[0].dy = aiMove;
+    }
+    // ------------------
     GameLoop(room.state);
     const json = JSON.stringify({ type: 'STATE', payload: buildStateSnapshot(room.state) });
     for (const client of room.clients) {

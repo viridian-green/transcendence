@@ -9,6 +9,7 @@ const Game = () => {
 	const { state } = useLocation();
 	const leftPlayer = state?.leftPlayer ?? 'Player 1';
 	const rightPlayer = state?.rightPlayer ?? 'Player 2';
+	const mode = state?.mode ?? 'classic'; // Default to classic if not provided
 	const { gameId } = useParams<{ gameId: string }>();
 
 	const [gameState, setGameState] = useState<GameState | null>(null);
@@ -25,7 +26,7 @@ const Game = () => {
 			return;
 		}
 
-		const ws = new WebSocket(`ws://localhost:3000/game/${gameId}`);
+		const ws = new WebSocket(`ws://localhost:3000/game/${gameId}?mode=${mode}`);
 		wsRef.current = ws;
 
 		ws.onopen = () => {
@@ -58,6 +59,9 @@ const Game = () => {
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (ws.readyState !== WebSocket.OPEN) return;
 
+			// Avoid repeating events if key is held down
+			if (event.repeat) return;
+
 			if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(event.key)) {
 				// Prevent scrolling the page
 				event.preventDefault();
@@ -66,6 +70,7 @@ const Game = () => {
 			switch (event.key) {
 				case 'w':
 				case 'W':
+					if (mode === 'AI') break; // Disable W/S keys for AI mode
 					ws.send(
 						JSON.stringify({
 							type: 'MOVE_PADDLE',
@@ -76,6 +81,7 @@ const Game = () => {
 
 				case 's':
 				case 'S':
+					if (mode === 'AI') break; // Disable W/S keys for AI mode
 					ws.send(
 						JSON.stringify({
 							type: 'MOVE_PADDLE',
@@ -120,10 +126,41 @@ const Game = () => {
 			}
 		};
 
+		const handleKeyUp = (event: KeyboardEvent) => {
+			if (ws.readyState !== WebSocket.OPEN) return;
+
+			switch (event.key) {
+				case 'w':
+				case 'W':
+				case 's':
+				case 'S':
+					if (mode === 'AI') break;
+					ws.send(
+						JSON.stringify({
+							type: 'STOP_PADDLE',
+							payload: { playerIndex: 0 },
+						}),
+					);
+					break;
+
+				case 'ArrowUp':
+				case 'ArrowDown':
+					ws.send(
+						JSON.stringify({
+							type: 'STOP_PADDLE',
+							payload: { playerIndex: 1 },
+						}),
+					);
+					break;
+			}
+		};
+
 		window.addEventListener('keydown', handleKeyDown, { capture: true });
+		window.addEventListener('keyup', handleKeyUp, { capture: true });
 
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown, { capture: true });
+			window.removeEventListener('keyup', handleKeyUp, { capture: true });
 			ws.close();
 			wsRef.current = null;
 		};
@@ -146,10 +183,11 @@ const Game = () => {
 						rightPlayer,
 						scores: gameState.scores,
 					},
+					mode,
 				},
 			});
 		}
-	}, [gameState, navigate, leftPlayer, rightPlayer]);
+	}, [gameState, navigate, leftPlayer, rightPlayer, mode]);
 
 	return (
 		<div className='bg-bg flex min-h-screen flex-col items-center justify-center gap-4'>

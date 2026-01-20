@@ -4,6 +4,21 @@ export type User = {
 	email: string;
 };
 
+export type UserProfile = {
+	id: number;
+	username: string;
+	email: string;
+	avatar?: string;
+	bio?: string;
+};
+
+export type Friend = {
+	id: number;
+	username: string;
+	avatar?: string;
+	status: 'online' | 'offline';
+};
+
 // Game phase types
 export type GamePhase = 'countdown' | 'playing' | 'paused' | 'ended';
 

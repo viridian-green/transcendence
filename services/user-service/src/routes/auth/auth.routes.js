@@ -9,7 +9,6 @@ import {
     ensureExistingUsername,
     ensureValidPassword
 } from "../../services/auth.service.js";
-import { updateUserState, getUserState } from "../../services/state.service.js";
 
 /**
  * Authentication routes
@@ -17,7 +16,7 @@ import { updateUserState, getUserState } from "../../services/state.service.js";
  */
 export default async function authRoutes(app) {
     // Register a new user
-    app.post('/register', async (req, reply) => {
+    app.post("/register", async (req, reply) => {
         const { username, password, email } = await parseRegisterBody(req);
 
         await ensureNotExistingEmail(app, email);
@@ -29,27 +28,22 @@ export default async function authRoutes(app) {
         const token = await signToken(app, user);
 
         return reply
-            .setCookie('access_token', token, {
+            .setCookie("access_token", token, {
                 httpOnly: true,
-                sameSite: 'lax',
-                secure: process.env.NODE_ENV === 'production',
-                path: '/',
+                sameSite: "lax",
+                secure: process.env.NODE_ENV === "production",
+                path: "/",
             })
             .code(201)
             .send(user);
     });
 
     // Login user
-    app.post('/login', async (req, reply) => {
+    app.post("/login", async (req, reply) => {
         const { username, password } = await parseLoginBody(req);
 
         const user = await ensureExistingUsername(app, username);
         await ensureValidPassword(password, user);
-
-        const existingState = await getUserState(user.id);
-        if (!existingState) {
-            await updateUserState(user.id, 'offline');
-        }
 
         const token = await signToken(app, user);
 
@@ -69,13 +63,13 @@ export default async function authRoutes(app) {
     });
 
     // Sign out user
-    app.post('/signout', async (req, reply) => {
+    app.post("/signout", async (req, reply) => {
         return reply
-            .clearCookie('access_token', {
-                path: '/',
+            .clearCookie("access_token", {
+                path: "/",
             })
             .code(200)
-            .send({ message: 'Logged out' });
+            .send({ message: "Logged out" });
     });
 }
 
