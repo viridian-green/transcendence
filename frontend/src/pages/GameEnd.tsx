@@ -16,7 +16,16 @@ const GameEnd = () => {
 
 	const handleGameStart = () => {
 		const gameId = nanoid();
-		navigate(`/game/${gameId}`, { state: { leftPlayer, rightPlayer } });
+		if (state.mode === 'AI') {
+			navigate(`/game/${gameId}`, {
+				state: {
+					leftPlayer: 'Computer',
+					rightPlayer: 'You',
+					mode: 'AI',
+				},
+			});
+		}
+		else navigate(`/game/${gameId}`, { state: { leftPlayer, rightPlayer } });
 	};
 
 	const handleHome = () => {
