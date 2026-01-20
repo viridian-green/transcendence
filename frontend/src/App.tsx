@@ -58,9 +58,9 @@ function App() {
 						<Route
 							path='/remote'
 							element={
-								<ProtectedRoute>
+								<PublicOnlyRoute>
 									<Remote />
-								</ProtectedRoute>
+								</PublicOnlyRoute>
 							}
 						/>
 						<Route
@@ -74,9 +74,9 @@ function App() {
 						<Route
 							path='/home'
 							element={
-								<ProtectedRoute>
+								<PublicOnlyRoute>
 									<Home />
-								</ProtectedRoute>
+								</PublicOnlyRoute>
 							}
 						/>
 						<Route
