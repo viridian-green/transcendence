@@ -1,133 +1,277 @@
-import { SocketStream } from '@fastify/websocket';
-import type { ChatServerMessage, ChatRenderMessage } from '@/types/chat';
+import { WebSocket } from "ws";
+import jwt from "jsonwebtoken";
 
-export function useChatSocket(connection: SocketStream, req: any) {
-  const [messages, setMessages] = useState<ChatRenderMessage[]>([]);
-  const [isConnected, setIsConnected] = useState(false);
-  const [lastRawMessage, setLastRawMessage] = useState<any | null>(null);
-  const ws = useRef<WebSocket | null>(null);
+export interface User {
+  id: string;
+  username: string;
+  state?: string; // e.g., "online", "offline", "busy"
+}
 
-  useEffect(() => {
-    if (!enabled) {
-      console.log('[CHAT SOCKET] disabled');
-      return;
+// Map to keep track of connected clients and their user info
+const clients: Map<WebSocket, User> = new Map();
+
+const socketsByUserId: Map<string, Set<WebSocket>> = new Map();
+
+// Main WebSocket handler function (not exported directly)
+export default function chatsocketsHandler(connection: WebSocket, request: any) {
+  const user = extractUserFromJWT(request);
+  if (!user) {
+    connection.send(JSON.stringify({ error: "Authentication required" }));
+    connection.close();
+    return;
+  }
+  handleConnection(connection, user);
+  connection.on("message", (message: string | Buffer) =>
+    handleMessage(connection, user, message)
+  );
+  connection.on("close", () => handleDisconnect(connection, user));
+}
+
+// Helpers
+function extractUserFromJWT(request: any): User | null {
+  // const cookieHeader = request.headers["cookie"] as string | undefined;
+
+  const url = new URL(request.url, 'http://localhost');
+  const fakeUser = url.searchParams.get('user');
+
+  if (fakeUser === 'alice') {
+    return { id: 'u1', username: 'alice' };
+  }
+  if (fakeUser === 'user2') {
+    return { id: 'u2', username: 'user2' };
+  }
+
+  // Fallback if no param / unknown
+  // let cookies: Record<string, string> = {};
+  // if (cookieHeader) {
+  //   cookieHeader.split(";").forEach((cookie) => {
+  //     const parts = cookie.split("=");
+  //     if (parts.length === 2) {
+  //       cookies[parts[0].trim()] = decodeURIComponent(parts[1].trim());
+  //     }
+  //   });
+  // }
+  // const accessToken = cookies["access_token"];
+  // const jwtSecret = process.env.JWT_SECRET;
+  // if (accessToken && jwtSecret) {
+  //   try {
+  //     const decoded = jwt.verify(accessToken, jwtSecret) as any;
+  //     if (decoded.username && decoded.id) {
+  //       return { username: decoded.username, id: String(decoded.id) };
+  //     }
+  //   } catch (err) {
+  //     console.error("Invalid JWT:", err);
+  //     return null;
+  //   }
+  // }
+  return null;
+}
+
+// function handleConnection(connection: WebSocket, user: User) {
+//   clients.set(connection, user);
+//   console.log(
+//     `User ${user.username} connected. Total clients: ${clients.size}`
+//   );
+//   connection.send(
+//     JSON.stringify({
+//       type: "welcome",
+//       message: `Welcome, ${user.username}!`,
+//       user: { id: user.id, username: user.username },
+//     })
+//   );
+//   // Broadcast to all other clients that this user joined
+//   broadcastToOthers(connection, {
+//     type: "user_joined",
+//     user: { id: user.id, username: user.username },
+//   });
+// }
+
+// function handleMessage(
+//   connection: WebSocket,
+//   user: User,
+//   message: string | Buffer
+// ) {
+//   const text = typeof message === "string" ? message : message.toString();
+//   console.log(`Received from ${user.username}:`, text);
+//   // Broadcast to all connected clients
+//   broadcastAll({
+//     type: "message",
+//     user: { id: user.id, username: user.username },
+//     text,
+//   });
+// }
+
+// function handleDisconnect(connection: WebSocket, user: User) {
+//   clients.delete(connection);
+//   console.log(
+//     `User ${user.username} disconnected. Total clients: ${clients.size}`
+//   );
+//   // Notify others that user left
+//   broadcastAll({
+//     type: "user_left",
+//     user: { id: user.id, username: user.username },
+//   });
+// }
+
+// Helper to broadcast to all clients
+function broadcastAll(payload: any) {
+  for (const [client] of clients) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(payload));
     }
+  }
+}
 
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const search = new URLSearchParams(window.location.search);
-    const userParam = search.get('user') ?? 'alice';
+// Helper to broadcast to all except one
+function broadcastToOthers(except: WebSocket, payload: any) {
+  for (const [client] of clients) {
+    if (client !== except && client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(payload));
+    }
+  }
+}
 
-    const wsUrl = `${protocol}//${window.location.host}/api/chat/websocket?user=${encodeURIComponent(userParam)}`;
 
-    console.log('[CHAT SOCKET] connecting to', wsUrl);
 
-    const socket = new WebSocket(wsUrl);
-    ws.current = socket;
+function handleConnection(connection: WebSocket, user: User) {
+  clients.set(connection, user);
 
-    socket.onopen = () => {
-      console.log('[CHAT SOCKET] connected');
-      setIsConnected(true);
-    };
+  // index by userId for direct messaging
+  let set = socketsByUserId.get(user.id);
+  if (!set) {
+    set = new Set();
+    socketsByUserId.set(user.id, set);
+  }
+  set.add(connection);
 
-    socket.onclose = (event) => {
-      console.log('[CHAT SOCKET] closed', {
-        code: event.code,
-        reason: event.reason,
-        wasClean: event.wasClean,
-        readyState: socket.readyState,
-      });
-      setIsConnected(false);
-    };
+  console.log(
+    `User ${user.username} connected. Total clients: ${clients.size}`
+  );
+  connection.send(
+    JSON.stringify({
+      type: "welcome",
+      message: `Welcome, ${user.username}!`,
+      user: { id: user.id, username: user.username },
+    })
+  );
+  broadcastToOthers(connection, {
+    type: "user_joined",
+    user: { id: user.id, username: user.username },
+  });
+}
 
-    socket.onerror = (err) => {
-      console.error('[CHAT SOCKET] error', err);
-      setIsConnected(false);
-    };
+function handleDisconnect(connection: WebSocket, user: User) {
+  clients.delete(connection);
 
-    socket.onmessage = (event) => {
-      console.log('[CHAT SOCKET] raw message', event.data);
-      try {
-        const data: ChatServerMessage & { type: string } = JSON.parse(event.data);
+  const set = socketsByUserId.get(user.id);
+  if (set) {
+    set.delete(connection);
+    if (set.size === 0) socketsByUserId.delete(user.id);
+  }
 
-        // expose raw data for other features (invites)
-        setLastRawMessage(data);
+  console.log(
+    `User ${user.username} disconnected. Total clients: ${clients.size}`
+  );
+  broadcastAll({
+    type: "user_left",
+    user: { id: user.id, username: user.username },
+  });
+}
+function handleMessage(
+  connection: WebSocket,
+  user: User,
+  message: string | Buffer,
+) {
+  const text = typeof message === 'string' ? message : message.toString();
+  console.log('WS raw from', user.username, ':', text);
 
-        switch (data.type) {
-          case 'message':
-            setMessages((prev) => [
-              ...prev,
-              {
-                kind: 'chat',
-                username: data.user?.username ?? data.username ?? 'unknown',
-                text: data.text,
-              },
-            ]);
-            return;
-          case 'welcome':
-            setMessages((prev) => [
-              ...prev,
-              { kind: 'system', text: data.message },
-            ]);
-            return;
-          case 'user_joined':
-            setMessages((prev) => [
-              ...prev,
-              { kind: 'system', text: `${data.user.username} joined` },
-            ]);
-            return;
-          case 'user_left':
-            setMessages((prev) => [
-              ...prev,
-              { kind: 'system', text: `${data.user.username} left` },
-            ]);
-            return;
-          default:
-            setMessages((prev) => [
-              ...prev,
-              { kind: 'raw', text: event.data },
-            ]);
-        }
-      } catch (parseError) {
-        console.error('[CHAT SOCKET] parse error:', parseError);
-        setMessages((prev) => [
-          ...prev,
-          { kind: 'raw', text: event.data },
-        ]);
-      }
-    };
+  let data: any;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    // plain chat text
+    broadcastAll({
+      type: 'message',
+      user: { id: user.id, username: user.username },
+      text,
+    });
+    return;
+  }
 
-    return () => {
-      console.log('[CHAT SOCKET] cleanup (effect unmounting)');
-      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-        ws.current.close();
-      }
-      ws.current = null;
-    };
-  }, [enabled]);
+  // switch on type
+// switch on type
+if (data.type === 'INVITE') {
+  const toUserId = String(data.toUserId);
+  console.log('Handling INVITE from', user.id, 'to', toUserId);
 
-  const send = (payload: unknown) => {
-    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) {
-      console.warn('[CHAT SOCKET] cannot send, socket state:',
-        ws.current?.readyState,
-        'payload:', payload
+  const targets = socketsByUserId.get(toUserId);
+  console.log('Targets for', toUserId, ':', targets?.size ?? 0);
+  if (!targets) {
+    console.log('No sockets for target', toUserId);
+    return;
+  }
+
+  for (const sock of targets) {
+    if (sock.readyState === WebSocket.OPEN) {
+      sock.send(
+        JSON.stringify({
+          type: 'INVITE_RECEIVED',
+          fromUserId: user.id,
+          fromUsername: user.username,
+          gameMode: data.gameMode ?? 'pong',
+        }),
       );
-      return;
     }
-    console.log('[CHAT SOCKET] sending', payload);
-    ws.current.send(
-      typeof payload === 'string' ? payload : JSON.stringify(payload)
-    );
+  }
+
+  return; // stop here for INVITE
+}
+
+if (data.type === 'INVITE_ACCEPT') {
+  // user = the one who clicked Accept
+  const invitedId = user.id;
+  const inviterId = String(data.fromUserId); // original challenger
+
+  const gameId = `game-${Date.now()}`;
+
+  console.log(
+    'INVITE_ACCEPT from',
+    invitedId,
+    'for inviter',
+    inviterId,
+    'gameId',
+    gameId,
+  );
+
+  const notifyUser = (userId: string, payload: any) => {
+    const targets = socketsByUserId.get(userId);
+    console.log('Targets for', userId, ':', targets?.size ?? 0);
+    if (!targets) return;
+    for (const sock of targets) {
+      if (sock.readyState === WebSocket.OPEN) {
+        sock.send(JSON.stringify(payload));
+      }
+    }
   };
 
-  const sendMessage = (text: string) => {
-    send(text);
+  const payload = {
+    type: 'GAME_START',
+    gameId,
+    leftPlayerId: inviterId,
+    rightPlayerId: invitedId,
   };
 
-  return {
-    messages,
-    isConnected,
-    sendMessage,
-    send,
-    lastRawMessage
-  };
+  notifyUser(inviterId, payload);
+  notifyUser(invitedId, payload);
+
+  return; // stop here for INVITE_ACCEPT
+}
+
+// default: normal chat broadcast
+broadcastAll({
+  type: 'message',
+  user: { id: user.id, username: user.username },
+  text: data.text ?? text,
+});
+
 }
