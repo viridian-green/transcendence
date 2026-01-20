@@ -25,7 +25,9 @@ const GameEnd = () => {
 				},
 			});
 		}
-		else navigate(`/game/${gameId}`, { state: { leftPlayer, rightPlayer } });
+		else {
+			navigate(`/game/${gameId}`, { state: { leftPlayer, rightPlayer } });
+		}
 	};
 
 	const handleHome = () => {
