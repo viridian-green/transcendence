@@ -1,17 +1,25 @@
-import redis from "../redis/index.js";
+import fetch from "node-fetch";
 
-/**
- * Get a list of online user IDs from Redis.
- * Assumes user states are stored as keys: user:state:<id> with value 'online'.
- */
+const PRESENCE_BASE_URL =
+  process.env.PRESENCE_SERVICE_URL || "http://presence:3005";
 
 export async function getOnlineUsers(): Promise<string[]> {
-  const keys: string[] = await redis.keys("user:state:*");
-  if (!keys.length) return [];
-  const states: (string | null)[] = await redis.mget(...keys);
-  return keys
-    .map((key: string, i: number) =>
-      states[i] === "online" ? key.replace("user:state:", "") : null
-    )
-    .filter((id: string | null): id is string => !!id);
+  const url = `${PRESENCE_BASE_URL}/online-users`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.error(
+        `[onlineUsers] Failed to fetch online users from presence service: ${res.status} ${res.statusText}`
+      );
+      return [];
+    }
+    const data = (await res.json()) as { users?: string[] };
+    return data.users ?? [];
+  } catch (err) {
+    console.error(
+      "[onlineUsers] Error fetching online users from presence service:",
+      err
+    );
+    return [];
+  }
 }

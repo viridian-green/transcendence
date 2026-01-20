@@ -9,6 +9,7 @@ const Game = () => {
 	const { state } = useLocation();
 	const leftPlayer = state?.leftPlayer ?? 'Player 1';
 	const rightPlayer = state?.rightPlayer ?? 'Player 2';
+	const mode = state?.mode ?? 'classic'; // Default to classic if not provided
 	const { gameId } = useParams<{ gameId: string }>();
 
 	const [gameState, setGameState] = useState<GameState | null>(null);
@@ -25,7 +26,7 @@ const Game = () => {
 			return;
 		}
 
-		const ws = new WebSocket(`ws://localhost:3000/game/${gameId}`);
+		const ws = new WebSocket(`ws://localhost:3000/game/${gameId}?mode=${mode}`);
 		wsRef.current = ws;
 
 		ws.onopen = () => {
@@ -60,6 +61,7 @@ const Game = () => {
 			switch (event.key) {
 				case 'w':
 				case 'W':
+					if (mode === 'AI') break; // Disable W/S keys for AI mode
 					ws.send(
 						JSON.stringify({
 							type: 'MOVE_PADDLE',
@@ -70,6 +72,7 @@ const Game = () => {
 
 				case 's':
 				case 'S':
+					if (mode === 'AI') break; // Disable W/S keys for AI mode
 					ws.send(
 						JSON.stringify({
 							type: 'MOVE_PADDLE',

@@ -21,6 +21,8 @@ jobs:
       NGINX_HTTPS_PORT: ${{ secrets.NGINX_HTTPS_PORT }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
 
     steps:
     - uses: actions/checkout@v6
@@ -31,6 +33,7 @@ jobs:
         cp api-gateway/.env.example api-gateway/.env
         cp services/game-service/.env.example services/game-service/.env
         cp services/user-service/.env.example services/user-service/.env
+        cp services/chat-service/.env.example services/chat-service/.env
 
     - name: Build and run containers
       run: |

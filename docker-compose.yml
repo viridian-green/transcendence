@@ -117,6 +117,22 @@ services:
     networks:
       - transcendence-network
 
+  presence:
+    container_name: presence
+    build:
+      context: ./services/presence-service
+      dockerfile: Dockerfile
+    environment:
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    depends_on:
+      redis:
+        condition: service_started
+    ports:
+      - "3005:3005"
+    networks:
+      - transcendence-network
+
   api-gateway:
     container_name: api-gateway
     build:

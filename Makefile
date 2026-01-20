@@ -60,7 +60,7 @@ nocache:
 
 # Clean everything including volumes
 clean:
-	docker compose down -v --remove-orphans
+	docker compose down --remove-orphans
 	rm -rf nginx/ssl/*.crt nginx/ssl/*.key
 
 # Prune Docker cache/containers/networks (keeps certs and volumes, e.g., database)

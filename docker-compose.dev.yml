@@ -130,6 +130,22 @@ services:
       - /app/node_modules
     command: ["npm", "run", "dev"]
 
+  presence:
+    container_name: presence_dev
+    build:
+      context: ./services/presence-service
+      dockerfile: Dockerfile.dev
+    environment:
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    depends_on:
+      redis:
+        condition: service_started
+    ports:
+      - "3005:3005"
+    networks:
+      - transcendence-network
+
   api-gateway:
     container_name: api_gateway_dev
     build:
