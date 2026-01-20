@@ -159,7 +159,7 @@ services:
     image: redis:7-alpine
     container_name: redis_dev
     ports:
-      - "6379:6379"
+      - "6378:6378"
     networks:
       - transcendence-network
 
