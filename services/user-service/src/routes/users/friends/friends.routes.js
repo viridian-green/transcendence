@@ -5,7 +5,7 @@ import {
     createFriendRequest,
     deleteFriendship,
     getFriendsList
-} from '../../services/friends.service.js'
+} from '../../../services/friends.service.js'
 
 export default async function friendsRoute(app) {
     //add friend

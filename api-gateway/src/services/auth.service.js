@@ -44,6 +44,11 @@ export async function authHook(request, reply) {
     try {
         // Verify JWT token from cookie - this automatically attaches payload to request.user
         await request.jwtVerify();
+        if (request.user) {
+            ["id", "username", "email"].forEach((key) =>
+                reply.header(`x-user-${key}`, request.user[key])
+            );
+        }
 
         // Check for 2FA pending status
         if (
