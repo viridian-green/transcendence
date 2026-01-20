@@ -2,11 +2,12 @@
   "name": "presence-service",
   "version": "1.0.0",
   "description": "Presence and online state service for transcendence",
-  "main": "src/server.js",
+  "main": "dist/server.js",
   "type": "module",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "build": "mkdir -p dist && cp -r src/* dist/",
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
