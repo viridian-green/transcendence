@@ -25,7 +25,7 @@ export default async function authRoutes(app) {
 
         const hashedPassword = await hashPassword(password);
         const user = await insertUserInDb(app, username, hashedPassword, email);
-        await updateUserState(user.id, 'offline');
+        //await updateUserState(user.id, 'offline');
         const token = await signToken(app, user);
 
         return reply
@@ -46,10 +46,11 @@ export default async function authRoutes(app) {
         const user = await ensureExistingUsername(app, username);
         await ensureValidPassword(password, user);
 
-        const existingState = await getUserState(user.id);
-        if (!existingState) {
-            await updateUserState(user.id, 'offline');
-        }
+        console.log('not Checking user state in Redis...');
+        // const existingState = await getUserState(user.id);
+        // if (!existingState) {
+        //     await updateUserState(user.id, 'offline');
+        // }
 
         const token = await signToken(app, user);
 
