@@ -42,6 +42,7 @@
 	--color-surface: #181818;
 	--color-elevated: #1f1f1f;
 	--color-border: #2a2a2a;
+	--color-inverse: var(--color-neutral-300);
 
 	--color-text-primary: var(--color-neutral-300);
 	--color-text-secondary: #b3b3b3;

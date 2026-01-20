@@ -22,7 +22,7 @@ export default async function updateUserRoute(app) {
         }
     );
 
-    app.post('/me/avatar', { preHandler: app.authenticate }, async (req, reply) => {
+    app.post('/avatar', { preHandler: app.authenticate }, async (req, reply) => {
         const data = await req.file();
 
         if (!data) {

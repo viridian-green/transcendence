@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-export default function ExclamationCircleOutline(props: SVGProps<SVGSVGElement>) {
+export function Eye(props: SVGProps<SVGSVGElement>) {
 	return (
 		<svg
 			xmlns='http://www.w3.org/2000/svg'
@@ -9,14 +9,16 @@ export default function ExclamationCircleOutline(props: SVGProps<SVGSVGElement>)
 			height='1em'
 			{...props}
 		>
-			<path
+			<g
 				fill='none'
 				stroke='currentColor'
 				strokeLinecap='round'
 				strokeLinejoin='round'
 				strokeWidth='2'
-				d='M12 13V8m0 8h.01M21 12a9 9 0 1 1-18 0a9 9 0 0 1 18 0'
-			></path>
+			>
+				<path d='M2.062 12.348a1 1 0 0 1 0-.696a10.75 10.75 0 0 1 19.876 0a1 1 0 0 1 0 .696a10.75 10.75 0 0 1-19.876 0'></path>
+				<circle cx='12' cy='12' r='3'></circle>
+			</g>
 		</svg>
 	);
 }

@@ -5,6 +5,7 @@ import { loginSessionStorageKey } from '@/const';
 
 interface AuthContextType {
 	user: User | null;
+	setUser: (user: User | null) => void;
 	login: (username: string, password: string) => Promise<void>;
 	register: (email: string, username: string, password: string) => Promise<void>;
 	signout: () => Promise<void>;
@@ -107,7 +108,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	};
 
 	return (
-		<AuthContext.Provider value={{ user, login, register, signout, isLoading, isLoggedIn }}>
+		<AuthContext.Provider
+			value={{ user, setUser, login, register, signout, isLoading, isLoggedIn }}
+		>
 			{children}
 		</AuthContext.Provider>
 	);
