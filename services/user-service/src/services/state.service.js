@@ -1,31 +1,55 @@
-import redis from "../../redis/index.js";
+import fetch from "node-fetch";
+
+const PRESENCE_BASE_URL =
+  process.env.PRESENCE_SERVICE_URL || "http://presence:3005";
 
 export async function checkIfStateIsValid(state) {
-    const allowedStates = ["online", "busy", "offline"]
-    if (!allowedStates.includes(state)) {
-        const err = new Error(`Invalid state. Allowed states: ${allowedStates.join(", ")}`)
-        err.statusCode = 400;
-        throw err;
-    };
+  const allowedStates = ["online", "busy", "offline"];
+  if (!allowedStates.includes(state)) {
+    const err = new Error(
+      `Invalid state. Allowed states: ${allowedStates.join(", ")}`
+    );
+    err.statusCode = 400;
+    throw err;
+  }
 }
 
 export async function updateUserState(id, state) {
-    try {
-        await redis.set(`user:state:${id}`, state);
-    } catch (err) {
-        const error = new Error("Failed to update user state in Redis");
-        error.statusCode = 500;
-        throw error;
+  try {
+    const res = await fetch(`${PRESENCE_BASE_URL}/state`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, state }),
+    });
+    if (!res.ok) {
+      const error = new Error(
+        `Failed to update user state in presence service: ${res.status} ${res.statusText}`
+      );
+      error.statusCode = res.status;
+      throw error;
     }
+  } catch (err) {
+    const error = new Error("Failed to update user state via presence service");
+    error.statusCode = 500;
+    throw error;
+  }
 }
 
 export async function getUserState(id) {
-    try {
-        const state = await redis.get(`user:state:${id}`);
-        return state || 'offline';  // Fallback to 'offline' if null
-    } catch (err) {
-        const error = new Error("Failed to get user state from Redis");
-        error.statusCode = 500;
-        throw error;
+  try {
+    const res = await fetch(`${PRESENCE_BASE_URL}/state/${id}`);
+    if (!res.ok) {
+      const error = new Error(
+        `Failed to get user state from presence service: ${res.status} ${res.statusText}`
+      );
+      error.statusCode = res.status;
+      throw error;
     }
+    const data = await res.json();
+    return data.state || "offline";
+  } catch (err) {
+    const error = new Error("Failed to get user state via presence service");
+    error.statusCode = 500;
+    throw error;
+  }
 }
