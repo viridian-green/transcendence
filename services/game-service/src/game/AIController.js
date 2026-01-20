@@ -6,32 +6,31 @@ export class AIController {
             this.reactionTimer = 0;
             this.lastMove = 0;
             this.aimOffset = 0;
+            this.recoveryOffset = 0;
     }
 
     getMove(ball, paddle, canvasHeight) {
-        // Center Recovery
-        if (ball.dx > 0) {
-            const paddleCenter = paddle.y + (GAME_CONFIG.paddle.height / 2);
-            const boardCenter = canvasHeight / 2;
-
-            if (paddleCenter < boardCenter - 10) return GAME_CONFIG.paddle.speed;
-            if (paddleCenter > boardCenter + 10) return -GAME_CONFIG.paddle.speed;
-            return 0;
-        }
-
         // 1. Detect Changes / Events
         const wallBounce = (this.prevDy !== 0 && Math.sign(ball.dy) !== Math.sign(this.prevDy));
         const opponentHit = (this.prevDx > 0 && ball.dx < 0);
+        const aiHit = (this.prevDx < 0 && ball.dx > 0);
 
-        // If something changed, trigger a delay AND recalculate our aim
-        if (wallBounce || opponentHit) {
-            this.reactionTimer = 15; // Stop thinking for ~250ms (15 frames)
-            this.aimOffset = (Math.random() - Math.random()) * 100; // adjust this number to make AI harder/easier - nb of pixels the AI can be "wrong" by
-        }
-
-        // Update history for next frame
+        // Update history for next frame (MUST be done every frame)
         this.prevDy = ball.dy;
         this.prevDx = ball.dx;
+
+        // If something changed, trigger a delay
+        if (wallBounce || opponentHit || aiHit) {
+            this.reactionTimer = 15; // Stop thinking for ~250ms (15 frames)
+        }
+
+        // Recalculate offsets on specific hits
+        if (wallBounce || opponentHit) {
+            this.aimOffset = (Math.random() - Math.random()) * 100;
+        }
+        if (aiHit) {
+            this.recoveryOffset = (Math.random() - Math.random()) * 100;
+        }
 
         // 2. Apply Reaction Delay
         // If the timer is active, return the OLD move
@@ -40,12 +39,19 @@ export class AIController {
             return this.lastMove;
         }
 
-        // 3. Initial logic - perfect tracking
-        // (This only runs when the AI is NOT processing a delay)
+        // 3. Logic
         const paddleCenter = paddle.y + (GAME_CONFIG.paddle.height / 2);
+        let targetY = 0;
 
-        const targetY = ball.y + this.aimOffset;
-        
+        if (ball.dx > 0) {
+            // Center Recovery
+            const boardCenter = canvasHeight / 2;
+            targetY = boardCenter + this.recoveryOffset;
+        } else {
+            // Tracking
+            targetY = ball.y + this.aimOffset;
+        }
+
         // Calculate the ideal move
         let newMove = 0;
         if (paddleCenter < targetY - 10) {
