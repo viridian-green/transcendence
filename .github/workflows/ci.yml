@@ -33,6 +33,7 @@ jobs:
         cp api-gateway/.env.example api-gateway/.env
         cp services/game-service/.env.example services/game-service/.env
         cp services/user-service/.env.example services/user-service/.env
+        cp services/chat-service/.env.example services/user-service/.env
 
     - name: Build and run containers
       run: |
