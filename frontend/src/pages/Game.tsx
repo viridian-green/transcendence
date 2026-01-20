@@ -177,10 +177,11 @@ const Game = () => {
 						rightPlayer,
 						scores: gameState.scores,
 					},
+					mode,
 				},
 			});
 		}
-	}, [gameState, navigate, leftPlayer, rightPlayer]);
+	}, [gameState, navigate, leftPlayer, rightPlayer, mode]);
 
 	return (
 		<div className='bg-bg flex min-h-screen flex-col items-center justify-center gap-4'>

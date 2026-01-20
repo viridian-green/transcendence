@@ -1,8 +1,6 @@
 import healthRoute from './health.js';
-import authRoutes from './auth.routes.js';
-import userRoutes from './users-resources/index.js';
-import meRoutes from './me/index.js';
-import friendsRoutes from './friends/index.js';
+import authRoutes from './auth/auth.routes.js';
+import userRoutes from './users/index.js';
 
 export default async function routes(app) {
     app.register(healthRoute);
@@ -10,6 +8,6 @@ export default async function routes(app) {
     app.register(authRoutes, { prefix: '/auth' });
 
     app.register(userRoutes, { prefix: '/users'});
-    app.register(meRoutes, { prefix: '/users/me'});
-    app.register(friendsRoutes, { prefix: '/users/friends'});
+
+    //console.log(app.printRoutes());
 }
