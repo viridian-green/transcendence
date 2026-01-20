@@ -51,12 +51,12 @@ const Game = () => {
 		};
 
 		const handleKeyDown = (event: KeyboardEvent) => {
-			if (ws.readyState !== WebSocket.OPEN) return;
-
+			// Prevent scrolling the page FIRST, before any other checks
 			if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(event.key)) {
-				// Prevent scrolling the page
 				event.preventDefault();
 			}
+
+			if (ws.readyState !== WebSocket.OPEN) return;
 
 			switch (event.key) {
 				case 'w':
