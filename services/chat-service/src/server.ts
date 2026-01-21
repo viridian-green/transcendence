@@ -14,7 +14,7 @@ await fastify.register(websocket);
 await fastify.register(ChatsocketsRoute);
 await fastify.register(OnlineUsersRoute);
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3004;
+const PORT = process.env.CHAT_PORT ? parseInt(process.env.CHAT_PORT, 10) : 3004;
 
 const start = async () => {
   try {
