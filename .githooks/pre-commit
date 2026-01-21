@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Pre-commit hook to ensure .env.example files stay in sync with .env keys.
+# Run the shared check script from the repo root.
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+
+cd "$REPO_ROOT"
+
+if [[ -x "scripts/check-env-examples.sh" ]]; then
+  scripts/check-env-examples.sh
+  exit_code=$?
+  if [[ $exit_code -ne 0 ]]; then
+    echo ""
+    echo "💡 Tip: Run 'make env' to sync your .env files with .env.example"
+    exit $exit_code
+  fi
+else
+  echo "warning: scripts/check-env-examples.sh not found or not executable; skipping env check."
+fi
+
