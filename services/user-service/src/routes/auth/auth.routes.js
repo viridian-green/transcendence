@@ -9,7 +9,7 @@ import {
     ensureExistingUsername,
     ensureValidPassword
 } from "../../services/auth.service.js";
-
+import { updateUserState} from "../../services/state.service.js"
 /**
  * Authentication routes
  * Handles user registration, login, and signout

@@ -7,14 +7,12 @@ import {
 	Game,
 	Landing,
 	Login,
-	About,
 	Registration,
 	ProtectedRoute,
 	PublicOnlyRoute,
 	GameEnd,
 	GameStart,
 	Chat,
-	Remote,
 	TermsOfService,
 	PrivacyPolicy,
 	Profile,
@@ -58,14 +56,6 @@ function App() {
 								<PublicOnlyRoute>
 									<Login />
 								</PublicOnlyRoute>
-							}
-						/>
-						<Route
-							path='/remote'
-							element={
-								<ProtectedRoute>
-									<Remote />
-								</ProtectedRoute>
 							}
 						/>
 						<Route
