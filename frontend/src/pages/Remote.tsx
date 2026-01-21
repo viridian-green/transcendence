@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { PinkButton } from '@/components';
 import { useChatSocket } from '@/hooks/useChatSocket';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 type Friend = {
   id: string;
@@ -26,7 +27,7 @@ const Remote = () => {
   const [friends] = useState<Friend[]>(MOCK_FRIENDS);
   const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
   const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
-
+    const { user } = useAuth();
   const { send, lastRawMessage, isConnected } = useChatSocket(true);
 
   useEffect(() => {
@@ -43,13 +44,18 @@ const Remote = () => {
     }
 
     if (lastRawMessage.type === 'GAME_START') {
-      const { gameId, leftPlayerId, rightPlayerId } = lastRawMessage;
+      const { gameId, leftPlayerId, rightPlayerId, yourSide } = lastRawMessage;
       console.log('[REMOTE] GAME_START', gameId, leftPlayerId, rightPlayerId);
+
+
+    const isLeft = user?.id === leftPlayerId;
 
     navigate(`/game/${gameId}`, {
         state: {
-          leftPlayerId,
-          rightPlayerId,
+          leftPlayerId: leftPlayerId,
+          rightPlayerId: rightPlayerId,
+          side: yourSide,
+          mode: 'remote'
         },
       });
     }

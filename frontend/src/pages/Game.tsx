@@ -10,12 +10,16 @@ const Game = () => {
 	const leftPlayer = state?.leftPlayer ?? 'Player 1';
 	const rightPlayer = state?.rightPlayer ?? 'Player 2';
 	const mode = state?.mode ?? 'classic'; // Default to classic if not provided
+    const side:  'left' | 'right' = state?.side ?? 'left';
 	const { gameId } = useParams<{ gameId: string }>();
 
 	const [gameState, setGameState] = useState<GameState | null>(null);
 	const wsRef = useRef<WebSocket | null>(null);
 
+
+
 	useEffect(() => {
+        console.log('[GAME] Debug', {side, mode, leftPlayerId: state?.leftPlayerId, rightPlayerId: state?.rightPlayerId });
 		if (typeof window === 'undefined') return;
 		// Prevent scrolling while in game -> hide overflow
 		// document.body.style.overflow = 'hidden';
@@ -71,6 +75,7 @@ const Game = () => {
 				case 'w':
 				case 'W':
 					if (mode === 'AI') break; // Disable W/S keys for AI mode
+                    if (mode === 'remote' && side === 'right') break;
 					ws.send(
 						JSON.stringify({
 							type: 'MOVE_PADDLE',
@@ -82,6 +87,7 @@ const Game = () => {
 				case 's':
 				case 'S':
 					if (mode === 'AI') break; // Disable W/S keys for AI mode
+                    if (mode === 'remote' && side === 'right') break;
 					ws.send(
 						JSON.stringify({
 							type: 'MOVE_PADDLE',
@@ -91,6 +97,7 @@ const Game = () => {
 					break;
 
 				case 'ArrowUp':
+                    if (mode === 'remote' && side === 'left') break;
 					ws.send(
 						JSON.stringify({
 							type: 'MOVE_PADDLE',
@@ -100,6 +107,7 @@ const Game = () => {
 					break;
 
 				case 'ArrowDown':
+                    if (mode === 'remote' && side === 'left') break;
 					ws.send(
 						JSON.stringify({
 							type: 'MOVE_PADDLE',
@@ -135,6 +143,7 @@ const Game = () => {
 				case 's':
 				case 'S':
 					if (mode === 'AI') break;
+                    if (mode === 'remote' && side === 'right') break;
 					ws.send(
 						JSON.stringify({
 							type: 'STOP_PADDLE',
@@ -145,6 +154,7 @@ const Game = () => {
 
 				case 'ArrowUp':
 				case 'ArrowDown':
+                    if (mode === 'remote' && side === 'left') break;
 					ws.send(
 						JSON.stringify({
 							type: 'STOP_PADDLE',
