@@ -35,8 +35,8 @@ function extractUserFromJWT(request: any): User | null {
   const url = new URL(request.url, 'http://localhost');
   const fakeUser = url.searchParams.get('user');
 
-  if (fakeUser === 'alice') {
-    return { id: 'u1', username: 'alice' };
+  if (fakeUser === 'user1') {
+    return { id: 'u1', username: 'user1' };
   }
   if (fakeUser === 'user2') {
     return { id: 'u2', username: 'user2' };

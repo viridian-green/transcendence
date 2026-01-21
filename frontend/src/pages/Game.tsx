@@ -16,6 +16,7 @@ const Game = () => {
 	const wsRef = useRef<WebSocket | null>(null);
 
 	useEffect(() => {
+        console.log('[REMOTE] GAME_START', gameId);
 		if (typeof window === 'undefined') return;
 		// Prevent scrolling while in game -> hide overflow
 		// document.body.style.overflow = 'hidden';
