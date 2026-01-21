@@ -67,6 +67,14 @@ function App() {
 								</PublicOnlyRoute>
 							}
 						/>
+                                                <Route
+							path='/remote'
+							element={
+								<ProtectedRoute>
+									<Remote />
+								</ProtectedRoute>
+							}
+						/>
 						<Route
 							path='/home'
 							element={
@@ -120,14 +128,6 @@ function App() {
 							element={
 								<ProtectedRoute>
 									<ProfileSettings />
-								</ProtectedRoute>
-							}
-						/>
-                        <Route
-							path='/remote'
-							element={
-								<ProtectedRoute>
-									<Remote />
 								</ProtectedRoute>
 							}
 						/>
