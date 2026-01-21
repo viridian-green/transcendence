@@ -1,4 +1,4 @@
-.PHONY: setup up dev down logs logsdev restart restartdev nocache rebuild rebuilddev clean prune open usertest usertable
+.PHONY: setup up dev down logs logsdev restart restartdev nocache rebuild rebuilddev clean prune open usertest usertable env-sync-overwrite
 
 
 ## === Bootstrap ===
@@ -99,6 +99,10 @@ rebuild: clean setup
 # Rebuild dev from scratch
 rebuilddev: clean setup
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d
+
+## === Env management ===
+env-sync-overwrite:
+	@bash scripts/sync-env-overwrite.sh
 
 ## === Misc ===
 open:
