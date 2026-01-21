@@ -8,8 +8,11 @@ export default async function getByIdRoute(app) {
 
     app.get('/', async (req, reply) => {
         const { ids } = req.query;
-        let idsArray = ids.split(',');
+        if (!ids) {
+            return reply.code(400).send({ error: 'ids parameter is required' });
+        }
+        const idsArray = ids.split(',').map(id => id.toString());
         const users = await getUsernamesByIds(app, idsArray);
-        reply.send({ users });
+        return reply.send({ users });
     });
 }

@@ -70,7 +70,7 @@ export async function getUsernamesByIds(app, idsArray) {
 
     const { rows } = await app.pg.query(
         `
-        SELECT id, username,
+        SELECT id, username
         FROM users
         WHERE id = ANY($1)
         `,
