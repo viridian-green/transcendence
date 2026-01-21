@@ -140,3 +140,6 @@ curl -X POST https://localhost:8443/api/auth/login \
 curl https://localhost:8443/api/users/me -k -b cookies.txt
 ```
 
+
+### READS:
+[Bcrypt](https://www.npmjs.com/package/bcrypt)
