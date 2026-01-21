@@ -7,6 +7,7 @@ import {
 	Game,
 	Landing,
 	Login,
+    Remote,
 	Registration,
 	ProtectedRoute,
 	PublicOnlyRoute,
@@ -119,6 +120,14 @@ function App() {
 							element={
 								<ProtectedRoute>
 									<ProfileSettings />
+								</ProtectedRoute>
+							}
+						/>
+                        <Route
+							path='/remote'
+							element={
+								<ProtectedRoute>
+									<Remote />
 								</ProtectedRoute>
 							}
 						/>
