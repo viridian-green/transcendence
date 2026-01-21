@@ -50,6 +50,10 @@ export const updateUserSchema = z.object({
         .regex(/[0-9]/, "Password must contain at least one number")
         .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character")
         .optional(),
+    bio: z
+        .string()
+        .max(150)
+        .optional(),
 }).refine(
         data => Object.keys(data).length > 0,
         { message: "At least one field must be provided" }
