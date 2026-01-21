@@ -10,7 +10,7 @@ export function useUserProfile() {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ username: payload.username, email: payload.email }), // TODO add bio
+			body: JSON.stringify({ username: payload.username, email: payload.email, bio: payload.bio }),
 		});
 
 		if (!response.ok) {

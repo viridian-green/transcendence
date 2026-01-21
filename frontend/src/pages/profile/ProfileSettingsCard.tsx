@@ -1,7 +1,7 @@
 import { Avatar, Card, CardTitle, ErrorMessage } from '@/components';
 import { Camera, Save } from '@/icons';
 import type { UserProfile } from '@/shared.types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import z, { ZodError } from 'zod';
 
 const profileUpdateSchema = z.object({
@@ -10,7 +10,7 @@ const profileUpdateSchema = z.object({
 		.string()
 		.min(1, 'Username is required')
 		.max(15, 'Username must be at most 15 characters'),
-	bio: z.string().max(160, 'Bio must be at most 160 characters'),
+	bio: z.string().max(150, 'Bio must be at most 150 characters'),
 	avatar: z.string(),
 });
 
@@ -23,6 +23,11 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 	const [formData, setFormData] = useState(profile);
 	const [previewUrl, setPreviewUrl] = useState(profile.avatar);
 	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		setFormData(profile);
+		setPreviewUrl(profile.avatar);
+	}, [profile]);
 
 	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -110,12 +115,18 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 
 				{/* Bio */}
 				<div className='flex flex-col space-y-2'>
-					<label htmlFor='bio'>Bio</label>
+					<div className='flex items-center justify-between'>
+						<label htmlFor='bio'>Bio</label>
+						<span className={`text-sm ${(formData.bio?.length || 0) > 150 ? 'text-red-500' : 'text-text-secondary'}`}>
+							{(formData.bio?.length || 0)}/150
+						</span>
+					</div>
 					<textarea
 						id='bio'
-						value={formData.bio}
+						value={formData.bio || ''}
 						onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
 						rows={4}
+						maxLength={150}
 						className='border-border bg-elevated resize-none rounded-md px-2 py-1 focus:border-(--color-accent-pink)'
 						placeholder='Tell us about yourself...'
 					/>

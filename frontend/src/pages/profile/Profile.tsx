@@ -1,7 +1,7 @@
 import { Avatar, Toast, type ToastType } from '@components/index';
 import { ArrowLeft } from '@/icons';
 import type { Friend, UserProfile } from '@/shared.types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ProfileCard } from './ProfileCard';
 import { useAuth } from '@/hooks/useAuth';
 import { StatsCard } from './StatsCard';
@@ -30,13 +30,41 @@ const MOCK_FRIENDS: Friend[] = [
 
 const Profile = () => {
 	const { user } = useAuth();
-	const profile: UserProfile = {
+	const [profile, setProfile] = useState<UserProfile>({
 		id: user?.id as number,
 		username: user?.username as string,
 		email: user?.email as string,
 		avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username as string)}&size=128`,
-		bio: 'This is a sample bio.', // TODO backend bio field
-	};
+		bio: '',
+	});
+
+	useEffect(() => {
+		const fetchUserProfile = async () => {
+			try {
+				const response = await fetch('/api/users/me', {
+					credentials: 'include',
+				});
+				if (response.ok) {
+					const userData = await response.json();
+					setProfile({
+						id: userData.id,
+						username: userData.username,
+						email: userData.email,
+						avatar: userData.avatar
+							? `/uploads/avatars/${userData.avatar}`
+							: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.username)}&size=128`,
+						bio: userData.bio || '',
+					});
+				}
+			} catch (error) {
+				console.error('Failed to fetch user profile:', error);
+			}
+		};
+
+		if (user) {
+			fetchUserProfile();
+		}
+	}, [user]);
 
 	const [friends, setFriends] = useState<Friend[]>(MOCK_FRIENDS);
 	const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType } | null>({
@@ -124,13 +152,6 @@ const Profile = () => {
 				<div className='mt-6 grid gap-6 md:grid-cols-2'>
 					{/* <PasswordCard onUpdate={handlePasswordUpdate} /> */}
 				</div>
-
-				{profile.bio && (
-					<div className='border-border bg-surface mt-6 rounded-2xl border p-8'>
-						<h2 className='text-accent-pink mb-4'>About</h2>
-						<p className='text-text-secondary leading-relaxed'>{profile.bio}</p>
-					</div>
-				)}
 			</main>
 		</div>
 	);
