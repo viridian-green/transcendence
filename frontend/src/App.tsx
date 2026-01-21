@@ -63,17 +63,17 @@ function App() {
 						<Route
 							path='/remote'
 							element={
-								<PublicOnlyRoute>
+								<ProtectedRoute>
 									<Remote />
-								</PublicOnlyRoute>
+								</ProtectedRoute>
 							}
 						/>
 						<Route
 							path='/register'
 							element={
-								<ProtectedRoute>
+								<PublicOnlyRoute>
 									<Registration />
-								</ProtectedRoute>
+								</PublicOnlyRoute>
 							}
 						/>
 						<Route
@@ -97,15 +97,6 @@ function App() {
 							element={
 								<ProtectedRoute>
 									<GameStart />
-								</ProtectedRoute>
-							}
-						/>
-                        <Route path='/about' element={<About />} />
-						<Route
-							path='/chat'
-							element={
-								<ProtectedRoute>
-									<Chat />
 								</ProtectedRoute>
 							}
 						/>
