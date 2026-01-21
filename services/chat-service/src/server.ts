@@ -2,6 +2,8 @@ import Fastify from "fastify";
 import websocket from "@fastify/websocket";
 import ChatsocketsRoute from "./routes/chatsockets.js";
 import OnlineUsersRoute from "./routes/onlineUsers.js";
+import { Server as SocketIOServer } from "socket.io";
+import { setupPresenceSubscriber } from "./redis/subscribers.js";
 
 const fastify = Fastify({
   logger: true,
@@ -15,6 +17,14 @@ await fastify.register(ChatsocketsRoute);
 await fastify.register(OnlineUsersRoute);
 
 const PORT = process.env.CHAT_PORT ? parseInt(process.env.CHAT_PORT, 10) : 3004;
+
+// Attach socket.io to Fastify's internal HTTP server
+const io = new SocketIOServer(fastify.server, {
+  cors: { origin: "*" }, // adjust as needed
+});
+
+// Setup Redis presence subscriber to emit updates via socket.io
+setupPresenceSubscriber(io);
 
 const start = async () => {
   try {
