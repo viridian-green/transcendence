@@ -27,6 +27,16 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
+    - name: Check .env.example consistency
+      run: |
+        chmod +x scripts/check-env-examples.sh
+        # Create temporary .env files from examples for validation
+        for file in $(find . -name ".env.example"); do
+          cp "$file" "${file%.example}"
+        done
+        # Run the check (should pass since we just synced)
+        bash scripts/check-env-examples.sh || (echo "❌ .env.example files have inconsistencies. Fix before merging." && exit 1)
+
     - name: Prepare env files
       run: |
         cp .env.example .env
