@@ -223,16 +223,16 @@ if (data.type === 'INVITE') {
     }
   }
 
-  return; // stop here for INVITE
+  return;
 }
 
 
 if (data.type === 'INVITE_ACCEPT') {
   // user = the one who clicked Accept
   const invitedId = user.id;
-  const inviterId = String(data.fromUserId); // original challenger
-const invitedUsername = user.username;
-  const inviterUsername = String(data.fromUsername); // original challenger
+  const inviterId = String(data.fromUserId);
+    const invitedUsername = user.username;
+  const inviterUsername = String(data.fromUsername);
 
   const gameId = `game-${Date.now()}`;
 
@@ -244,6 +244,8 @@ const invitedUsername = user.username;
     'gameId',
     gameId,
   );
+
+
 
   const notifyUser = (userId: string, payload: any) => {
     const targets = socketsByUserId.get(userId);
@@ -261,6 +263,8 @@ const invitedUsername = user.username;
     gameId,
     leftPlayerId: inviterId,
     rightPlayerId: invitedId,
+    leftPlayer: inviterUsername,
+    rightPlayer: invitedUsername,
     yourSide: 'left'
   });
 
@@ -269,6 +273,8 @@ const invitedUsername = user.username;
     gameId,
     leftPlayerId: inviterId,
     rightPlayerId: invitedId,
+    leftPlayer: inviterUsername,
+    rightPlayer: invitedUsername,
     yourSide: 'right'
   });
 
