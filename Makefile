@@ -42,8 +42,8 @@ down:
 	docker compose down
 
 # Restart with rebuild (base stack)
-restart: setup
-	docker compose up -d --build
+restart:
+	docker compose up -d
 
 # Restart with rebuild (dev stack)
 restartdev: setup

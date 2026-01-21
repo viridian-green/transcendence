@@ -1,5 +1,6 @@
 import { MessageInput } from '../components/chat/MessageInput';
 import { MessageList } from '../components/chat/MessageList';
+import UsersList from "../components/chat/UsersList"
 import { useChatSocket } from '../hooks/useChatSocket';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -13,6 +14,7 @@ export default function Chat() {
       <div className="status">{isConnected ? '🟢 Connected' : '🔴 Disconnected'}</div>
       <MessageList messages={messages} currentUsername={user?.username} />
       <MessageInput onSend={sendMessage} disabled={!isConnected} />
+      <UsersList />
     </div>
   );
 }
