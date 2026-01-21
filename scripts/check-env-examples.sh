@@ -34,10 +34,18 @@ while IFS= read -r -d '' env; do
   done
 
   # Check for keys present in .env but missing in .env.example
-  missing=()
+  missing_in_example=()
   for k in "${env_keys[@]}"; do
     if [[ -z "${EX_VALS[$k]+set}" ]]; then
-      missing+=("$k")
+      missing_in_example+=("$k")
+    fi
+  done
+
+  # Check for keys present in .env.example but missing in .env
+  missing_in_env=()
+  for k in "${ex_keys[@]}"; do
+    if [[ -z "${ENV_VALS[$k]+set}" ]]; then
+      missing_in_env+=("$k")
     fi
   done
 
@@ -49,11 +57,15 @@ while IFS= read -r -d '' env; do
     fi
   done
 
-  if ((${#missing[@]} > 0 || ${#differing[@]} > 0)); then
-    echo "❌ Mismatch between ${env#$ROOT_DIR/} and ${example#$ROOT_DIR/}:"
-    if ((${#missing[@]} > 0)); then
+  if ((${#missing_in_example[@]} > 0 || ${#missing_in_env[@]} > 0 || ${#differing[@]} > 0)); then
+    echo "❌ FIX: Run make env and commit again"
+    if ((${#missing_in_example[@]} > 0)); then
       echo "   Keys present in .env but missing in .env.example:"
-      printf '     - %s\n' "${missing[@]}"
+      printf '     - %s\n' "${missing_in_example[@]}"
+    fi
+    if ((${#missing_in_env[@]} > 0)); then
+      echo "   Keys present in .env.example but missing in .env:"
+      printf '     - %s\n' "${missing_in_env[@]}"
     fi
     if ((${#differing[@]} > 0)); then
       echo "   Keys with different values (showing keys only, not values):"
@@ -66,12 +78,10 @@ while IFS= read -r -d '' env; do
   unset EX_VALS
 done < <(find "$ROOT_DIR" -name ".env" -print0)
 
-if ((ERRORS > 0)); then
-  echo
-  echo "Fix: keep .env.example canonical by adding missing keys and aligning values for the keys above."
-  exit 1
+if ((ERRORS == 0)); then
+  echo "✅ .env and .env.example key sets are consistent."
+  exit 0
 fi
 
-echo "✅ .env and .env.example key sets are consistent."
 
 
