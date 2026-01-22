@@ -12,6 +12,7 @@ import {
 	PublicOnlyRoute,
 	GameEnd,
 	GameStart,
+	AIGameStart,
 	Chat,
 	TermsOfService,
 	PrivacyPolicy,
@@ -87,6 +88,14 @@ function App() {
 							element={
 								<ProtectedRoute>
 									<GameStart />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path='/AI-game-start'
+							element={
+								<ProtectedRoute>
+									<AIGameStart />
 								</ProtectedRoute>
 							}
 						/>

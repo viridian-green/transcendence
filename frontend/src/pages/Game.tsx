@@ -9,7 +9,7 @@ const Game = () => {
 	const { state } = useLocation();
 	const leftPlayer = state?.leftPlayer ?? 'Player 1';
 	const rightPlayer = state?.rightPlayer ?? 'Player 2';
-	const mode = state?.mode ?? 'classic'; // Default to classic if not provided
+	const mode = state?.mode ?? 'local'; // Default to local if not provided
 	const { gameId } = useParams<{ gameId: string }>();
 
 	const [gameState, setGameState] = useState<GameState | null>(null);

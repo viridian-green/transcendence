@@ -114,7 +114,7 @@ const GameStart = () => {
 						</div>
 					</div>
 				</div>
-				<p className='text-xl'>First to 11 points wins!</p>
+				<p className='text-xl'>First to score 11 points wins!</p>
 				{error && <ErrorMessage message={error} />}
 				<PinkButton
 					text='Start Game'
