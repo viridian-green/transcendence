@@ -30,8 +30,11 @@ const Game = () => {
 			return;
 		}
 
-		const protocol = window.location.protocol === 'https:' ? 'ws:' : 'wss:';
-        const wsUrl = `${protocol}//${window.location.host}/game/${gameId}?mode=${mode}`;
+		// const protocol = window.location.protocol === 'https:' ? 'ws:' : 'wss:';
+        // const wsUrl = `${protocol}//${window.location.host}/game/${gameId}?mode=${mode}`;
+        const backendHost = window.location.host.includes(':8443') ? 'localhost:3000' : window.location.host;
+        const wsUrl = `ws://${backendHost}/game/${gameId}?mode=${mode}`;
+
         const ws = new WebSocket(wsUrl);
 
 		ws.onopen = () => {
