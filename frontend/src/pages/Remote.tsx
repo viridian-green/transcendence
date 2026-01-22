@@ -10,9 +10,9 @@ type Friend = {
 };
 
 const MOCK_FRIENDS: Friend[] = [
-  { id: 'u1', username: 'user1', status: 'online' },
-  { id: 'u2', username: 'user2', status: 'online' },
-  { id: 'u3', username: 'user3', status: 'online' },
+  { id: '1', username: 'u1', status: 'online' },
+  { id: '2', username: 'u2', status: 'online' },
+  { id: '3', username: 'u3', status: 'online' },
 ];
 
 type InvitePopupState = {

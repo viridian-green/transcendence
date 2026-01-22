@@ -29,41 +29,41 @@ export default function chatsocketsHandler(connection: WebSocket, request: any) 
 
 // Helpers
 function extractUserFromJWT(request: any): User | null {
-  // const cookieHeader = request.headers["cookie"] as string | undefined;
+  const cookieHeader = request.headers["cookie"] as string | undefined;
 
-  const url = new URL(request.url, 'http://localhost');
-  const fakeUser = url.searchParams.get('user');
+//   const url = new URL(request.url, 'http://localhost');
+//   const fakeUser = url.searchParams.get('user');
 
-  if (fakeUser === 'user1') {
-    return { id: 'u1', username: 'user1' };
-  }
-  if (fakeUser === 'user2') {
-    return { id: 'u2', username: 'user2' };
-  }
+//   if (fakeUser === 'user1') {
+//     return { id: 'u1', username: 'user1' };
+//   }
+//   if (fakeUser === 'user2') {
+//     return { id: 'u2', username: 'user2' };
+//   }
 
   // Fallback if no param / unknown
-  // let cookies: Record<string, string> = {};
-  // if (cookieHeader) {
-  //   cookieHeader.split(";").forEach((cookie) => {
-  //     const parts = cookie.split("=");
-  //     if (parts.length === 2) {
-  //       cookies[parts[0].trim()] = decodeURIComponent(parts[1].trim());
-  //     }
-  //   });
-  // }
-  // const accessToken = cookies["access_token"];
-  // const jwtSecret = process.env.JWT_SECRET;
-  // if (accessToken && jwtSecret) {
-  //   try {
-  //     const decoded = jwt.verify(accessToken, jwtSecret) as any;
-  //     if (decoded.username && decoded.id) {
-  //       return { username: decoded.username, id: String(decoded.id) };
-  //     }
-  //   } catch (err) {
-  //     console.error("Invalid JWT:", err);
-  //     return null;
-  //   }
-  // }
+  let cookies: Record<string, string> = {};
+  if (cookieHeader) {
+    cookieHeader.split(";").forEach((cookie) => {
+      const parts = cookie.split("=");
+      if (parts.length === 2) {
+        cookies[parts[0].trim()] = decodeURIComponent(parts[1].trim());
+      }
+    });
+  }
+  const accessToken = cookies["access_token"];
+  const jwtSecret = process.env.JWT_SECRET;
+  if (accessToken && jwtSecret) {
+    try {
+      const decoded = jwt.verify(accessToken, jwtSecret) as any;
+      if (decoded.username && decoded.id) {
+        return { username: decoded.username, id: String(decoded.id) };
+      }
+    } catch (err) {
+      console.error("Invalid JWT:", err);
+      return null;
+    }
+  }
   return null;
 }
 

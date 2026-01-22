@@ -5,7 +5,7 @@ import Fastify from "fastify";
 async function gameRoutes(fastify, options) {
   fastify.register(httpProxy, {
     upstream: 'http://game:3002',
-    prefix: '/game',
+    prefix: 'game',
     websocket: true,
     rewritePrefix: '/ws',
   });
