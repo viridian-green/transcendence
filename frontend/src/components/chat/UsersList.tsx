@@ -56,7 +56,7 @@ const UsersList: React.FC = () => {
 
 	return (
 		<div>
-			<h2>Online Users</h2>
+			<h2>😊Online Users <span role="img" aria-label="friends" title="Friends"></span></h2>
 			{users.length === 0 ? (
 				<div>No users online.</div>
 			) : (
