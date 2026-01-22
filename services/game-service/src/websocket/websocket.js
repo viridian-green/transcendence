@@ -145,10 +145,3 @@ function stopRoomLoop(room) {
   }
 }
 
-
-function stopRoomLoop(room) {
-  if (room.loopId) {
-    clearInterval(room.loopId);
-    room.loopId = null;
-  }
-}

@@ -31,7 +31,7 @@ const Game = () => {
 		}
 
 		const protocol = window.location.protocol === 'https:' ? 'ws:' : 'wss:';
-        const wsUrl = `${protocol}//${window.location.host}/ws/${gameId}?mode=${mode}`;
+        const wsUrl = `${protocol}//${window.location.host}/game/${gameId}?mode=${mode}`;
         const ws = new WebSocket(wsUrl);
 
 		ws.onopen = () => {
