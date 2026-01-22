@@ -1,4 +1,4 @@
-.PHONY: setup up dev down logs logsdev restart restartdev nocache rebuild rebuilddev clean prune open usertest usertable
+.PHONY: setup up dev down logs logsdev restart restartdev nocache rebuild rebuilddev clean prune open usertest usertable env env-check env-sync-overwrite
 
 
 ## === Bootstrap ===
@@ -99,6 +99,15 @@ rebuild: clean setup
 # Rebuild dev from scratch
 rebuilddev: clean setup
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d
+
+## === Env management ===
+env:
+	@for file in $$(find . -name ".env.example"); do cp "$$file" "$${file%.example}"; done
+	@echo "Environment variables synced from .env.example files"
+
+# Check that .env files match their .env.example counterparts
+env-check:
+	@bash scripts/check-env-examples.sh
 
 ## === Misc ===
 open:
