@@ -8,7 +8,6 @@ const PUBLIC_ROUTES = [
     "/api/auth/login",
     "/api/auth/signout",
     "/health",
-    "/game",
     "/game-start",
 ];
 

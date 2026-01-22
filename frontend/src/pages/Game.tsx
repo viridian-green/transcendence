@@ -16,8 +16,6 @@ const Game = () => {
 	const [gameState, setGameState] = useState<GameState | null>(null);
 	const wsRef = useRef<WebSocket | null>(null);
 
-
-
 	useEffect(() => {
         console.log('[GAME] Debug', {side, mode, leftPlayerId: state?.leftPlayerId, rightPlayerId: state?.rightPlayerId });
 		if (typeof window === 'undefined') return;
@@ -31,11 +29,14 @@ const Game = () => {
 		}
 
 		// const protocol = window.location.protocol === 'https:' ? 'ws:' : 'wss:';
-        const wsUrl = `wss://${window.location.host}/game/${gameId}?mode=${mode}`;
-  
+        const wsUrl = `wss://${window.location.host}/api/game/${gameId}?mode=${mode}`;
+
         // console.log('[GAME] Debug', {backendHost });
         console.log('[GAME SOCKET] connecting to', wsUrl);
         const ws = new WebSocket(wsUrl);
+
+        console.log('Connected to game server');
+
 
 		ws.onopen = () => {
 			console.log('Connected to game server');

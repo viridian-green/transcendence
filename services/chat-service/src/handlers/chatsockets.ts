@@ -30,8 +30,6 @@ export default function chatsocketsHandler(connection: WebSocket, request: any) 
 // Helpers
 function extractUserFromJWT(request: any): User | null {
   const cookieHeader = request.headers["cookie"] as string | undefined;
-
-  // Fallback if no param / unknown
   let cookies: Record<string, string> = {};
   if (cookieHeader) {
     cookieHeader.split(";").forEach((cookie) => {
@@ -57,26 +55,15 @@ function extractUserFromJWT(request: any): User | null {
   return null;
 }
 
-// Helper to broadcast to all clients
-function broadcastAll(payload: any) {
-  for (const [client] of clients) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(payload));
-    }
-  }
-}
-
-// Helper to broadcast to all except one
-function broadcastToOthers(except: WebSocket, payload: any) {
-  for (const [client] of clients) {
-    if (client !== except && client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(payload));
-    }
-  }
-}
 
 function handleConnection(connection: WebSocket, user: User) {
   clients.set(connection, user);
+
+   user.state = "online";
+  updateUserState(user.id, user.state);
+  console.log(
+    `User ${user.username} connected. Total clients: ${clients.size}`
+  );
 
   // index by userId for direct messaging
   let set = socketsByUserId.get(user.id);
@@ -101,24 +88,6 @@ function handleConnection(connection: WebSocket, user: User) {
     user: { id: user.id, username: user.username },
   });
 }
-
-function handleDisconnect(connection: WebSocket, user: User) {
-  clients.delete(connection);
-
-  const set = socketsByUserId.get(user.id);
-  if (set) {
-    set.delete(connection);
-    if (set.size === 0) socketsByUserId.delete(user.id);
-  }
-
-  console.log(
-    `User ${user.username} disconnected. Total clients: ${clients.size}`
-  );
-  broadcastAll({
-    type: "user_left",
-    user: { id: user.id, username: user.username },
-  });
-}
 function handleMessage(
   connection: WebSocket,
   user: User,
@@ -131,7 +100,6 @@ function handleMessage(
   try {
     data = JSON.parse(text);
   } catch {
-    // plain chat text
     broadcastAll({
       type: 'message',
       user: { id: user.id, username: user.username },
@@ -168,7 +136,6 @@ if (data.type === 'INVITE') {
   return;
 }
 
-
 if (data.type === 'INVITE_ACCEPT') {
   // user = the one who clicked Accept
   const invitedId = user.id;
@@ -186,8 +153,6 @@ if (data.type === 'INVITE_ACCEPT') {
     'gameId',
     gameId,
   );
-
-
 
   const notifyUser = (userId: string, payload: any) => {
     const targets = socketsByUserId.get(userId);
@@ -223,6 +188,26 @@ if (data.type === 'INVITE_ACCEPT') {
   return;
 }
 
+
+
+function handleDisconnect(connection: WebSocket, user: User) {
+  clients.delete(connection);
+
+  const set = socketsByUserId.get(user.id);
+  if (set) {
+    set.delete(connection);
+    if (set.size === 0) socketsByUserId.delete(user.id);
+  }
+
+  console.log(
+    `User ${user.username} disconnected. Total clients: ${clients.size}`
+  );
+  broadcastAll({
+    type: "user_left",
+    user: { id: user.id, username: user.username },
+  });
+}
+
 // default: normal chat broadcast
 broadcastAll({
   type: 'message',
@@ -230,4 +215,23 @@ broadcastAll({
   text: data.text ?? text,
 });
 
+}
+
+
+// Helper to broadcast to all clients
+function broadcastAll(payload: any) {
+  for (const [client] of clients) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(payload));
+    }
+  }
+}
+
+// Helper to broadcast to all except one
+function broadcastToOthers(except: WebSocket, payload: any) {
+  for (const [client] of clients) {
+    if (client !== except && client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(payload));
+    }
+  }
 }

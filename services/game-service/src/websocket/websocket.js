@@ -22,7 +22,7 @@ function getOrCreateRoom(gameId, mode) {
 }
 
 export default async function gameWebsocket(fastify) {
-  fastify.get('/ws/:gameId', { websocket: true }, (connection, req) => {
+  fastify.get('/:gameId', { websocket: true }, (connection, req) => {
     const { gameId } = req.params;
     const { mode } = req.query;
     const ws = connection.socket;
@@ -144,4 +144,3 @@ function stopRoomLoop(room) {
     room.loopId = null;
   }
 }
-
