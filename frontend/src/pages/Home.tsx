@@ -17,14 +17,7 @@ const Home: FC = () => {
 	const [showRest, setShowRest] = useState(!isFirstSession);
 
 	const handleAIGameStart = () => {
-		const gameId = nanoid();
-		navigate(`/game/${gameId}`, {
-			state: {
-				leftPlayer: "Computer",
-				rightPlayer: "You", // or logged-in user's name - "You" seems easier
-				mode: 'AI'
-			}
-		}); // or `navigate('/AI');` to allow user to pick sides 
+		navigate('/AI-game-start');
 	};
 
 	const handleLocalGameStart = () => {
