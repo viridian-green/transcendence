@@ -10,6 +10,7 @@ function getOrCreateRoom(gameId, mode) {
     room = {
       state: createInitialState(),
       clients: new Set(),
+      loopId: null,
       // AI ---------------
       ai: isAI ? new AIController() : null,
       isAIGame: isAI
@@ -26,11 +27,15 @@ export default async function gameWebsocket(fastify) {
     const { mode } = req.query;
     const ws = connection.socket;
 
+    console.log(`[GAME WS] Client connected to room ${gameId} (mode: ${mode})`);
+
     const room = getOrCreateRoom(gameId, mode);
 
     room.clients.add(ws);
 
     ws.send(JSON.stringify({ type: 'STATE', payload: buildStateSnapshot(room.state) }));
+
+    startRoomLoop(room);
 
     ws.on('message', (msg) => {
       try {
@@ -44,23 +49,28 @@ export default async function gameWebsocket(fastify) {
     ws.on('close', () => {
       console.log('[GAME WS] Player disconnected from room', gameId);
       room.clients.delete(ws);
-      
+
     if (room.clients.size === 0) {
       console.log('[GAME WS] No clients left, deleting room', gameId);
-      rooms.delete(gameId);
+      stopRoomLoop(room);
+      rooms.delete(gameId);} else {
 
-      console.log('[GAME WS] Opponent left, notifying remaining client(s)', gameId);
-  const payload = JSON.stringify({ type: 'OPPONENT_LEFT' });
+        console.log(`[GAME WS] Notifying ${room.clients.size} remaining client(s) in ${gameId}`);
+        const payload = JSON.stringify({ type: 'OPPONENT_LEFT' });
+        for (const client of room.clients) {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(payload);
+          }
+        }
+      }
+    });
 
-  for (const client of room.clients) {
-    if (client.readyState === 1)
-      client.send(payload);
-    }
-  room.state.game.phase = 'ended';
-    };
-  });
+    ws.on('error', (err) => {
+      console.error(`[GAME WS] Error in room ${gameId}:`, err);
+    });
   });
 }
+
 
 function buildStateSnapshot(state) {
   return {
@@ -84,10 +94,7 @@ function handleWebSocketMessage(message, state) {
 case 'RESET_GAME':
   {
   const fresh = createInitialState();
-  state.paddles = fresh.paddles;
-  state.ball = fresh.ball;
-  state.score = fresh.score;
-  state.game = fresh.game;
+  Object.assign(state, fresh); //See if this would work for the game!
   break;
     }
     case 'MOVE_PADDLE':
@@ -104,19 +111,44 @@ case 'RESET_GAME':
   }
 }
 
-setInterval(() => {
-  for (const [, room] of rooms) {
-    // AI ---------------
-    if (room.isAIGame) {
-        // AI plays as Player 1 (Left Paddle / index 0)
-        const aiMove = room.ai.getMove(room.state.ball, room.state.paddles[0], GAME_CONFIG.canvas.height);
-        room.state.paddles[0].dy = aiMove;
+function startRoomLoop(room) {
+  if (room.loopId) return; // Already running
+
+  room.loopId = setInterval(() => {
+    // AI logic
+    if (room.isAIGame && room.ai) {
+      const aiMove = room.ai.getMove(room.state.ball, room.state.paddles[0], GAME_CONFIG.canvas.height);
+      room.state.paddles[0].dy = aiMove;
     }
-    // ------------------
+
+    // Game update
     GameLoop(room.state);
-    const json = JSON.stringify({ type: 'STATE', payload: buildStateSnapshot(room.state) });
+
+    // Broadcast to all clients in room
+    const json = JSON.stringify({
+      type: 'STATE',
+      payload: buildStateSnapshot(room.state)
+    });
+
     for (const client of room.clients) {
-      if (client.readyState === 1) client.send(json);
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(json);
+      }
     }
+  }, 1000 / 60);
+}
+
+function stopRoomLoop(room) {
+  if (room.loopId) {
+    clearInterval(room.loopId);
+    room.loopId = null;
   }
-}, 1000 / 60);
+}
+
+
+function stopRoomLoop(room) {
+  if (room.loopId) {
+    clearInterval(room.loopId);
+    room.loopId = null;
+  }
+}

@@ -26,7 +26,6 @@ const Remote = () => {
   const [friends] = useState<Friend[]>(MOCK_FRIENDS);
   const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
   const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
-
   const { send, lastRawMessage, isConnected } = useChatSocket(true);
 
   useEffect(() => {
@@ -43,13 +42,17 @@ const Remote = () => {
     }
 
     if (lastRawMessage.type === 'GAME_START') {
-      const { gameId, leftPlayerId, rightPlayerId } = lastRawMessage;
+      const { gameId, leftPlayerId, rightPlayerId, yourSide, leftPlayer, rightPlayer } = lastRawMessage;
       console.log('[REMOTE] GAME_START', gameId, leftPlayerId, rightPlayerId);
 
     navigate(`/game/${gameId}`, {
         state: {
-          leftPlayerId,
-          rightPlayerId,
+          leftPlayerId: leftPlayerId,
+          rightPlayerId: rightPlayerId,
+          leftPlayer: leftPlayer,
+          rightPlayer: rightPlayer,
+          side: yourSide,
+          mode: 'remote'
         },
       });
     }
