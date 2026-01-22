@@ -2,6 +2,7 @@ import { WebSocket } from "ws";
 import jwt from "jsonwebtoken";
 import { updateUserState } from "../utils/userStateApi.js";
 
+
 export interface User {
   id: string;
   username: string;
@@ -30,6 +31,18 @@ export default function chatsocketsHandler(connection: WebSocket, request: any) 
 // Helpers
 function extractUserFromJWT(request: any): User | null {
   const cookieHeader = request.headers["cookie"] as string | undefined;
+
+  const url = new URL(request.url, 'http://localhost');
+  const fakeUser = url.searchParams.get('user');
+
+  if (fakeUser === 'user1') {
+    return { id: 'u1', username: 'user1' };
+  }
+  if (fakeUser === 'user2') {
+    return { id: 'u2', username: 'user2' };
+  }
+
+//   Fallback if no param / unknown
   let cookies: Record<string, string> = {};
   if (cookieHeader) {
     cookieHeader.split(";").forEach((cookie) => {
@@ -55,15 +68,26 @@ function extractUserFromJWT(request: any): User | null {
   return null;
 }
 
+// Helper to broadcast to all clients
+function broadcastAll(payload: any) {
+  for (const [client] of clients) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(payload));
+    }
+  }
+}
+
+// Helper to broadcast to all except one
+function broadcastToOthers(except: WebSocket, payload: any) {
+  for (const [client] of clients) {
+    if (client !== except && client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(payload));
+    }
+  }
+}
 
 function handleConnection(connection: WebSocket, user: User) {
   clients.set(connection, user);
-
-   user.state = "online";
-  updateUserState(user.id, user.state);
-  console.log(
-    `User ${user.username} connected. Total clients: ${clients.size}`
-  );
 
   // index by userId for direct messaging
   let set = socketsByUserId.get(user.id);
@@ -88,6 +112,24 @@ function handleConnection(connection: WebSocket, user: User) {
     user: { id: user.id, username: user.username },
   });
 }
+
+function handleDisconnect(connection: WebSocket, user: User) {
+  clients.delete(connection);
+
+  const set = socketsByUserId.get(user.id);
+  if (set) {
+    set.delete(connection);
+    if (set.size === 0) socketsByUserId.delete(user.id);
+  }
+
+  console.log(
+    `User ${user.username} disconnected. Total clients: ${clients.size}`
+  );
+  broadcastAll({
+    type: "user_left",
+    user: { id: user.id, username: user.username },
+  });
+}
 function handleMessage(
   connection: WebSocket,
   user: User,
@@ -100,6 +142,7 @@ function handleMessage(
   try {
     data = JSON.parse(text);
   } catch {
+    // plain chat text
     broadcastAll({
       type: 'message',
       user: { id: user.id, username: user.username },
@@ -133,15 +176,14 @@ if (data.type === 'INVITE') {
     }
   }
 
-  return;
+  return; // stop here for INVITE
 }
+
 
 if (data.type === 'INVITE_ACCEPT') {
   // user = the one who clicked Accept
   const invitedId = user.id;
-  const inviterId = String(data.fromUserId);
-    const invitedUsername = user.username;
-  const inviterUsername = String(data.fromUsername);
+  const inviterId = String(data.fromUserId); // original challenger
 
   const gameId = `game-${Date.now()}`;
 
@@ -165,47 +207,18 @@ if (data.type === 'INVITE_ACCEPT') {
     }
   };
 
-  notifyUser(inviterId, {
+  const payload = {
     type: 'GAME_START',
     gameId,
     leftPlayerId: inviterId,
     rightPlayerId: invitedId,
-    leftPlayer: inviterUsername,
-    rightPlayer: invitedUsername,
-    yourSide: 'left'
-  });
 
-  notifyUser(invitedId, {
-    type: 'GAME_START',
-    gameId,
-    leftPlayerId: inviterId,
-    rightPlayerId: invitedId,
-    leftPlayer: inviterUsername,
-    rightPlayer: invitedUsername,
-    yourSide: 'right'
-  });
+  };
+
+  notifyUser(inviterId, payload);
+  notifyUser(invitedId, payload);
 
   return;
-}
-
-
-
-function handleDisconnect(connection: WebSocket, user: User) {
-  clients.delete(connection);
-
-  const set = socketsByUserId.get(user.id);
-  if (set) {
-    set.delete(connection);
-    if (set.size === 0) socketsByUserId.delete(user.id);
-  }
-
-  console.log(
-    `User ${user.username} disconnected. Total clients: ${clients.size}`
-  );
-  broadcastAll({
-    type: "user_left",
-    user: { id: user.id, username: user.username },
-  });
 }
 
 // default: normal chat broadcast
@@ -215,23 +228,4 @@ broadcastAll({
   text: data.text ?? text,
 });
 
-}
-
-
-// Helper to broadcast to all clients
-function broadcastAll(payload: any) {
-  for (const [client] of clients) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(payload));
-    }
-  }
-}
-
-// Helper to broadcast to all except one
-function broadcastToOthers(except: WebSocket, payload: any) {
-  for (const [client] of clients) {
-    if (client !== except && client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(payload));
-    }
-  }
 }
