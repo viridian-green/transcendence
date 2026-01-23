@@ -3,7 +3,7 @@ import websocket from "@fastify/websocket";
 import ChatsocketsRoute from "./routes/chatsockets.js";
 import OnlineUsersRoute from "./routes/onlineUsers.js";
 import { Server as SocketIOServer } from "socket.io";
-import { setupPresenceSubscriber } from "./redis/subscribers.js";
+import { setupSubscribers } from "./redis/subscribers.js";
 
 const fastify = Fastify({
   logger: true,
@@ -24,7 +24,7 @@ const io = new SocketIOServer(fastify.server, {
 });
 
 // Setup Redis presence subscriber to emit updates via socket.io
-setupPresenceSubscriber(io);
+setupSubscribers(io);
 
 const start = async () => {
   try {

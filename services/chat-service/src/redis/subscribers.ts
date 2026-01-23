@@ -12,7 +12,7 @@ const redisSubscriber = new Redis({
 });
 
 // Attach the  message handler ONCE
-export function setupRedisSubscribers(io?: any) {
+export function setupSubscribers(io?: any) {
   redisSubscriber.on("message", (channel: string, message: string) => {
     if (channel === "presence:updates" && io) {
       io.emit("onlineUsersUpdated");

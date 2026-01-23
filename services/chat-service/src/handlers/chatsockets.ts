@@ -1,11 +1,11 @@
 import { WebSocket } from "ws";
 import jwt from "jsonwebtoken";
-import { updateUserState } from "../utils/userStateApi.js";
+import { updateUserState } from "../utils/userStateApi";
 import {
   subscribeUserChannel,
   unsubscribeUserChannel,
   wsByUserId,
-} from "../redis/subscribers.ts";
+} from "../redis/subscribers";
 import Redis from "ioredis";
 
 export interface User {
