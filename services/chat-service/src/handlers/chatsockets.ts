@@ -1,15 +1,20 @@
 import { WebSocket } from "ws";
 import jwt from "jsonwebtoken";
 import { updateUserState } from "../utils/userStateApi.js";
+import { subscribeUserChannel, unsubscribeUserChannel, wsByUserId } from "../redis/subscribers.ts";
+import Redis from "ioredis";
 
 export interface User {
   id: string;
   username: string;
-  state?: string; // e.g., "online", "offline", "busy"
+  state?: string; // Allowed: "online", "offline", "busy"
 }
 
 // Map to keep track of connected clients and their user info
 const clients: Map<WebSocket, User> = new Map();
+const redisPublisher = new Redis(
+  process.env.REDIS_URL || "redis://localhost:6379" // Replace with your Redis URL in envm check if localhost is correct
+);
 
 // Main WebSocket handler function (not exported directly)
 function chatsocketsHandler(connection: WebSocket, request: any) {
@@ -19,11 +24,23 @@ function chatsocketsHandler(connection: WebSocket, request: any) {
     connection.close();
     return;
   }
-  handleConnection(connection, user);
+
+  // On new connection
+  subscribeUserChannel(user.id); // Subscribe to user's private Redis channel
+  wsByUserId.set(user.id, connection); // Store WebSocket by userId
+  handleConnection(connection, user); // Handle new connection
+
+  // Handle incoming messages
   connection.on("message", (message: string | Buffer) =>
     handleMessage(connection, user, message)
   );
-  connection.on("close", () => handleDisconnect(connection, user));
+
+  // Handle disconnection
+  connection.on("close", () => {
+    unsubscribeUserChannel(user.id);
+    wsByUserId.delete(user.id);
+    handleDisconnect(connection, user);
+  });
 }
 
 // Helpers

@@ -1,6 +1,8 @@
 // src/redis/subscribers.ts
 import Redis from "ioredis";
-import { Server as SocketIOServer } from "socket.io";
+import { WebSocket } from "ws";
+
+export const wsByUserId: Map<string, WebSocket> = new Map();
 
 const redisSubscriber = new Redis({
   //Check if all these envs can be replaced by process.envREDIS_URL
@@ -9,15 +11,38 @@ const redisSubscriber = new Redis({
   password: process.env.REDIS_PASSWORD || undefined,
 });
 
-export function setupPresenceSubscriber(io: SocketIOServer) {
-  redisSubscriber.subscribe("presence:updates");
-
-  redisSubscriber.on("message", async (channel, message) => {
-    if (channel === "presence:updates") {
-      // Optionally, parse message and log or use it
-      // const { userId, state } = JSON.parse(message);
-      // console.log(`User ${userId} is now ${state}`);
+// Attach the  message handler ONCE
+export function setupRedisSubscribers(io?: any) {
+  redisSubscriber.on("message", (channel: string, message: string) => {
+    if (channel === "presence:updates" && io) {
       io.emit("onlineUsersUpdated");
+    } else if (channel === "chat:general") {
+      wsByUserId.forEach((ws) => {
+        if (ws.readyState === ws.OPEN)
+          ws.send(message);
+      });
+    } else if (channel.startsWith("user:")) {
+      const userId = channel.split(":")[1];
+      const ws = wsByUserId.get(userId);
+      if (ws && ws.readyState === ws.OPEN) {
+        ws.send(message);
+      }
     }
   });
+}
+
+export function subscribePresenceUpdates() {
+  redisSubscriber.subscribe("presence:updates");
+}
+
+export function subscribeGeneralChat() {
+  redisSubscriber.subscribe("chat:general");
+}
+
+export function subscribeUserChannel(userId: string) {
+  redisSubscriber.subscribe(`user:${userId}`);
+}
+
+export function unsubscribeUserChannel(userId: string) {
+  redisSubscriber.unsubscribe(`user:${userId}`);
 }
