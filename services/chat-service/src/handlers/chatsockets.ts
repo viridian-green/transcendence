@@ -16,9 +16,10 @@ export interface User {
 
 // Map to keep track of connected clients and their user info
 const clients: Map<WebSocket, User> = new Map();
-const redisPublisher = new Redis(
-  process.env.REDIS_URL || "redis://localhost:6379" // Replace with your Redis URL in envm check if localhost is correct
-);
+const redisPublisher = new Redis({
+  host: process.env.REDIS_HOST || "redis",
+  port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6378,
+});
 
 // Main WebSocket handler function (not exported directly)
 function chatsocketsHandler(connection: WebSocket, request: any) {
