@@ -1,7 +1,11 @@
 import { WebSocket } from "ws";
 import jwt from "jsonwebtoken";
 import { updateUserState } from "../utils/userStateApi.js";
-import { subscribeUserChannel, unsubscribeUserChannel, wsByUserId } from "../redis/subscribers.ts";
+import {
+  subscribeUserChannel,
+  unsubscribeUserChannel,
+  wsByUserId,
+} from "../redis/subscribers.ts";
 import Redis from "ioredis";
 
 export interface User {
@@ -97,14 +101,38 @@ function handleMessage(
   user: User,
   message: string | Buffer
 ) {
-  const text = typeof message === "string" ? message : message.toString();
-  console.log(`Received from ${user.username}:`, text);
-  // Broadcast to all connected clients
-  broadcastAll({
-    type: "message",
-    user: { id: user.id, username: user.username },
-    text,
-  });
+  let payload: any;
+  try {
+    payload =
+      typeof message === "string"
+        ? JSON.parse(message)
+        : JSON.parse(message.toString());
+  } catch {
+    connection.send(JSON.stringify({ error: "Invalid message format" }));
+    return;
+  }
+
+  if (payload.type === "private_msg" && payload.to && payload.text) {
+    // Private message: publish to recipient's channel
+    const msg = JSON.stringify({
+      type: "private_msg",
+      from: { id: user.id, username: user.username },
+      text: payload.text,
+      timestamp: Date.now(),
+    });
+    redisPublisher.publish(`user:${payload.to}`, msg);
+  } else if (payload.type === "general_msg" && payload.text) {
+    // General chat: publish to _msg channel
+    const msg = JSON.stringify({
+      type: "general_msg",
+      user: { id: user.id, username: user.username },
+      text: payload.text,
+      timestamp: Date.now(),
+    });
+    redisPublisher.publish("chat:general", msg);
+  } else {
+    connection.send(JSON.stringify({ error: "Invalid message payload" }));
+  }
 }
 
 function handleDisconnect(connection: WebSocket, user: User) {
