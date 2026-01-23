@@ -40,7 +40,7 @@ export function PrivateMessages({
 					placeholder={`Message ${recipient.username}...`}
 				/>
 				<button
-					className='rounded bg-blue-800 px-4 py-2 font-bold text-white hover:bg-stone-600'
+					className='cursor-pointer rounded bg-stone-600 px-4 py-2 font-bold text-white hover:bg-blue-800'
 					onClick={handleSend}
 				>
 					Send
