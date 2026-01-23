@@ -7,9 +7,13 @@ type User = {
 	// Add avatar or other fields if needed
 };
 
+interface UsersListProps {
+	onUserClick: (user: User) => void;
+}
+
 const socket: Socket = io('/api/chat', { autoConnect: true }); // Adjust path/URL as needed
 
-const UsersList: React.FC = () => {
+const UsersList: React.FC<UsersListProps> = ({ onUserClick }) => {
 	const [users, setUsers] = useState<User[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -56,13 +60,21 @@ const UsersList: React.FC = () => {
 
 	return (
 		<div>
-			<h2>😊Online Users <span role="img" aria-label="friends" title="Friends"></span></h2>
+			<h2>
+				😊Online Users <span role='img' aria-label='friends' title='Friends'></span>
+			</h2>
 			{users.length === 0 ? (
 				<div>No users online.</div>
 			) : (
 				<ul>
 					{users.map((user) => (
-						<li key={user.id}>{user.username}</li>
+						<li
+							key={user.id}
+							onClick={() => onUserClick(user)}
+							style={{ cursor: 'pointer' }}
+						>
+							{user.username}
+						</li>
 					))}
 				</ul>
 			)}
