@@ -1,4 +1,4 @@
-export type ChatRenderMessage = 
+export type ChatRenderMessage =
 	| { kind: 'chat'; username: string; text: string }
 	| { kind: 'system'; text: string };
 
@@ -12,7 +12,7 @@ export function AllMessages({
 	return (
 		<div className='messages'>
 			{messages.map((msg, i) => (
-				<div key={i} className='message'>
+				<div key={i} className='message px-4 py-2'>
 					{msg.kind === 'chat' ? (
 						<>
 							<strong

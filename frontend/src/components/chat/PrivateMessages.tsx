@@ -25,21 +25,26 @@ export function PrivateMessages({
 	};
 
 	return (
-		<div className='private-message'>
-			<div className='header'>
+		<div className='private-message rounded-lg bg-stone-900 text-white'>
+			<div className='header mb-2 rounded bg-stone-800 p-4'>
 				<span>
-					Private chat with <strong>{recipient.username}</strong>
+					<strong>{recipient.username}</strong>
 				</span>
 			</div>
 			<AllMessages messages={messages} currentUsername={currentUsername} />
-			<div className='input-row'>
+			<div className='input-row flex gap-2 p-4 text-white'>
 				<input
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
 					onKeyDown={(e) => e.key === 'Enter' && handleSend()}
 					placeholder={`Message ${recipient.username}...`}
 				/>
-				<button onClick={handleSend}>Send</button>
+				<button
+					className='rounded bg-blue-800 px-4 py-2 font-bold text-white hover:bg-stone-600'
+					onClick={handleSend}
+				>
+					Send
+				</button>
 			</div>
 		</div>
 	);

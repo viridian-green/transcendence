@@ -9,7 +9,24 @@ import type { ChatRenderMessage } from '@/types/chat';
 
 export default function Chat() {
   const { user } = useAuth();
-  const { messages, isConnected, sendMessage } = useChatSocket(Boolean(user));
+  const { messages, isConnected, sendMessage } = useChatSocket(
+    Boolean(user),
+    undefined,
+    (from, text) => {
+      // Open the conversation if not already open
+      setOpenConversations((prev) =>
+        prev.some((u) => u.id === from.id) ? prev : [...prev, from]
+      );
+      // Add the message to the correct conversation
+      setPrivateMessages((prev) => ({
+        ...prev,
+        [from.id]: [
+          ...(prev[from.id] || []),
+          { kind: "chat", username: from.username, text },
+        ],
+      }));
+    }
+  );
 	const [openConversations, setOpenConversations] = useState<{ id: string; username: string }[]>(
 		[],
 	);
