@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ChatServerMessage, ChatRenderMessage } from '@/types/chat';
 
-export function useChatSocket(enabled: boolean) {
+export function useChatSocket(enabled: boolean, recipientUserId?: string) {
   const [messages, setMessages] = useState<ChatRenderMessage[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const ws = useRef<WebSocket | null>(null);
@@ -17,23 +17,44 @@ export function useChatSocket(enabled: boolean) {
     ws.current.onerror = () => setIsConnected(false);
 
     ws.current.onmessage = (event) => {
+      console.log('Received from WS:', event.data);
       try {
         const data: ChatServerMessage = JSON.parse(event.data);
         switch (data.type) {
-          case 'message':
+          case 'general_msg':
             setMessages((prev) => [
               ...prev,
-              { kind: 'chat', username: data.user?.username ?? data.username ?? 'unknown', text: data.text }
+              {
+                kind: 'chat',
+                username: data.user?.username ?? 'unknown',
+                text: data.text,
+              },
+            ]);
+            return;
+          case 'private_msg':
+            setMessages((prev) => [
+              ...prev,
+              {
+                kind: 'chat',
+                username: data.from?.user?.username ?? 'unknown',
+                text: data.text,
+              },
             ]);
             return;
           case 'welcome':
             setMessages((prev) => [...prev, { kind: 'system', text: data.message }]);
             return;
           case 'user_joined':
-            setMessages((prev) => [...prev, { kind: 'system', text: `${data.user.username} joined` }]);
+            setMessages((prev) => [
+              ...prev,
+              { kind: 'system', text: `${data.user.username} joined` },
+            ]);
             return;
           case 'user_left':
-            setMessages((prev) => [...prev, { kind: 'system', text: `${data.user.username} left` }]);
+            setMessages((prev) => [
+              ...prev,
+              { kind: 'system', text: `${data.user.username} left` },
+            ]);
             return;
           default:
             setMessages((prev) => [...prev, { kind: 'raw', text: event.data }]);
@@ -48,7 +69,13 @@ export function useChatSocket(enabled: boolean) {
 
   const sendMessage = (text: string) => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(text);
+      let payload;
+      if (recipientUserId) {
+        payload = { type: 'private_msg', to: recipientUserId, text };
+      } else {
+        payload = { type: 'general_msg', text };
+      }
+      ws.current.send(JSON.stringify(payload));
     }
   };
 
