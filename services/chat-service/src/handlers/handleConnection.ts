@@ -1,0 +1,45 @@
+import { WebSocket } from "ws";
+import { User } from "./chatsockets";
+import { updateUserState } from "../utils/userStateApi";
+import { subscribeUserChannel, wsByUserId } from "../redis/subscribers";
+
+export function handleConnection(
+  connection: WebSocket,
+  user: User,
+  clients: Map<WebSocket, User>
+) {
+  clients.set(connection, user);
+  user.state = "online";
+  updateUserState(user.id, user.state);
+  console.log(
+    `User ${user.username} connected. Total clients: ${clients.size}`
+  );
+  connection.send(
+    JSON.stringify({
+      type: "welcome",
+      message: `Welcome, ${user.username}!`,
+      user: { id: user.id, username: user.username, state: user.state },
+    })
+  );
+  // Broadcast to all other clients that this user joined and is online
+  broadcastToOthers(
+    connection,
+    {
+      type: "user_joined",
+      user: { id: user.id, username: user.username, state: user.state },
+    },
+    clients
+  );
+}
+
+function broadcastToOthers(
+  except: WebSocket,
+  payload: any,
+  clients: Map<WebSocket, User>
+) {
+  for (const [client] of clients) {
+    if (client !== except && client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(payload));
+    }
+  }
+}
