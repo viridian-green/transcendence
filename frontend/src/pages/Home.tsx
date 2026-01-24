@@ -2,7 +2,6 @@ import { useEffect, useState, type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PinkButton } from '@components/index';
 import { useAuth } from '@hooks/useAuth';
-import { nanoid } from 'nanoid';
 import './Home.css';
 import { loginSessionStorageKey } from '@/const';
 
