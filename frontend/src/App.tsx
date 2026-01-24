@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import {
 	Home,
 	NotFound,
@@ -24,9 +24,6 @@ import { useAuth } from './hooks/useAuth';
 
 function App() {
 	const { isLoggedIn, isLoading } = useAuth();
-	const location = useLocation();
-	const showTopAvatar =
-		location.pathname !== '/profile' && location.pathname !== '/settings' && isLoggedIn;
 
 	if (isLoading) {
 		return <Loading />;
@@ -34,7 +31,7 @@ function App() {
 
 	return (
 		<div className='flex min-h-screen flex-col'>
-			{showTopAvatar && (
+			{isLoggedIn && (
 				<nav className='bg-surface border-border sticky top-0 z-50 flex h-16 items-center justify-between border-b px-6'>
 					<button
 						className='font-retro text-accent-pink no-scale text-xl leading-none'

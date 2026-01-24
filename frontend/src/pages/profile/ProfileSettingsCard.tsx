@@ -91,7 +91,9 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 
 				{/* Username */}
 				<div className='flex flex-col space-y-2'>
-					<label htmlFor='username'>Username</label>
+					<label htmlFor='username' className='text-text-muted'>
+						Username
+					</label>
 					<input
 						type='text'
 						id='username'
@@ -103,7 +105,9 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 
 				{/* Email */}
 				<div className='flex flex-col space-y-2'>
-					<label htmlFor='email'>Email</label>
+					<label htmlFor='email' className='text-text-muted'>
+						Email
+					</label>
 					<input
 						type='email'
 						id='email'
@@ -116,7 +120,9 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 				{/* Bio */}
 				<div className='flex flex-col space-y-2'>
 					<div className='flex items-center justify-between'>
-						<label htmlFor='bio'>Bio</label>
+						<label htmlFor='bio' className='text-text-muted'>
+							Bio
+						</label>
 						<span
 							className={`text-sm ${(formData.bio?.length || 0) > 150 ? 'text-red-500' : 'text-text-secondary'}`}
 						>

@@ -9,7 +9,7 @@ export function ProfileCard({ profile }: ProfileCardProps) {
 	return (
 		<Card>
 			<CardTitle>Profile</CardTitle>
-			<div className='space-y-6'>
+			<div className='space-y-4'>
 				{/* Avatar */}
 				<div className='flex flex-col items-center gap-4'>
 					<Avatar size={128} className='hover:opacity-100' url={profile.avatar} />
@@ -17,20 +17,20 @@ export function ProfileCard({ profile }: ProfileCardProps) {
 
 				{/* Username */}
 				<div className='flex flex-col space-y-2'>
-					<label className='text-text-secondary text-sm'>Username</label>
-					<p className='text-accent-pink'>{profile.username}</p>
+					<label className='text-text-muted'>Username</label>
+					<p className='text-text'>{profile.username}</p>
 				</div>
 
 				{/* Email */}
 				<div className='flex flex-col space-y-2'>
-					<label className='text-text-secondary text-sm'>Email</label>
+					<label className='text-text-muted'>Email</label>
 					<p className='text-text'>{profile.email}</p>
 				</div>
 
 				{/* Bio */}
 				{profile.bio && (
 					<div className='flex flex-col space-y-2'>
-						<label className='text-text-secondary text-sm'>Bio</label>
+						<label className='text-text-muted'>Bio</label>
 						<p className='text-text leading-relaxed'>{profile.bio}</p>
 					</div>
 				)}
