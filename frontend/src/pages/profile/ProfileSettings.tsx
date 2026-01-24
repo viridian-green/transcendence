@@ -1,49 +1,21 @@
 import { Toast, type ToastType } from '@components/index';
 import type { UserProfile } from '@/shared.types';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ProfileSettingsCard } from './ProfileSettingsCard';
 import { ChangePasswordCard } from './ChangePasswordCard';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
 
 const ProfileSettings = () => {
-	const { user } = useAuth();
-	const { updateProfile, updatePassword } = useUserProfile();
+	const { user, avatarUrl } = useAuth();
+	const { updateProfile, updatePassword, updateAvatar } = useUserProfile();
 	const [profile, setProfile] = useState<UserProfile>({
 		id: user?.id as number,
 		username: user?.username as string,
 		email: user?.email as string,
-		avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username as string)}&size=128`,
-		bio: '',
+		avatar: user?.avatar,
+		bio: user?.bio || '',
 	});
-
-	useEffect(() => {
-		const fetchUserProfile = async () => {
-			try {
-				const response = await fetch('/api/users/me', {
-					credentials: 'include',
-				});
-				if (response.ok) {
-					const userData = await response.json();
-					setProfile({
-						id: userData.id,
-						username: userData.username,
-						email: userData.email,
-						avatar: userData.avatar
-							? `/uploads/avatars/${userData.avatar}`
-							: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.username)}&size=128`,
-						bio: userData.bio || '',
-					});
-				}
-			} catch (error) {
-				console.error('Failed to fetch user profile:', error);
-			}
-		};
-
-		if (user) {
-			fetchUserProfile();
-		}
-	}, [user]);
 
 	const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType } | null>({
 		show: false,
@@ -51,7 +23,7 @@ const ProfileSettings = () => {
 		type: 'success',
 	});
 
-	const handleProfileUpdate = async (updatedProfile: UserProfile) => {
+	const handleProfileUpdate = async (updatedProfile: UserProfile, avatarFile: File | null) => {
 		try {
 			const user = await updateProfile(updatedProfile);
 			setProfile({
@@ -61,6 +33,9 @@ const ProfileSettings = () => {
 				email: user.email,
 				bio: user.bio || '',
 			});
+			if (avatarFile) {
+				await updateAvatar(avatarFile);
+			}
 			setToast({ show: true, message: 'Profile updated successfully!', type: 'success' });
 		} catch {
 			setToast({ show: true, message: 'Failed to update profile.', type: 'failure' });
@@ -92,7 +67,11 @@ const ProfileSettings = () => {
 			)}
 			<main className='mx-auto max-w-6xl flex-1 overflow-y-auto px-6 py-8'>
 				<div className='grid gap-6 md:grid-cols-2'>
-					<ProfileSettingsCard profile={profile} onUpdate={handleProfileUpdate} />
+					<ProfileSettingsCard
+						profile={profile}
+						avatar={avatarUrl}
+						onUpdate={handleProfileUpdate}
+					/>
 					<div>
 						<ChangePasswordCard onUpdate={handlePasswordUpdate} />
 					</div>

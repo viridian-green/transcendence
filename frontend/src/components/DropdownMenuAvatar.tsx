@@ -73,6 +73,9 @@ const ProfileCard = () => {
 const DropdownMenuAvatar = () => {
 	const [open, setOpen] = useState(false);
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
+	const avatarSize = 48;
+	const { user, avatarUrl } = useAuth();
+	const name = user?.username || '?';
 	useOutsideAlerter(wrapperRef);
 	function useOutsideAlerter(ref: React.RefObject<HTMLDivElement | null>) {
 		useEffect(() => {
@@ -104,7 +107,13 @@ const DropdownMenuAvatar = () => {
 				aria-controls='profile-menu'
 				aria-label='Open user menu'
 			>
-				<Avatar />
+				<Avatar
+					url={
+						avatarUrl ||
+						`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=${avatarSize * 2}`
+					}
+					size={avatarSize}
+				/>
 			</button>
 			{open && <ProfileCard />}
 		</div>

@@ -16,18 +16,26 @@ const profileUpdateSchema = z.object({
 
 interface ProfileSettingsCardProps {
 	profile: UserProfile;
-	onUpdate: (profile: UserProfile) => void;
+	avatar: string | null;
+	onUpdate: (profile: UserProfile, avatarFile: File | null) => Promise<void>;
 }
 
-export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardProps) {
+export function ProfileSettingsCard({ profile, avatar, onUpdate }: ProfileSettingsCardProps) {
 	const [formData, setFormData] = useState(profile);
-	const [previewUrl, setPreviewUrl] = useState(profile.avatar);
+	const [avatarFile, setAvatarFile] = useState<File | null>(null);
+	const [previewUrl, setPreviewUrl] = useState(
+		avatar ||
+			`https://ui-avatars.com/api/?name=${encodeURIComponent(profile.username)}&size=${128 * 2}`,
+	);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		setFormData(profile);
-		setPreviewUrl(profile.avatar);
-	}, [profile]);
+		setPreviewUrl(
+			avatar ||
+				`https://ui-avatars.com/api/?name=${encodeURIComponent(profile.username)}&size=${128 * 2}`,
+		);
+	}, [profile, avatar]);
 
 	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -36,13 +44,13 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 			reader.onloadend = () => {
 				const result = reader.result as string;
 				setPreviewUrl(result);
-				setFormData({ ...formData, avatar: result });
+				setAvatarFile(file);
 			};
 			reader.readAsDataURL(file);
 		}
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		try {
 			profileUpdateSchema.parse({
@@ -51,7 +59,7 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 				bio: formData.bio,
 				avatar: formData.avatar,
 			});
-			onUpdate(formData);
+			await onUpdate(formData, avatarFile);
 			if (error) {
 				setError(null);
 			}
@@ -61,6 +69,9 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 			} else {
 				setError('An unexpected error occurred.');
 			}
+		} finally {
+			// Clean up the avatar file input
+			setAvatarFile(null);
 		}
 	};
 
