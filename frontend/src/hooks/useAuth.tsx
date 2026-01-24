@@ -12,18 +12,59 @@ interface AuthContextType {
 	signout: () => Promise<void>;
 	isLoading: boolean;
 	isLoggedIn: boolean;
+	avatarUrl: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const getAvatar = async (fileName: string) => {
+	const res = await fetch(`/api/avatars/${fileName}`, {
+		method: 'GET',
+		credentials: 'include',
+	});
+	if (!res.ok) {
+		const err = await res.json();
+		throw new Error(err.error || 'Failed to fetch avatar');
+	}
+	const avatar = await res.blob();
+	return URL.createObjectURL(avatar);
+};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const [user, setUser] = useState<User | null>(null);
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
+	const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
 	useEffect(() => {
 		checkAuth();
 	}, []);
+
+	useEffect(() => {
+		if (!user?.avatar) {
+			setAvatarUrl(null);
+			return;
+		}
+
+		let active = true;
+
+		getAvatar(user.avatar)
+			.then((url) => {
+				if (active) setAvatarUrl(url);
+			})
+			.catch(() => setAvatarUrl(null));
+
+		return () => {
+			active = false;
+		};
+	}, [user?.avatar]);
+
+	// cleanup avatar URL object when user or avatar changes to prevent memory leaks
+	useEffect(() => {
+		return () => {
+			if (avatarUrl) URL.revokeObjectURL(avatarUrl);
+		};
+	}, [avatarUrl]);
 
 	// Used to check the session status with the server
 	const checkAuth = async () => {
@@ -110,7 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	return (
 		<AuthContext.Provider
-			value={{ user, setUser, login, register, signout, isLoading, isLoggedIn }}
+			value={{ user, setUser, login, register, signout, isLoading, isLoggedIn, avatarUrl }}
 		>
 			{children}
 		</AuthContext.Provider>
