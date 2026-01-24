@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { User } from '@/shared.types';
 import { loginSessionStorageKey } from '@/const';
+import { authErroMapper } from '@/pages/auth/utils';
 
 interface AuthContextType {
 	user: User | null;
@@ -66,8 +67,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		});
 
 		if (!response.ok) {
-			const error = await response.json();
-			throw new Error(error.error || 'Failed to log in');
+			const message = authErroMapper(response.status);
+			throw new Error(message);
 		}
 
 		const data = await response.json();
@@ -87,8 +88,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		});
 
 		if (!response.ok) {
-			const error = await response.json();
-			throw new Error(error.error || 'Failed to register');
+			const message = authErroMapper(response.status);
+			throw new Error(message);
 		}
 
 		const data = await response.json();

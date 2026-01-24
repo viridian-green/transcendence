@@ -48,9 +48,8 @@ export default function Login() {
 				setErrors(formattedErrors);
 			} else {
 				if (error instanceof Error) {
-					const message = error.message.trimEnd();
-					const formattedMessage = message.endsWith('.') ? message.slice(0, -1) : message;
-					setErrors({ submit: `${formattedMessage}. Please try again.` });
+					const { message } = error;
+					setErrors({ submit: `${message}` });
 				} else {
 					setErrors({ submit: `Failed to log in. Please try again.` });
 				}
