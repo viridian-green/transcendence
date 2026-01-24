@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { User } from '@/shared.types';
 import { loginSessionStorageKey } from '@/const';
+import { authErroMapper } from '@/pages/auth/utils';
 
 interface AuthContextType {
 	user: User | null;
@@ -55,19 +56,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	};
 
 	// Used to log in a user, create a session, and store the user data in the context
-	const login = async (username: string, password: string) => {
+	const login = async (email: string, password: string) => {
 		const response = await fetch('/api/auth/login', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			credentials: 'include',
-			body: JSON.stringify({ username, password }),
+			body: JSON.stringify({ email, password }),
 		});
 
 		if (!response.ok) {
-			const error = await response.json();
-			throw new Error(error.error || 'Failed to log in');
+			const message = authErroMapper(response.status);
+			throw new Error(message);
 		}
 
 		const data = await response.json();
@@ -87,8 +88,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		});
 
 		if (!response.ok) {
-			const error = await response.json();
-			throw new Error(error.error || 'Failed to register');
+			const message = authErroMapper(response.status);
+			throw new Error(message);
 		}
 
 		const data = await response.json();
