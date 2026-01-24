@@ -70,7 +70,7 @@ const ProfileCard = () => {
 	);
 };
 
-const TopRightAvatar = () => {
+const DropdownMenuAvatar = () => {
 	const [open, setOpen] = useState(false);
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	useOutsideAlerter(wrapperRef);
@@ -111,4 +111,4 @@ const TopRightAvatar = () => {
 	);
 };
 
-export default TopRightAvatar;
+export default DropdownMenuAvatar;

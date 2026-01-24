@@ -19,7 +19,7 @@ import {
 	Profile,
 	ProfileSettings,
 } from '@pages/index';
-import TopRightAvatar from './pages/TopRightAvatar';
+import DropdownMenuAvatar from './components/DropdownMenuAvatar';
 import { useAuth } from './hooks/useAuth';
 
 function App() {
@@ -43,7 +43,7 @@ function App() {
 					>
 						Retroscendence
 					</button>
-					<TopRightAvatar />
+					<DropdownMenuAvatar />
 				</nav>
 			)}
 
