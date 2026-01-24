@@ -182,7 +182,7 @@ const Game = () => {
 	}, [gameState, navigate, leftPlayer, rightPlayer, mode]);
 
 	return (
-		<div className='bg-bg flex min-h-screen flex-col items-center justify-center gap-4'>
+		<div className='bg-bg flex flex-col items-center justify-center gap-4 py-8'>
 			<h1 className='text-accent-pink font-retro mb-4 text-4xl font-bold'>Game Room</h1>
 			<div className='flex w-[800px] justify-between'>
 				<p>{leftPlayer}</p>
