@@ -113,22 +113,6 @@ export default function Registration() {
 						className='space-y-4'
 					>
 						<div className='flex flex-col space-y-2'>
-							<label htmlFor='email' className='text-md font-medium'>
-								Email
-							</label>
-							<input
-								id='email'
-								name='email'
-								type='email'
-								value={formData.email}
-								onChange={handleChange}
-								required
-								placeholder='Enter your email'
-								className='border-border text-text-secondary rounded-md border-2 p-2 text-sm'
-							/>
-							{errors.email && <ErrorMessage message={errors.email} />}
-						</div>
-						<div className='flex flex-col space-y-2'>
 							<label htmlFor='username' className='text-md font-medium'>
 								Username
 							</label>
@@ -143,6 +127,22 @@ export default function Registration() {
 								className='border-border text-text-secondary rounded-md border-2 p-2 text-sm'
 							/>
 							{errors.username && <ErrorMessage message={errors.username} />}
+						</div>
+						<div className='flex flex-col space-y-2'>
+							<label htmlFor='email' className='text-md font-medium'>
+								Email
+							</label>
+							<input
+								id='email'
+								name='email'
+								type='email'
+								value={formData.email}
+								onChange={handleChange}
+								required
+								placeholder='Enter your email'
+								className='border-border text-text-secondary rounded-md border-2 p-2 text-sm'
+							/>
+							{errors.email && <ErrorMessage message={errors.email} />}
 						</div>
 						<div className='relative flex flex-col space-y-2'>
 							<label htmlFor='password' className='text-md font-medium'>

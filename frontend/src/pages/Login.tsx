@@ -7,7 +7,7 @@ import { Eye } from '@/icons/Eye';
 import { EyeOff } from '@/icons/EyeOff';
 
 const logInSchema = z.object({
-	username: z.string('Invalid username').min(1, 'Username required'),
+	email: z.email('Invalid email address').min(1, 'Email required'),
 	password: z.string('Invalid password').min(1, 'Password required'),
 });
 
@@ -15,11 +15,11 @@ type LoginUser = z.infer<typeof logInSchema>;
 
 export default function Login() {
 	const [formData, setFormData] = useState({
-		username: '',
+		email: '',
 		password: '',
 	});
 	const [errors, setErrors] = useState<{
-		username?: string;
+		email?: string;
 		password?: string;
 		submit?: string;
 	}>({});
@@ -35,7 +35,7 @@ export default function Login() {
 
 			const validUser: LoginUser = logInSchema.parse(data);
 
-			await login(validUser.username, validUser.password);
+			await login(validUser.email, validUser.password);
 			navigate('/home');
 		} catch (error) {
 			if (error instanceof ZodError) {
@@ -84,20 +84,20 @@ export default function Login() {
 						className='space-y-4'
 					>
 						<div className='flex flex-col space-y-2'>
-							<label htmlFor='username' className='text-md font-medium'>
-								Username
+							<label htmlFor='email' className='text-md font-medium'>
+								Email
 							</label>
 							<input
-								id='username'
-								name='username'
+								id='email'
+								name='email'
 								type='text'
-								value={formData.username}
+								value={formData.email}
 								onChange={handleChange}
 								required
-								placeholder='Enter your username'
+								placeholder='Enter your email'
 								className='border-border text-text-secondary rounded-md border-2 p-2 text-sm'
 							/>
-							{errors.username && <ErrorMessage message={errors.username} />}
+							{errors.email && <ErrorMessage message={errors.email} />}
 						</div>
 						<div className='relative flex flex-col space-y-2'>
 							<label htmlFor='password' className='text-md font-medium'>

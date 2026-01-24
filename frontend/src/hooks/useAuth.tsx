@@ -55,14 +55,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	};
 
 	// Used to log in a user, create a session, and store the user data in the context
-	const login = async (username: string, password: string) => {
+	const login = async (email: string, password: string) => {
 		const response = await fetch('/api/auth/login', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
 			credentials: 'include',
-			body: JSON.stringify({ username, password }),
+			body: JSON.stringify({ email, password }),
 		});
 
 		if (!response.ok) {
