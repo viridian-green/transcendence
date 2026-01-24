@@ -55,9 +55,9 @@ const GameStart = () => {
 	};
 
 	return (
-		<div className='flex min-h-screen flex-col items-center justify-center gap-6'>
+		<div className='flex flex-1 flex-col items-center justify-center gap-6'>
 			<section className='flex flex-col items-center justify-center gap-6'>
-				<p className='text-accent-pink font-retro text-6xl font-bold'>Game Start</p>
+				<p className='text-accent-pink font-retro text-4xl font-bold'>Game Start</p>
 				<label htmlFor='opponent' className='text-2xl'>
 					Who are you playing with?
 				</label>
@@ -70,7 +70,7 @@ const GameStart = () => {
 					onChange={(e) => handleValueChange(e)}
 				/>
 				<div className='flex items-center justify-center gap-10'>
-					<div className='bg-surface border-border shadow-elevated flex min-w-54 flex-col items-center gap-2 rounded-lg px-6 py-4 shadow'>
+					<div className='bg-surface border-border shadow-elevated flex min-w-54 flex-col items-center gap-2 rounded-lg border px-6 py-4 shadow'>
 						<p className='text-2xl'>{leftPlayer}</p>
 						<div className='flex w-full items-center justify-between'>
 							<p className='text-text-secondary'>Paddle:</p>
@@ -95,7 +95,7 @@ const GameStart = () => {
 					>
 						&harr;
 					</button>
-					<div className='bg-surface border-border shadow-elevated flex min-w-54 flex-col items-center gap-2 rounded-lg px-6 py-4 shadow'>
+					<div className='bg-surface border-border shadow-elevated flex min-w-54 flex-col items-center gap-2 rounded-lg border px-6 py-4 shadow'>
 						<p className='text-2xl'>{rightPlayer}</p>
 						<div className='flex w-full items-center justify-between'>
 							<p className='text-text-secondary'>Paddle:</p>

@@ -1,5 +1,5 @@
 import { PinkButton } from '@/components';
-import Canvas from './Canvas';
+import Canvas, { CANVAS_WIDTH } from './Canvas';
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import type { GameState } from '@/shared.types';
@@ -182,9 +182,9 @@ const Game = () => {
 	}, [gameState, navigate, leftPlayer, rightPlayer, mode]);
 
 	return (
-		<div className='bg-bg flex min-h-screen flex-col items-center justify-center gap-4'>
-			<h1 className='text-accent-pink font-retro mb-4 text-4xl font-bold'>Game Room</h1>
-			<div className='flex w-[800px] justify-between'>
+		<div className='flex flex-1 flex-col items-center justify-center gap-6'>
+			<h1 className='text-accent-pink font-retro text-4xl font-bold'>Game Room</h1>
+			<div className={`flex w-[${CANVAS_WIDTH}px] justify-between`}>
 				<p>{leftPlayer}</p>
 				<p>{rightPlayer}</p>
 			</div>

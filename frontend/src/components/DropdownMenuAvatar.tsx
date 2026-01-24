@@ -16,7 +16,7 @@ const MenuButton = ({ onClick, icon, description }: MenuButtonProps) => {
 			type='button'
 			role='menuitem'
 			onClick={onClick}
-			className='hover:bg-accent-blue flex cursor-pointer items-center justify-between rounded-lg border-0 px-2'
+			className='hover:bg-accent-blue flex items-center justify-between rounded-lg border-0 px-2'
 		>
 			<p>{description}</p>
 			{icon}
@@ -70,7 +70,7 @@ const ProfileCard = () => {
 	);
 };
 
-const TopRightAvatar = () => {
+const DropdownMenuAvatar = () => {
 	const [open, setOpen] = useState(false);
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	useOutsideAlerter(wrapperRef);
@@ -98,7 +98,7 @@ const TopRightAvatar = () => {
 			<button
 				type='button'
 				onClick={() => setOpen(!open)}
-				className='cursor-pointer'
+				className='flex items-center hover:cursor-pointer'
 				aria-haspopup='menu'
 				aria-expanded={open}
 				aria-controls='profile-menu'
@@ -111,4 +111,4 @@ const TopRightAvatar = () => {
 	);
 };
 
-export default TopRightAvatar;
+export default DropdownMenuAvatar;
