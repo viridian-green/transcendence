@@ -25,7 +25,7 @@ export function FriendsCard({
 	};
 
 	return (
-		<div className='border-border bg-surface max-h-100 overflow-y-auto rounded-2xl border p-8'>
+		<div className='border-border bg-surface max-h-[436px] overflow-y-auto rounded-2xl border p-8'>
 			<h2 className='mb-6 text-(--color-accent-pink)'>Friends</h2>
 
 			{/* Add Friend */}

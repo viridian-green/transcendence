@@ -16,18 +16,20 @@ const profileUpdateSchema = z.object({
 
 interface ProfileSettingsCardProps {
 	profile: UserProfile;
-	onUpdate: (profile: UserProfile) => void;
+	avatar: string | null;
+	onUpdate: (profile: UserProfile, avatarFile: File | null) => void;
 }
 
-export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardProps) {
+export function ProfileSettingsCard({ profile, avatar, onUpdate }: ProfileSettingsCardProps) {
 	const [formData, setFormData] = useState(profile);
-	const [previewUrl, setPreviewUrl] = useState(profile.avatar);
+	const [avatarFile, setAvatarFile] = useState<File | null>(null);
+	const [previewUrl, setPreviewUrl] = useState(avatar || '');
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		setFormData(profile);
-		setPreviewUrl(profile.avatar);
-	}, [profile]);
+		setPreviewUrl(avatar || '');
+	}, [profile, avatar]);
 
 	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -36,7 +38,7 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 			reader.onloadend = () => {
 				const result = reader.result as string;
 				setPreviewUrl(result);
-				setFormData({ ...formData, avatar: result });
+				setAvatarFile(file);
 			};
 			reader.readAsDataURL(file);
 		}
@@ -51,7 +53,7 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 				bio: formData.bio,
 				avatar: formData.avatar,
 			});
-			onUpdate(formData);
+			onUpdate(formData, avatarFile);
 			if (error) {
 				setError(null);
 			}
@@ -61,6 +63,9 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 			} else {
 				setError('An unexpected error occurred.');
 			}
+		} finally {
+			// Clean up the avatar file input
+			setAvatarFile(null);
 		}
 	};
 

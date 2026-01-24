@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	}, []);
 
 	useEffect(() => {
-		if (!user?.avatar) {
+		if (!isLoggedIn || !user?.avatar) {
 			setAvatarUrl(null);
 			return;
 		}
@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		return () => {
 			active = false;
 		};
-	}, [user?.avatar]);
+	}, [isLoggedIn, user?.avatar]);
 
 	// cleanup avatar URL object when user or avatar changes to prevent memory leaks
 	useEffect(() => {
@@ -115,6 +115,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		const data = await response.json();
 		setUser(data);
 		setIsLoggedIn(true);
+
+		await checkAuth();
 	};
 
 	// Used to register a new user, create a session, and store the user data in the context
@@ -136,6 +138,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		const data = await response.json();
 		setUser(data);
 		setIsLoggedIn(true);
+
+		await checkAuth();
 	};
 
 	// Used to sign out a user and clear the user data from the context
