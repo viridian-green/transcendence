@@ -41,6 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	}, []);
 
 	useEffect(() => {
+		let objectURL: string | null = null;
 		if (!isLoggedIn || !user?.avatar) {
 			setAvatarUrl(null);
 			return;
@@ -50,21 +51,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 		getAvatar(user.avatar)
 			.then((url) => {
+				objectURL = url;
 				if (active) setAvatarUrl(url);
 			})
-			.catch(() => setAvatarUrl(null));
+			.catch(() => {
+				setAvatarUrl(null);
+			});
 
 		return () => {
+			// cleanup avatar URL object when user or avatar changes to prevent memory leaks
+			if (objectURL) URL.revokeObjectURL(objectURL);
 			active = false;
 		};
 	}, [isLoggedIn, user?.avatar]);
-
-	// cleanup avatar URL object when user or avatar changes to prevent memory leaks
-	useEffect(() => {
-		return () => {
-			if (avatarUrl) URL.revokeObjectURL(avatarUrl);
-		};
-	}, [avatarUrl]);
 
 	// Used to check the session status with the server
 	const checkAuth = async () => {

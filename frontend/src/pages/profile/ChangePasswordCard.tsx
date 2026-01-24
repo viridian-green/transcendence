@@ -21,7 +21,7 @@ const passwordSchema = z
 	});
 
 interface ChangePasswordCardProps {
-	onUpdate: (newPassword: string) => void;
+	onUpdate: (newPassword: string) => Promise<void>;
 }
 
 export function ChangePasswordCard({ onUpdate }: ChangePasswordCardProps) {
@@ -34,14 +34,14 @@ export function ChangePasswordCard({ onUpdate }: ChangePasswordCardProps) {
 		confirmPassword: '',
 	});
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		try {
 			passwordSchema.parse({
 				password: formData.newPassword,
 				confirmPassword: formData.confirmPassword,
 			});
-			onUpdate(formData.newPassword);
+			await onUpdate(formData.newPassword);
 			if (error) {
 				setError(null);
 			}

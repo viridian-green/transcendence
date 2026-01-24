@@ -17,18 +17,24 @@ const profileUpdateSchema = z.object({
 interface ProfileSettingsCardProps {
 	profile: UserProfile;
 	avatar: string | null;
-	onUpdate: (profile: UserProfile, avatarFile: File | null) => void;
+	onUpdate: (profile: UserProfile, avatarFile: File | null) => Promise<void>;
 }
 
 export function ProfileSettingsCard({ profile, avatar, onUpdate }: ProfileSettingsCardProps) {
 	const [formData, setFormData] = useState(profile);
 	const [avatarFile, setAvatarFile] = useState<File | null>(null);
-	const [previewUrl, setPreviewUrl] = useState(avatar || '');
+	const [previewUrl, setPreviewUrl] = useState(
+		avatar ||
+			`https://ui-avatars.com/api/?name=${encodeURIComponent(profile.username)}&size=${128 * 2}`,
+	);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		setFormData(profile);
-		setPreviewUrl(avatar || '');
+		setPreviewUrl(
+			avatar ||
+				`https://ui-avatars.com/api/?name=${encodeURIComponent(profile.username)}&size=${128 * 2}`,
+		);
 	}, [profile, avatar]);
 
 	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +50,7 @@ export function ProfileSettingsCard({ profile, avatar, onUpdate }: ProfileSettin
 		}
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		try {
 			profileUpdateSchema.parse({
@@ -53,7 +59,7 @@ export function ProfileSettingsCard({ profile, avatar, onUpdate }: ProfileSettin
 				bio: formData.bio,
 				avatar: formData.avatar,
 			});
-			onUpdate(formData, avatarFile);
+			await onUpdate(formData, avatarFile);
 			if (error) {
 				setError(null);
 			}
