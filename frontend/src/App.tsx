@@ -47,7 +47,7 @@ function App() {
 				</nav>
 			)}
 
-			<main className='grow'>
+			<main className='flex flex-1 flex-col'>
 				<Suspense fallback={<Loading />}>
 					<Routes>
 						<Route

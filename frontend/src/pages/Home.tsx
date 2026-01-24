@@ -48,7 +48,7 @@ const Home: FC = () => {
 	}, [showWelcome]);
 
 	return (
-		<div className='flex min-h-screen flex-col items-center justify-center gap-6'>
+		<div className='flex flex-1 flex-col items-center justify-center gap-6'>
 			{showWelcome && (
 				<section
 					className={
