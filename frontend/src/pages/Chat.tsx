@@ -4,15 +4,15 @@ import { useChatSocket } from '../hooks/useChatSocket';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function Chat() {
-  const { user } = useAuth();
-  const { messages, isConnected, sendMessage } = useChatSocket(Boolean(user));
+	const { user } = useAuth();
+	const { messages, isConnected, sendMessage } = useChatSocket(Boolean(user));
 
-  return (
-    <div className="chat-container">
-      <h1>Chat</h1>
-      <div className="status">{isConnected ? '🟢 Connected' : '🔴 Disconnected'}</div>
-      <MessageList messages={messages} currentUsername={user?.username} />
-      <MessageInput onSend={sendMessage} disabled={!isConnected} />
-    </div>
-  );
+	return (
+		<div className='chat-container'>
+			<h1>Chat</h1>
+			<div className='status'>{isConnected ? '🟢 Connected' : '🔴 Disconnected'}</div>
+			<MessageList messages={messages} currentUsername={user?.username} />
+			<MessageInput onSend={sendMessage} disabled={!isConnected} />
+		</div>
+	);
 }

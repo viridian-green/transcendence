@@ -24,8 +24,7 @@ const GameEnd = () => {
 					mode: 'AI',
 				},
 			});
-		}
-		else {
+		} else {
 			navigate(`/game/${gameId}`, { state: { leftPlayer, rightPlayer } });
 		}
 	};

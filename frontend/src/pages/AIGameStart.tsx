@@ -53,7 +53,7 @@ const AIGameStart = () => {
 					</div>
 				</div>
 				<p className='text-xl'>First to score 11 points wins!</p>
-				
+
 				<PinkButton
 					text='Start Game'
 					onClick={() => {

@@ -117,8 +117,10 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 				<div className='flex flex-col space-y-2'>
 					<div className='flex items-center justify-between'>
 						<label htmlFor='bio'>Bio</label>
-						<span className={`text-sm ${(formData.bio?.length || 0) > 150 ? 'text-red-500' : 'text-text-secondary'}`}>
-							{(formData.bio?.length || 0)}/150
+						<span
+							className={`text-sm ${(formData.bio?.length || 0) > 150 ? 'text-red-500' : 'text-text-secondary'}`}
+						>
+							{formData.bio?.length || 0}/150
 						</span>
 					</div>
 					<textarea
