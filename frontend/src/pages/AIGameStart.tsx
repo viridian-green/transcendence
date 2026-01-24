@@ -25,7 +25,7 @@ const AIGameStart = () => {
 				<p className='text-accent-pink font-retro text-6xl font-bold'>Game Start</p>
 
 				<div className='flex items-stretch justify-center gap-10'>
-					<div className='bg-surface border-border shadow-elevated flex min-w-54 flex-col items-center justify-start gap-2 rounded-lg px-6 py-4 shadow'>
+					<div className='bg-surface border-border shadow-elevated flex min-w-54 flex-col items-center justify-start gap-2 rounded-lg border px-6 py-4 shadow'>
 						<p className='text-2xl'>{leftPlayer}</p>
 						<div className='flex w-full items-center justify-between'>
 							<p className='text-text-secondary'>Paddle:</p>
@@ -33,7 +33,7 @@ const AIGameStart = () => {
 						</div>
 					</div>
 
-					<div className='bg-surface border-border shadow-elevated flex min-w-54 flex-col items-center justify-start gap-2 rounded-lg px-6 py-4 shadow'>
+					<div className='bg-surface border-border shadow-elevated flex min-w-54 flex-col items-center justify-start gap-2 rounded-lg border px-6 py-4 shadow'>
 						<p className='text-2xl'>{rightPlayer}</p>
 						<div className='flex w-full items-center justify-between'>
 							<p className='text-text-secondary'>Paddle:</p>
