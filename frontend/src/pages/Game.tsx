@@ -52,14 +52,12 @@ const Game = () => {
 
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (ws.readyState !== WebSocket.OPEN) return;
-
-			// Avoid repeating events if key is held down
-			if (event.repeat) return;
-
 			if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(event.key)) {
 				// Prevent scrolling the page
 				event.preventDefault();
 			}
+			// Avoid repeating events if key is held down
+			if (event.repeat) return;
 
 			switch (event.key) {
 				case 'w':
@@ -158,7 +156,7 @@ const Game = () => {
 			ws.close();
 			wsRef.current = null;
 		};
-	}, [navigate, gameId]);
+	}, [navigate, gameId, mode]);
 
 	const handlePauseToggle = () => {
 		wsRef.current?.send(JSON.stringify({ type: 'TOGGLE_PAUSE' }));
