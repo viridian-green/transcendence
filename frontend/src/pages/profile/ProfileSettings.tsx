@@ -1,7 +1,7 @@
 import { Avatar, Toast, type ToastType } from '@components/index';
 import { ArrowLeft } from '@/icons';
 import type { UserProfile } from '@/shared.types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ProfileSettingsCard } from './ProfileSettingsCard';
 import { ChangePasswordCard } from './ChangePasswordCard';
 import { useAuth } from '@/hooks/useAuth';
@@ -15,8 +15,36 @@ const ProfileSettings = () => {
 		username: user?.username as string,
 		email: user?.email as string,
 		avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username as string)}&size=128`,
-		bio: 'This is a sample bio.', // TODO backend bio field
+		bio: '',
 	});
+
+	useEffect(() => {
+		const fetchUserProfile = async () => {
+			try {
+				const response = await fetch('/api/users/me', {
+					credentials: 'include',
+				});
+				if (response.ok) {
+					const userData = await response.json();
+					setProfile({
+						id: userData.id,
+						username: userData.username,
+						email: userData.email,
+						avatar: userData.avatar
+							? `/uploads/avatars/${userData.avatar}`
+							: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.username)}&size=128`,
+						bio: userData.bio || '',
+					});
+				}
+			} catch (error) {
+				console.error('Failed to fetch user profile:', error);
+			}
+		};
+
+		if (user) {
+			fetchUserProfile();
+		}
+	}, [user]);
 
 	const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType } | null>({
 		show: false,
@@ -27,7 +55,13 @@ const ProfileSettings = () => {
 	const handleProfileUpdate = async (updatedProfile: UserProfile) => {
 		try {
 			const user = await updateProfile(updatedProfile);
-			setProfile(user);
+			setProfile({
+				...updatedProfile,
+				id: user.id,
+				username: user.username,
+				email: user.email,
+				bio: user.bio || '',
+			});
 			setToast({ show: true, message: 'Profile updated successfully!', type: 'success' });
 		} catch {
 			setToast({ show: true, message: 'Failed to update profile.', type: 'failure' });
