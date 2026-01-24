@@ -7,7 +7,7 @@ export default function LegalText({ title, children }: { title: string; children
 	const navigate = useNavigate();
 
 	return (
-		<div className='legal-text-wrapper'>
+		<div className='fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/20 p-8 shadow-lg'>
 			<div className='legal-text'>
 				<div className='legal-text-header'>
 					<h1>{title}</h1>
@@ -19,7 +19,7 @@ export default function LegalText({ title, children }: { title: string; children
 						{<CloseIcon />}
 					</button>
 				</div>
-				<article>{children}</article>
+				<article className='flex-1 overflow-y-auto'>{children}</article>
 			</div>
 		</div>
 	);
