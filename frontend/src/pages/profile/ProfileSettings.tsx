@@ -31,7 +31,6 @@ const ProfileSettings = () => {
 				id: user.id,
 				username: user.username,
 				email: user.email,
-				avatar: user.avatar,
 				bio: user.bio || '',
 			});
 			if (avatarFile) {

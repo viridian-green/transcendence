@@ -36,7 +36,7 @@ export async function updateUser(app, userId, updateData) {
         UPDATE users
         SET ${fields.join(", ")}
         WHERE id = $${index}
-        RETURNING id, username, email, bio
+        RETURNING id, username, email, avatar, bio
     `;
 
     const { rows } = await app.pg.query(query, values);

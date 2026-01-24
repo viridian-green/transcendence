@@ -6,7 +6,7 @@ import { authErroMapper } from '@/pages/auth/utils';
 
 interface AuthContextType {
 	user: User | null;
-	setUser: (user: User | null) => void;
+	setUser: React.Dispatch<React.SetStateAction<User | null>>;
 	login: (username: string, password: string) => Promise<void>;
 	register: (email: string, username: string, password: string) => Promise<void>;
 	signout: () => Promise<void>;

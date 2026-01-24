@@ -1,4 +1,4 @@
-import type { UserProfile } from '@/shared.types';
+import type { UserProfile, User } from '@/shared.types';
 import { useAuth } from './useAuth';
 
 export function useUserProfile() {
@@ -61,10 +61,10 @@ export function useUserProfile() {
 			throw new Error(err.error || 'Failed to upload avatar');
 		}
 
-		const updatedUser = await res.json();
-		setUser(updatedUser);
+		const { avatar }: { avatar: string } = await res.json();
+		setUser((prev: User | null) => (prev ? ({ ...prev, avatar } as User) : prev));
 
-		return updatedUser;
+		return avatar;
 	};
 
 	return {
