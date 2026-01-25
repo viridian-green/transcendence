@@ -24,6 +24,7 @@ export function useChatSocket(
 			const data = JSON.parse(event.data);
 			if (data.type === 'private_msg') {
 				onPrivateMessage?.(data.from, data.text);
+				return;
 			}
 			console.log('Received from WS:', event.data);
 			try {
@@ -35,16 +36,6 @@ export function useChatSocket(
 							{
 								kind: 'chat',
 								username: data.user?.username ?? 'unknown',
-								text: data.text,
-							},
-						]);
-						return;
-					case 'private_msg':
-						setMessages((prev) => [
-							...prev,
-							{
-								kind: 'chat',
-								username: data.from?.user?.username ?? 'unknown',
 								text: data.text,
 							},
 						]);
