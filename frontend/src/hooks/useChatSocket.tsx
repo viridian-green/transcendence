@@ -4,7 +4,11 @@ import type { ChatServerMessage, ChatRenderMessage } from '@/types/chat';
 export function useChatSocket(
 	enabled: boolean,
 	recipientUserId?: string,
-	onPrivateMessage?: (from: { id: string; username: string }, text: string) => void,
+	onPrivateMessage?: (
+		from: { id: string; username: string },
+		text: string,
+		kind: 'chat' | 'system',
+	) => void,
 ) {
 	const [messages, setMessages] = useState<ChatRenderMessage[]>([]);
 	const [isConnected, setIsConnected] = useState(false);
@@ -30,7 +34,7 @@ export function useChatSocket(
 			}
 
 			if (data.type === 'private_msg') {
-				onPrivateMessage?.(data.from, data.text);
+				onPrivateMessage?.(data.from, data.text, 'chat');
 				return;
 			}
 
@@ -53,12 +57,26 @@ export function useChatSocket(
 						...prev,
 						{ kind: 'system', text: `${data.user.username} joined` },
 					]);
+					if (onPrivateMessage) {
+						onPrivateMessage(
+							{ id: data.user.id, username: data.user.username },
+							`${data.user.username} joined the chat`,
+							'system',
+						);
+					}
 					return;
 				case 'user_left':
 					setMessages((prev) => [
 						...prev,
 						{ kind: 'system', text: `${data.user.username} left` },
 					]);
+					if (onPrivateMessage) {
+						onPrivateMessage(
+							{ id: data.user.id, username: data.user.username },
+							`${data.user.username} left the chat`,
+							'system',
+						);
+					}
 					return;
 			}
 		};
