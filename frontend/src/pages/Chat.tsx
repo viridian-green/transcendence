@@ -16,26 +16,25 @@ export default function Chat() {
 
 	const [privateMessages, setPrivateMessages] = useState<Record<string, ChatRenderMessage[]>>({});
 
-	const addPrivateMessage = useCallback(
-		(userId: string, username: string, text: string, kind: 'chat' | 'system' = 'chat') => {
-			setPrivateMessages((prev) => ({
-				...prev,
-				[userId]: [...(prev[userId] || []), { kind, username, text }],
-			}));
-		},
-		[],
-	);
-
 	const onPrivateMessage = useCallback(
-		(from, text, kind = 'chat') => {
+		(
+			from: { id: string; username: string },
+			text: string,
+			kind: 'chat' | 'system' = 'chat',
+		) => {
+			// Open conversation if not already open
 			setOpenConversations((prev) =>
 				prev.some((u) => String(u.id) === String(from.id))
 					? prev
 					: [...prev, { id: String(from.id), username: from.username }],
 			);
-			addPrivateMessage(from.id, from.username, text, kind);
+			// Add message to private messages
+			setPrivateMessages((prev) => ({
+				...prev,
+				[from.id]: [...(prev[from.id] || []), { kind, username: from.username, text }],
+			}));
 		},
-		[addPrivateMessage, setOpenConversations],
+		[setOpenConversations, setPrivateMessages],
 	);
 
 	const { messages, isConnected, sendMessage } = useChatSocket(
@@ -72,7 +71,13 @@ export default function Chat() {
 					currentUsername={user?.username || ''}
 					onSend={(text) => {
 						sendMessage({ type: 'private_msg', to: recipient.id, text });
-						addPrivateMessage(String(recipient.id), user?.username || '', text);
+						setPrivateMessages((prev) => ({
+							...prev,
+							[String(recipient.id)]: [
+								...(prev[String(recipient.id)] || []),
+								{ kind: 'chat', username: user?.username || '', text },
+							],
+						}));
 					}}
 				/>
 			))}

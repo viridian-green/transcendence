@@ -57,26 +57,22 @@ export function useChatSocket(
 						...prev,
 						{ kind: 'system', text: `${data.user.username} joined` },
 					]);
-					if (onPrivateMessage) {
-						onPrivateMessage(
-							{ id: data.user.id, username: data.user.username },
-							`${data.user.username} joined the chat`,
-							'system',
-						);
-					}
+					onPrivateMessage?.(
+						{ id: data.user.id, username: data.user.username },
+						`${data.user.username} joined the chat`,
+						'system',
+					);
 					return;
 				case 'user_left':
 					setMessages((prev) => [
 						...prev,
 						{ kind: 'system', text: `${data.user.username} left` },
 					]);
-					if (onPrivateMessage) {
-						onPrivateMessage(
-							{ id: data.user.id, username: data.user.username },
-							`${data.user.username} left the chat`,
-							'system',
-						);
-					}
+					onPrivateMessage?.(
+						{ id: data.user.id, username: data.user.username },
+						`${data.user.username} left the chat`,
+						'system',
+					);
 					return;
 			}
 		};
