@@ -21,45 +21,45 @@ export function useChatSocket(
 		ws.current.onerror = () => setIsConnected(false);
 
 		ws.current.onmessage = (event) => {
-			const data = JSON.parse(event.data);
+			let data: ChatServerMessage;
+			try {
+				data = JSON.parse(event.data);
+			} catch {
+				console.warn('Invalid JSON from WS:', event.data);
+				return;
+			}
+
 			if (data.type === 'private_msg') {
 				onPrivateMessage?.(data.from, data.text);
 				return;
 			}
-			console.log('Received from WS:', event.data);
-			try {
-				const data: ChatServerMessage = JSON.parse(event.data);
-				switch (data.type) {
-					case 'general_msg':
-						setMessages((prev) => [
-							...prev,
-							{
-								kind: 'chat',
-								username: data.user?.username ?? 'unknown',
-								text: data.text,
-							},
-						]);
-						return;
-					case 'welcome':
-						setMessages((prev) => [...prev, { kind: 'system', text: data.message }]);
-						return;
-					case 'user_joined':
-						setMessages((prev) => [
-							...prev,
-							{ kind: 'system', text: `${data.user.username} joined` },
-						]);
-						return;
-					case 'user_left':
-						setMessages((prev) => [
-							...prev,
-							{ kind: 'system', text: `${data.user.username} left` },
-						]);
-						return;
-					default:
-						setMessages((prev) => [...prev, { kind: 'raw', text: event.data }]);
-				}
-			} catch {
-				setMessages((prev) => [...prev, { kind: 'raw', text: event.data }]);
+
+			switch (data.type) {
+				case 'general_msg':
+					setMessages((prev) => [
+						...prev,
+						{
+							kind: 'chat',
+							username: data.user?.username ?? 'unknown',
+							text: data.text,
+						},
+					]);
+					return;
+				case 'welcome':
+					setMessages((prev) => [...prev, { kind: 'system', text: data.message }]);
+					return;
+				case 'user_joined':
+					setMessages((prev) => [
+						...prev,
+						{ kind: 'system', text: `${data.user.username} joined` },
+					]);
+					return;
+				case 'user_left':
+					setMessages((prev) => [
+						...prev,
+						{ kind: 'system', text: `${data.user.username} left` },
+					]);
+					return;
 			}
 		};
 
