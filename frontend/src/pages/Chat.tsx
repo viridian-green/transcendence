@@ -15,7 +15,9 @@ export default function Chat() {
 		(from, text) => {
 			// Open the conversation if not already open
 			setOpenConversations((prev) =>
-				prev.some((u) => u.id === from.id) ? prev : [...prev, from],
+				prev.some((u) => String(u.id) === String(from.id))
+					? prev
+					: [...prev, { id: String(from.id), username: from.username }],
 			);
 			// Add the message to the correct conversation
 			setPrivateMessages((prev) => ({
@@ -34,22 +36,11 @@ export default function Chat() {
 
 	function handleUserClick(selectedUser: { id: string; username: string }) {
 		setOpenConversations((prev) =>
-			prev.some((u) => u.id === selectedUser.id) ? prev : [...prev, selectedUser],
+			prev.some((u) => String(u.id) === String(selectedUser.id))
+				? prev
+				: [...prev, { id: String(selectedUser.id), username: selectedUser.username }],
 		);
 	}
-
-	// function sendPrivateMessage(userId: string, text: string) {
-	// 	// Send the private message via WebSocket
-	// 	sendMessage(JSON.stringify({ type: 'private_msg', to: userId, text }));
-
-	// 	// setPrivateMessages((prev) => ({
-	// 	// 	...prev,
-	// 	// 	[userId]: [
-	// 	// 		...(prev[userId] || []),
-	// 	// 		{ kind: 'chat', username: user?.username || 'me', text },
-	// 	// 	],
-	// 	// }));
-	// }
 
 	return (
 		<div className='chat-container'>
@@ -66,7 +57,7 @@ export default function Chat() {
 			<br></br>
 			{openConversations.map((recipient) => (
 				<PrivateMessages
-					key={recipient.id}
+					key={String(recipient.id)}
 					recipient={recipient}
 					messages={privateMessages[recipient.id] || []}
 					currentUsername={user?.username || ''}
