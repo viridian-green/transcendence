@@ -61,8 +61,17 @@ export default function Chat() {
 					recipient={recipient}
 					messages={privateMessages[recipient.id] || []}
 					currentUsername={user?.username || ''}
-					onSend={(text) => sendMessage({ type: 'private_msg', to: recipient.id, text })}
-				/>
+          onSend={(text) => {
+            sendMessage({ type: 'private_msg', to: recipient.id, text });
+            setPrivateMessages((prev) => ({
+                ...prev,
+                [recipient.id]: [
+                    ...(prev[recipient.id] || []),
+                    { kind: 'chat', username: user?.username || '', text },
+                ],
+            }));
+          }}
+				/>  
 			))}
 		</div>
 	);
