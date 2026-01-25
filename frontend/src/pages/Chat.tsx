@@ -8,25 +8,25 @@ import { useAuth } from '@/hooks/useAuth';
 import type { ChatRenderMessage } from '@/types/chat';
 
 export default function Chat() {
-  const { user } = useAuth();
-  const { messages, isConnected, sendMessage } = useChatSocket(
-    Boolean(user),
-    undefined,
-    (from, text) => {
-      // Open the conversation if not already open
-      setOpenConversations((prev) =>
-        prev.some((u) => u.id === from.id) ? prev : [...prev, from],
-      );
-      // Add the message to the correct conversation
-      setPrivateMessages((prev) => ({
-        ...prev,
-        [from.id]: [
-          ...(prev[from.id] || []),
-          { kind: 'chat', username: from.username, text },
-        ],
-      }));
-    },
-  );
+	const { user } = useAuth();
+	const { messages, isConnected, sendMessage } = useChatSocket(
+		Boolean(user),
+		undefined,
+		(from, text) => {
+			// Open the conversation if not already open
+			setOpenConversations((prev) =>
+				prev.some((u) => u.id === from.id) ? prev : [...prev, from],
+			);
+			// Add the message to the correct conversation
+			setPrivateMessages((prev) => ({
+				...prev,
+				[from.id]: [
+					...(prev[from.id] || []),
+					{ kind: 'chat', username: from.username, text },
+				],
+			}));
+		},
+	);
 	const [openConversations, setOpenConversations] = useState<{ id: string; username: string }[]>(
 		[],
 	);
@@ -38,38 +38,41 @@ export default function Chat() {
 		);
 	}
 
-	function sendPrivateMessage(userId: string, text: string) {
-		// Send the private message via WebSocket
-		sendMessage(JSON.stringify({ type: 'private_msg', to: userId, text }));
+	// function sendPrivateMessage(userId: string, text: string) {
+	// 	// Send the private message via WebSocket
+	// 	sendMessage(JSON.stringify({ type: 'private_msg', to: userId, text }));
 
-		// setPrivateMessages((prev) => ({
-		// 	...prev,
-		// 	[userId]: [
-		// 		...(prev[userId] || []),
-		// 		{ kind: 'chat', username: user?.username || 'me', text },
-		// 	],
-		// }));
-	}
+	// 	// setPrivateMessages((prev) => ({
+	// 	// 	...prev,
+	// 	// 	[userId]: [
+	// 	// 		...(prev[userId] || []),
+	// 	// 		{ kind: 'chat', username: user?.username || 'me', text },
+	// 	// 	],
+	// 	// }));
+	// }
 
-  return (
-    <div className='chat-container'>
-      <h1>Chat</h1>
-      <div className='status'>
-        {isConnected ? '🟢 Your are online' : '🔴 You are offline'}
-      </div>
-      <AllMessages messages={messages} currentUsername={user?.username} />
-      <MessageInput onSend={sendMessage} disabled={!isConnected} />
-      <UsersList onUserClick={handleUserClick} currentUserId={String(user?.id || '')} />
-      <br></br>
+	return (
+		<div className='chat-container'>
+			<h1>Chat</h1>
+			<div className='status'>
+				{isConnected ? '🟢 Your are online' : '🔴 You are offline'}
+			</div>
+			<AllMessages messages={messages} currentUsername={user?.username} />
+			<MessageInput
+				onSend={(text) => sendMessage({ type: 'general_msg', text })}
+				disabled={!isConnected}
+			/>
+			<UsersList onUserClick={handleUserClick} currentUserId={String(user?.id || '')} />
+			<br></br>
 			{openConversations.map((recipient) => (
 				<PrivateMessages
 					key={recipient.id}
 					recipient={recipient}
 					messages={privateMessages[recipient.id] || []}
 					currentUsername={user?.username || ''}
-					onSend={(text) => sendPrivateMessage(recipient.id, text)}
+					onSend={(text) => sendMessage({ type: 'private_msg', to: recipient.id, text })}
 				/>
 			))}
-    </div>
-  );
+		</div>
+	);
 }

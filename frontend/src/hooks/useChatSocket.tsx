@@ -23,7 +23,6 @@ export function useChatSocket(
 		ws.current.onmessage = (event) => {
 			const data = JSON.parse(event.data);
 			if (data.type === 'private_msg') {
-				// Call the callback with sender info and text
 				onPrivateMessage?.(data.from, data.text);
 			}
 			console.log('Received from WS:', event.data);
@@ -76,14 +75,8 @@ export function useChatSocket(
 		return () => ws.current?.close();
 	}, [enabled]);
 
-	const sendMessage = (text: string) => {
+	const sendMessage = (payload: { type: string; text: string; to?: string }) => {
 		if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-			let payload;
-			if (recipientUserId) {
-				payload = { type: 'private_msg', to: recipientUserId, text };
-			} else {
-				payload = { type: 'general_msg', text };
-			}
 			ws.current.send(JSON.stringify(payload));
 		}
 	};
