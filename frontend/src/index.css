@@ -69,10 +69,16 @@ body {
 
 button:hover {
 	transform: scale(1.05);
+	cursor: pointer;
 }
 
 button:active {
 	transform: scale(0.95);
+}
+
+.no-scale:hover,
+.no-scale:active {
+	transform: none !important;
 }
 
 @tailwind utilities;

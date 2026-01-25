@@ -10,7 +10,7 @@ export default function PublicOnlyRouteProtectedRoute({ children }: { children: 
 	}
 
 	if (!user) {
-		return <Navigate to='/login' replace />;
+		return <Navigate to='/' replace />;
 	}
 
 	return <>{children}</>;

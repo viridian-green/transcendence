@@ -8,7 +8,6 @@ async function userRoutes(fastify) {
     rewritePrefix: "/auth",
     replyOptions: {
       rewriteRequestHeaders: (originalReq, headers) => {
-        // Forward cookies for authentication
         if (originalReq.headers.cookie) {
           headers.cookie = originalReq.headers.cookie;
         }
@@ -24,8 +23,6 @@ async function userRoutes(fastify) {
     rewritePrefix: "/users",
     replyOptions: {
       rewriteRequestHeaders: (originalReq, headers) => {
-        // Modify REQUEST headers sent to upstream service
-        // originalReq.user is set by the auth plugin after JWT verification
         if (originalReq.user?.id) {
           headers["x-user-id"] = String(originalReq.user.id);
         }
@@ -39,6 +36,21 @@ async function userRoutes(fastify) {
       },
     },
   });
+
+    fastify.register(httpProxy, {
+        upstream: "http://user:3003",
+        prefix: "/api/avatars",
+        rewritePrefix: "/avatars",
+        replyOptions: {
+            rewriteRequestHeaders: (originalReq, headers) => {
+                if (originalReq.headers.cookie) {
+                    headers.cookie = originalReq.headers.cookie;
+                }
+                return headers;
+            },
+        },
+    });
+
 }
 
 export default fp(userRoutes);

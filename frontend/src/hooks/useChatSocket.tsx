@@ -19,7 +19,15 @@ export function useChatSocket(
 		const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 		const wsUrl = `${protocol}//${window.location.host}/api/chat/websocket`;
 		ws.current = new WebSocket(wsUrl);
+	useEffect(() => {
+		if (!enabled) return;
+		const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+		const wsUrl = `${protocol}//${window.location.host}/api/chat/websocket`;
+		ws.current = new WebSocket(wsUrl);
 
+		ws.current.onopen = () => setIsConnected(true);
+		ws.current.onclose = () => setIsConnected(false);
+		ws.current.onerror = () => setIsConnected(false);
 		ws.current.onopen = () => setIsConnected(true);
 		ws.current.onclose = () => setIsConnected(false);
 		ws.current.onerror = () => setIsConnected(false);
@@ -79,6 +87,8 @@ export function useChatSocket(
 
 		return () => ws.current?.close();
 	}, [enabled]);
+		return () => ws.current?.close();
+	}, [enabled]);
 
 	const sendMessage = (payload: { type: string; text: string; to?: string }) => {
 		if (ws.current && ws.current.readyState === WebSocket.OPEN) {
@@ -86,5 +96,6 @@ export function useChatSocket(
 		}
 	};
 
+	return { messages, isConnected, sendMessage };
 	return { messages, isConnected, sendMessage };
 }

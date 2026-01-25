@@ -72,10 +72,10 @@ export function parseLoginBody(req) {
     return result.data;
 }
 
-export async function ensureExistingUsername(app, username) {
+export async function ensureExistingEmail(app, email) {
     const { rows } = await app.pg.query(
-        "SELECT * FROM users WHERE username = $1",
-        [username]
+        "SELECT * FROM users WHERE email = $1",
+        [email]
     );
     if (rows.length === 0) {
         const err = new Error("Invalid credentials");

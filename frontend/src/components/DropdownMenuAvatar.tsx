@@ -16,7 +16,7 @@ const MenuButton = ({ onClick, icon, description }: MenuButtonProps) => {
 			type='button'
 			role='menuitem'
 			onClick={onClick}
-			className='hover:bg-accent-blue flex cursor-pointer items-center justify-between rounded-lg border-0 px-2'
+			className='hover:bg-accent-blue flex items-center justify-between rounded-lg border-0 px-2'
 		>
 			<p>{description}</p>
 			{icon}
@@ -70,9 +70,12 @@ const ProfileCard = () => {
 	);
 };
 
-const TopRightAvatar = () => {
+const DropdownMenuAvatar = () => {
 	const [open, setOpen] = useState(false);
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
+	const avatarSize = 48;
+	const { user, avatarUrl } = useAuth();
+	const name = user?.username || '?';
 	useOutsideAlerter(wrapperRef);
 	function useOutsideAlerter(ref: React.RefObject<HTMLDivElement | null>) {
 		useEffect(() => {
@@ -98,17 +101,23 @@ const TopRightAvatar = () => {
 			<button
 				type='button'
 				onClick={() => setOpen(!open)}
-				className='cursor-pointer'
+				className='flex items-center hover:cursor-pointer'
 				aria-haspopup='menu'
 				aria-expanded={open}
 				aria-controls='profile-menu'
 				aria-label='Open user menu'
 			>
-				<Avatar />
+				<Avatar
+					url={
+						avatarUrl ||
+						`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=${avatarSize * 2}`
+					}
+					size={avatarSize}
+				/>
 			</button>
 			{open && <ProfileCard />}
 		</div>
 	);
 };
 
-export default TopRightAvatar;
+export default DropdownMenuAvatar;
