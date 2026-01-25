@@ -9,11 +9,12 @@ type User = {
 
 interface UsersListProps {
 	onUserClick: (user: User) => void;
+	currentUserId: string;
 }
 
 const socket: Socket = io('/api/chat', { autoConnect: true }); // Adjust path/URL as needed
 
-const UsersList: React.FC<UsersListProps> = ({ onUserClick }) => {
+const UsersList: React.FC<UsersListProps> = ({ onUserClick, currentUserId }) => {
 	const [users, setUsers] = useState<User[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -36,7 +37,8 @@ const UsersList: React.FC<UsersListProps> = ({ onUserClick }) => {
 			const detailsRes = await fetch(`/api/users?ids=${ids.join(',')}`);
 			if (!detailsRes.ok) throw new Error('Failed to fetch user details');
 			const details = await detailsRes.json();
-			setUsers(details.users || []);
+			const filteredUsers = details.users.filter((user: User) => user.id !== currentUserId);
+			setUsers(filteredUsers || []);
 		} catch (err: any) {
 			setError(err.message || 'Unknown error');
 		} finally {

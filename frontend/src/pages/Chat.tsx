@@ -39,14 +39,16 @@ export default function Chat() {
 	}
 
 	function sendPrivateMessage(userId: string, text: string) {
-		// TODO: send to backend via socket
-		setPrivateMessages((prev) => ({
-			...prev,
-			[userId]: [
-				...(prev[userId] || []),
-				{ kind: 'chat', username: user?.username || 'me', text },
-			],
-		}));
+		// Send the private message via WebSocket
+		sendMessage(JSON.stringify({ type: 'private_msg', to: userId, text }));
+
+		// setPrivateMessages((prev) => ({
+		// 	...prev,
+		// 	[userId]: [
+		// 		...(prev[userId] || []),
+		// 		{ kind: 'chat', username: user?.username || 'me', text },
+		// 	],
+		// }));
 	}
 
   return (
@@ -57,8 +59,8 @@ export default function Chat() {
       </div>
       <AllMessages messages={messages} currentUsername={user?.username} />
       <MessageInput onSend={sendMessage} disabled={!isConnected} />
-      <UsersList onUserClick={handleUserClick} />
-			<br></br>
+      <UsersList onUserClick={handleUserClick} currentUserId={String(user?.id || '')} />
+      <br></br>
 			{openConversations.map((recipient) => (
 				<PrivateMessages
 					key={recipient.id}
