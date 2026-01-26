@@ -41,13 +41,13 @@ logsdev: setup
 down:
 	docker compose down
 
-# Restart with rebuild (base stack)
-restart: setup
-	docker compose up -d --build
+# Restart
+restart:
+	docker compose up -d
 
-# Restart with rebuild (dev stack)
+# Restart dev
 restartdev: setup
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 
 ## === Targeted rebuilds ===

@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ChatServerMessage, ChatRenderMessage } from '@/types/chat';
 
-export function useChatSocket(enabled: boolean) {
+export function useChatSocket(
+	enabled: boolean,
+	recipientUserId?: string,
+	onPrivateMessage?: (
+		from: { id: string; username: string },
+		text: string,
+		kind: 'chat' | 'system',
+	) => void,
+) {
 	const [messages, setMessages] = useState<ChatRenderMessage[]>([]);
 	const [isConnected, setIsConnected] = useState(false);
 	const ws = useRef<WebSocket | null>(null);
@@ -17,48 +25,64 @@ export function useChatSocket(enabled: boolean) {
 		ws.current.onerror = () => setIsConnected(false);
 
 		ws.current.onmessage = (event) => {
+			let data: ChatServerMessage;
 			try {
-				const data: ChatServerMessage = JSON.parse(event.data);
-				switch (data.type) {
-					case 'message':
-						setMessages((prev) => [
-							...prev,
-							{
-								kind: 'chat',
-								username: data.user?.username ?? data.username ?? 'unknown',
-								text: data.text,
-							},
-						]);
-						return;
-					case 'welcome':
-						setMessages((prev) => [...prev, { kind: 'system', text: data.message }]);
-						return;
-					case 'user_joined':
-						setMessages((prev) => [
-							...prev,
-							{ kind: 'system', text: `${data.user.username} joined` },
-						]);
-						return;
-					case 'user_left':
-						setMessages((prev) => [
-							...prev,
-							{ kind: 'system', text: `${data.user.username} left` },
-						]);
-						return;
-					default:
-						setMessages((prev) => [...prev, { kind: 'raw', text: event.data }]);
-				}
+				data = JSON.parse(event.data);
 			} catch {
-				setMessages((prev) => [...prev, { kind: 'raw', text: event.data }]);
+				console.warn('Invalid JSON from WS:', event.data);
+				return;
+			}
+
+			if (data.type === 'private_msg') {
+				onPrivateMessage?.(data.from, data.text, 'chat');
+				return;
+			}
+
+			switch (data.type) {
+				case 'general_msg':
+					setMessages((prev) => [
+						...prev,
+						{
+							kind: 'chat',
+							username: data.user?.username ?? 'unknown',
+							text: data.text,
+						},
+					]);
+					return;
+				case 'welcome':
+					setMessages((prev) => [...prev, { kind: 'system', text: data.message }]);
+					return;
+				case 'user_joined':
+					setMessages((prev) => [
+						...prev,
+						{ kind: 'system', text: `${data.user.username} joined` },
+					]);
+					onPrivateMessage?.(
+						{ id: data.user.id, username: data.user.username },
+						`${data.user.username} joined the chat`,
+						'system',
+					);
+					return;
+				case 'user_left':
+					setMessages((prev) => [
+						...prev,
+						{ kind: 'system', text: `${data.user.username} left` },
+					]);
+					onPrivateMessage?.(
+						{ id: data.user.id, username: data.user.username },
+						`${data.user.username} left the chat`,
+						'system',
+					);
+					return;
 			}
 		};
 
 		return () => ws.current?.close();
 	}, [enabled]);
 
-	const sendMessage = (text: string) => {
+	const sendMessage = (payload: { type: string; text: string; to?: string }) => {
 		if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-			ws.current.send(text);
+			ws.current.send(JSON.stringify(payload));
 		}
 	};
 

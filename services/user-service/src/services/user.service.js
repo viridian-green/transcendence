@@ -69,6 +69,20 @@ export async function getUserById(app, userId) {
     return rows[0];
 }
 
+export async function getUsernamesByIds(app, idsArray) {
+
+    const { rows } = await app.pg.query(
+        `
+        SELECT id, username
+        FROM users
+        WHERE id = ANY($1)
+        `,
+        [idsArray]
+    );
+
+    return rows;
+}
+
 export async function updateUserAvatar(app, userId, filename) {
     const { rows } = await app.pg.query(
         'UPDATE users SET avatar = $1 WHERE id = $2 RETURNING avatar',

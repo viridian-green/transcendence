@@ -7,7 +7,7 @@ RUN npm install
 
 COPY src ./src
 
-ENV PORT=3005
+ENV PRESENCE_PORT=3005
 
 CMD ["npm", "run", "dev"]
 
