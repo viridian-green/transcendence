@@ -2,7 +2,6 @@ import { WebSocket } from "ws";
 import jwt from "jsonwebtoken";
 import { updateUserState } from "../utils/userStateApi.js";
 
-
 export interface User {
   id: string;
   username: string;
@@ -167,14 +166,16 @@ if (data.type === 'INVITE') {
     }
   }
 
-  return; // stop here for INVITE
+  return;
 }
 
 
 if (data.type === 'INVITE_ACCEPT') {
   // user = the one who clicked Accept
   const invitedId = user.id;
-  const inviterId = String(data.fromUserId); // original challenger
+  const inviterId = String(data.fromUserId);
+    const invitedUsername = user.username;
+  const inviterUsername = String(data.fromUsername);
 
   const gameId = `game-${Date.now()}`;
 
@@ -187,6 +188,8 @@ if (data.type === 'INVITE_ACCEPT') {
     gameId,
   );
 
+
+
   const notifyUser = (userId: string, payload: any) => {
     const targets = socketsByUserId.get(userId);
     console.log('Targets for', userId, ':', targets?.size ?? 0);
@@ -198,13 +201,25 @@ if (data.type === 'INVITE_ACCEPT') {
     }
   };
 
-  const payload = {
+  notifyUser(inviterId, {
     type: 'GAME_START',
     gameId,
     leftPlayerId: inviterId,
     rightPlayerId: invitedId,
+    leftPlayer: inviterUsername,
+    rightPlayer: invitedUsername,
+    yourSide: 'left'
+  });
 
-  };
+  notifyUser(invitedId, {
+    type: 'GAME_START',
+    gameId,
+    leftPlayerId: inviterId,
+    rightPlayerId: invitedId,
+    leftPlayer: inviterUsername,
+    rightPlayer: invitedUsername,
+    yourSide: 'right'
+  });
 
   notifyUser(inviterId, payload);
   notifyUser(invitedId, payload);

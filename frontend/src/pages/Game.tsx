@@ -16,6 +16,8 @@ const Game = () => {
 	const [gameState, setGameState] = useState<GameState | null>(null);
 	const wsRef = useRef<WebSocket | null>(null);
 
+
+
 	useEffect(() => {
         console.log('[GAME] Debug', {side, mode, leftPlayerId: state?.leftPlayerId, rightPlayerId: state?.rightPlayerId });
 		if (typeof window === 'undefined') return;
