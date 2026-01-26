@@ -1,7 +1,6 @@
 import { WebSocket } from "ws";
 import { User } from "./chatsockets";
 import Redis from "ioredis";
-import { wsByUserId } from "../redis/subscribers";
 
 export function handleMessage(
   connection: WebSocket,

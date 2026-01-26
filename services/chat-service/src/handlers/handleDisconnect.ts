@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 import { User } from "./chatsockets";
-import { updateUserState } from "../utils/userStateApi";
+import { updateUserState } from "../utils/userStateApi.js";
 
 export function handleDisconnect(
   connection: WebSocket,

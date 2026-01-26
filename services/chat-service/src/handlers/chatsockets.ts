@@ -4,11 +4,11 @@ import {
   subscribeUserChannel,
   unsubscribeUserChannel,
   wsByUserId,
-} from "../redis/subscribers";
+} from "../redis/subscribers.js";
 import Redis from "ioredis";
-import { handleConnection } from "./handleConnection";
-import { handleMessage } from "./handleMessage";
-import { handleDisconnect } from "./handleDisconnect";
+import { handleConnection } from "./handleConnection.js";
+import { handleMessage } from "./handleMessage.js";
+import { handleDisconnect } from "./handleDisconnect.js";
 
 export interface User {
   id: string;
@@ -41,7 +41,7 @@ function chatsocketsHandler(connection: WebSocket, request: any) {
 
   // Handle incoming messages
   connection.on("message", (message: string | Buffer) =>
-    handleMessage(connection, user, message, redisPublisher)
+    handleMessage(connection, user, message, redisPublisher),
   );
 
   // Handle disconnection

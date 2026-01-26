@@ -1,7 +1,6 @@
 import { WebSocket } from "ws";
 import { User } from "./chatsockets";
-import { updateUserState } from "../utils/userStateApi";
-import { subscribeUserChannel, wsByUserId } from "../redis/subscribers";
+import { updateUserState } from "../utils/userStateApi.js";
 
 export function handleConnection(
   connection: WebSocket,
