@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { User } from "./chatsockets";
+import { User } from "../types.js";
 import { updateUserState } from "../utils/userStateApi.js";
 
 export function handleConnection(
@@ -8,8 +8,8 @@ export function handleConnection(
   clients: Map<WebSocket, User>
 ) {
   clients.set(connection, user);
-  user.state = "online";
-  updateUserState(user.id, user.state);
+  // user.state = "online";
+  // updateUserState(user.id, user.state);
   console.log(
     `User ${user.username} connected. Total clients: ${clients.size}`
   );

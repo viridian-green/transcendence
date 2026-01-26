@@ -8,8 +8,8 @@ export function handleDisconnect(
   clients: Map<WebSocket, User>
 ) {
   clients.delete(connection);
-  user.state = "offline";
-  updateUserState(user.id, user.state);
+  // user.state = "offline";
+  // updateUserState(user.id, user.state);
   console.log(
     `User ${user.username} disconnected. Total clients: ${clients.size}`
   );
