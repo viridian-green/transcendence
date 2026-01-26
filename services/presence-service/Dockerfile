@@ -10,7 +10,7 @@ COPY . .
 # Build JS into dist (copy src to dist, similar pattern to chat-service)
 RUN npm run build
 
-ENV PORT=3005
+ENV PRESENCE_PORT=3005
 
 CMD ["npm", "start"]
 

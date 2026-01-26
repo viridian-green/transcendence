@@ -25,7 +25,7 @@ export function FriendsCard({
 	};
 
 	return (
-		<div className='border-border bg-surface rounded-2xl border p-8'>
+		<div className='border-border bg-surface max-h-[436px] overflow-y-auto rounded-2xl border p-8'>
 			<h2 className='mb-6 text-(--color-accent-pink)'>Friends</h2>
 
 			{/* Add Friend */}
@@ -91,7 +91,7 @@ export function FriendsCard({
 							<button
 								type='button'
 								onClick={() => onChallengeFriend(friend.id)}
-								className='text-text-muted hover:bg-accent-pink/10 hover:text-accent-pink'
+								className='text-text-muted hover:bg-accent-pink/10 hover:text-accent-pink rounded-md border-0 p-1'
 							>
 								Challenge
 							</button>
@@ -100,7 +100,7 @@ export function FriendsCard({
 							<button
 								type='button'
 								onClick={() => onRemoveFriend(friend.id)}
-								className='text-text-muted hover:bg-accent-pink/10 hover:text-accent-pink'
+								className='text-text-muted hover:bg-accent-pink/10 hover:text-accent-pink rounded-md border-0 p-1'
 							>
 								<X className='h-4 w-4' />
 							</button>

@@ -1,137 +1,272 @@
-## Transcendence Dev Environment
+*This project has been created as part of the 42 curriculum by <login1>[, <login2>[, <login3>[...]]].*
 
-This repo is dockerized for a consistent local setup with Nginx as a reverse proxy, a Fastify gateway, the game service, and the frontend. SSL certs are self‑signed and generated automatically by the Makefile.
+# Transcendence
+
+## Description
+
+**Transcendence** is a full-stack web application that brings the classic Pong game to the modern web. The project demonstrates a complete microservices architecture with real-time multiplayer gaming capabilities, social features, and a polished user interface.
+
+### Project Goal
+
+The goal of this project is to build a production-ready web application featuring:
+- A playable Pong game with multiple game modes (local, AI, and online multiplayer)
+- Real-time communication through WebSockets
+- User authentication and profile management
+- Social features including friend management
+- A modern, responsive user interface
+
+### Key Features
+
+- **Pong Game**: Classic Pong gameplay with three modes:
+  - Local multiplayer (two players on the same device)
+  - AI opponent mode
+  - Online multiplayer (real-time matches between users)
+- **User Authentication**: Secure registration, login, and session management with JWT tokens
+- **User Profiles**: Customizable profiles with avatar upload, statistics tracking, and settings management
+- **Real-time Chat**: WebSocket-based chat system with online user presence
+- **Friends System**: Add, remove, and manage friends
+- **Presence Tracking**: Real-time user status (online/offline/in-game)
+- **Responsive Design**: Modern UI built with React and TailwindCSS
+
+### Architecture Overview
+
+The application follows a microservices architecture:
+
+- **Frontend**: React + TypeScript application served via Nginx
+- **API Gateway**: Fastify-based gateway handling routing and authentication
+- **User Service**: Manages user accounts, authentication, and profiles
+- **Game Service**: Handles game logic, matchmaking, and game state
+- **Chat Service**: Real-time messaging and chat functionality
+- **Presence Service**: Tracks user online status and presence
+- **Database**: PostgreSQL for persistent data storage
+- **Cache**: Redis for real-time data and session management
+
+## Instructions
 
 ### Prerequisites
 
-- Docker and Docker Compose plugin installed
-- Linux/macOS recommended (Windows WSL2 also works)
+Before running the project, ensure you have the following installed:
 
----
+- **Docker** (version 20.10 or higher)
+- **Docker Compose** (version 2.0 or higher, or Docker Compose plugin)
+- **Make** (for using the Makefile commands)
+- **OpenSSL** (for SSL certificate generation)
+- **Git** (for cloning the repository)
 
-## Start on 42 machines (goinfre)
+**Recommended Operating Systems:**
+- Linux (Ubuntu/Debian recommended)
+- macOS
+- Windows with WSL2
 
-1. Run the goinfre symlink helper once to fix Docker paths:
+### Environment Setup
 
-```bash
-chmod +x ./script_goinfre_symlink.sh
-./script_goinfre_symlink.sh
-```
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd transcendence
+   ```
 
-2. Bring the stack up (first run generates SSL certs automatically):
+2. **Set up environment variables:**
 
+   Create a `.env` file in the root directory with the following variables:
+   ```bash
+   # Database Configuration
+   POSTGRES_USER=myuser
+   POSTGRES_PASSWORD=your_secure_password
+   POSTGRES_DB=transcendence_db
+   POSTGRES_PORT=5432
+
+   # JWT and Security
+   JWT_SECRET=your_jwt_secret_key_here
+   COOKIE_SECRET=your_cookie_secret_key_here
+
+   # Redis Configuration
+   REDIS_HOST=redis
+   REDIS_PORT=6379
+
+   # Nginx Ports
+   NGINX_HTTP_PORT=8080
+   NGINX_HTTPS_PORT=8443
+   ```
+
+   **Note**: Replace all placeholder values with secure, randomly generated strings. Never commit `.env` files to version control.
+
+   For detailed environment setup instructions, see [ENV_SETUP.md](./ENV_SETUP.md).
+
+### Running the Project
+
+#### For 42 School Machines (goinfre)
+
+If you're running on a 42 school machine, first set up the goinfre symlink:
+
+1. **Run the goinfre symlink helper:**
+   ```bash
+   chmod +x ./script_goinfre_symlink.sh
+   ./script_goinfre_symlink.sh
+   ```
+
+2. **Start Docker service (if not running):**
+   ```bash
+   systemctl --user start docker.service
+   systemctl --user status docker
+   ```
+
+3. **Start the application:**
+   ```bash
+   make up
+   ```
+
+#### For Other Machines
+
+Simply use the Makefile commands:
+
+**Start the application:**
 ```bash
 make up
 ```
 
-If Docker didn’t start, you can manage it manually:
+This command will:
+- Automatically generate SSL certificates (if they don't exist)
+- Build all Docker images
+- Start all services in detached mode
 
+**Other useful commands:**
 ```bash
-systemctl --user start docker.service
-systemctl --user status docker
+make dev        # Start with development overrides (hot reload)
+make logs       # View logs from all services
+make logsdev    # View logs in development mode
+make down       # Stop all services
+make clean      # Stop services and remove volumes + SSL certs
+make rebuild    # Clean rebuild from scratch
 ```
 
----
+### Accessing the Application
 
-## Start on other machines
+Once the services are running, you can access:
 
-Just use the Makefile targets:
+- **Web Application**:
+  - HTTPS: `https://localhost:8443` (self-signed certificate - browser will show a warning)
+  - HTTP: `http://localhost:8080`
+- **API Gateway**: `http://localhost:3000`
+- **Game Service**: `http://localhost:3002`
+- **User Service**: `http://localhost:3003`
+- **Chat Service**: `http://localhost:3004`
+- **Presence Service**: `http://localhost:3005`
 
-```bash
-make up        # Start services in the background (generates certs)
-make logs      # Start with attached logs
-make down      # Stop services
-make clean     # Stop and remove volumes + SSL certs
-make rebuild   # Clean rebuild (build images from scratch)
-```
+### First Steps
 
----
+1. **Register a new account:**
+   - Navigate to the registration page
+   - Create an account with a valid email, username, and password
 
-## Services and Ports
+2. **Login:**
+   - Use your credentials to log in
+   - You'll be redirected to the home page
 
-- Nginx: http://localhost:8080 and https://localhost:8443
-- Gateway (Fastify): http://localhost:3000
-- Frontend (Vite dev): http://localhost:5173
-- Game service: http://localhost:3002
-- User Service: http://localhost:3003
+3. **Start playing:**
+   - Choose a game mode (Local, AI, or Online)
+   - Invite friends to play online matches
+   - Chat with other users in real-time
 
-Notes:
+### Development Mode
 
-- SSL uses self‑signed certs generated into `nginx/ssl` by `make setup` (run implicitly by `make up`). Your browser may warn on first visit to https://localhost:8443.
-
----
-
-## Common Tasks
-
-- View logs for all services:
+For development with hot reload and volume mounts:
 
 ```bash
-docker compose logs -f
+make dev
 ```
 
-- Check running services:
+This uses `docker-compose.dev.yml` which includes:
+- Volume mounts for live code reloading
+- Vite dev server for frontend
+- Nodemon for backend services
 
-```bash
-docker compose ps
-```
+### Troubleshooting
 
-- Full reset (volumes and certs):
+**Services won't start:**
+- Check Docker is running: `docker ps`
+- View logs: `docker compose logs`
+- Ensure ports are not in use: `lsof -i :8080 -i :8443`
 
+**Database connection issues:**
+- Verify `.env` file exists and has correct database credentials
+- Check database container: `docker compose ps database`
+- View database logs: `docker compose logs database`
+
+**SSL certificate warnings:**
+- This is expected with self-signed certificates
+- Click "Advanced" → "Proceed to localhost" in your browser
+
+**Full reset (removes all data):**
 ```bash
 make clean && make up
 ```
 
+## Resources
+
+### Documentation and References
+
+- **Fastify Documentation**: [https://www.fastify.io/](https://www.fastify.io/)
+  - Used for building the API gateway and microservices
+- **React Documentation**: [https://react.dev/](https://react.dev/)
+  - Frontend framework documentation
+- **PostgreSQL Documentation**: [https://www.postgresql.org/docs/](https://www.postgresql.org/docs/)
+  - Database system used for persistent storage
+- **Redis Documentation**: [https://redis.io/docs/](https://redis.io/docs/)
+  - In-memory data store for real-time features
+- **WebSocket API**: [https://developer.mozilla.org/en-US/docs/Web/API/WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
+  - Real-time communication protocol
+- **Docker Documentation**: [https://docs.docker.com/](https://docs.docker.com/)
+  - Containerization platform
+- **Nginx Documentation**: [https://nginx.org/en/docs/](https://nginx.org/en/docs/)
+  - Reverse proxy and web server
+- **JWT (JSON Web Tokens)**: [https://jwt.io/introduction](https://jwt.io/introduction)
+  - Authentication token standard
+- **Bcrypt**: [https://www.npmjs.com/package/bcrypt](https://www.npmjs.com/package/bcrypt)
+  - Password hashing library
+
+### Tutorials and Learning Resources
+
+- **Microservices Architecture Patterns**: Understanding service decomposition and communication
+- **WebSocket Programming**: Real-time bidirectional communication
+- **JWT Authentication**: Secure token-based authentication
+- **Docker Compose**: Multi-container application orchestration
+- **React Hooks**: Modern React state management and side effects
+
+### AI Usage
+
+AI tools were used in the following areas of this project:
+
+- **Code Generation**: Initial scaffolding and boilerplate code for services, routes, and components
+- **Documentation**: Assistance in writing and structuring documentation, including API documentation and code comments
+- **Debugging**: Help identifying and resolving bugs, especially in WebSocket connections and authentication flows
+- **Code Review**: Suggestions for code improvements, best practices, and refactoring opportunities
+- **Architecture Design**: Consultation on microservices architecture patterns and service communication strategies
+- **Configuration**: Assistance with Docker, Nginx, and environment variable configuration
+- **Testing**: Help writing test cases and understanding testing strategies
+
+**Note**: While AI tools were used as a learning and development aid, all code was reviewed, understood, and customized to fit the project's specific requirements. The final implementation reflects the developers' understanding and decisions.
+
 ---
 
-## Compose Modes
+## Additional Information
 
-- `docker-compose.yml`: production stack (used in CI). Builds static frontend and runs Nginx/api/user/game.
-- `docker-compose.dev.yml`: local dev overrides with volume mounts and hot reload (Vite, nodemon). Use with `make dev`.
+### Project Structure
 
-## CI/CD Notes
-
-- GitHub Actions uses `docker-compose.yml` to mirror prod; it rebuilds with `--no-cache` to avoid stale layers.
-- Frontend `build` is non-blocking for TypeScript errors (errors log, build continues). Run `npm run build:strict` if you need strict TS enforcement for prod.
-
-## Makefile Helpers
-
-- `usertest`: create a sample user via gateway.
-- `usertable`: inspect `user_db` users table.
-
-## Gateway routes folder
-
-The gateway modules now live in `gateway/routes` (previously `gateway/services`). Ensure imports/registrations use `./routes/...`. Example in `gateway/server.js`:
-
-```js
-const { registerGameModule } = require("./routes/game");
 ```
-
----
-
-## Testing & Development
-
-### Create a test user via terminal
-
-```bash
-curl -X POST https://localhost:8443/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"user@example.com","username":"testuser","password":"Password123!"}' \
-  -k
-```
-
-### Check users in database
-
-```bash
-docker exec postgres_db psql -U myuser -d user_db -c "SELECT id, username, email, created_at FROM users ORDER BY id;"
-```
-
-### Login via terminal (saves cookie to file)
-
-```bash
-curl -X POST https://localhost:8443/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"testuser","password":"Password123!"}' \
-  -k -c cookies.txt
+transcendence/
+├── api-gateway/          # API Gateway service
+├── frontend/             # React frontend application
+├── services/
+│   ├── user-service/     # User management and authentication
+│   ├── game-service/     # Game logic and matchmaking
+│   ├── chat-service/     # Real-time chat functionality
+│   └── presence-service/ # User presence tracking
+├── nginx/                # Nginx configuration
+├── init-scripts/         # Database initialization scripts
+├── docker-compose.yml    # Production Docker Compose configuration
+├── docker-compose.dev.yml # Development Docker Compose overrides
+└── Makefile              # Build and deployment commands
 ```
 
 ### Check authentication status
@@ -143,3 +278,6 @@ curl https://localhost:8443/api/users/me -k -b cookies.txt
 "Tests remote user"
 url = remote?user=alice
 url = remote?user=user2
+
+### READS:
+[Bcrypt](https://www.npmjs.com/package/bcrypt)

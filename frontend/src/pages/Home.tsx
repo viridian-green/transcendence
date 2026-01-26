@@ -2,7 +2,6 @@ import { useEffect, useState, type FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PinkButton } from '@components/index';
 import { useAuth } from '@hooks/useAuth';
-import { nanoid } from 'nanoid';
 import './Home.css';
 import { loginSessionStorageKey } from '@/const';
 
@@ -17,14 +16,7 @@ const Home: FC = () => {
 	const [showRest, setShowRest] = useState(!isFirstSession);
 
 	const handleAIGameStart = () => {
-		const gameId = nanoid();
-		navigate(`/game/${gameId}`, {
-			state: {
-				leftPlayer: "Computer",
-				rightPlayer: "You", // or logged-in user's name - "You" seems easier
-				mode: 'AI'
-			}
-		}); // or `navigate('/AI');` to allow user to pick sides 
+		navigate('/AI-game-start');
 	};
 
 	const handleLocalGameStart = () => {
@@ -56,7 +48,7 @@ const Home: FC = () => {
 	}, [showWelcome]);
 
 	return (
-		<div className='flex min-h-screen flex-col items-center justify-center gap-6'>
+		<div className='flex flex-1 flex-col items-center justify-center gap-6'>
 			{showWelcome && (
 				<section
 					className={

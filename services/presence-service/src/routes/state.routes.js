@@ -15,6 +15,10 @@ async function checkIfStateIsValid(state) {
 async function updateUserState(id, state) {
   try {
     await redis.set(`user:state:${id}`, state);
+    await redis.publish(
+      "presence:updates",
+      JSON.stringify({ userId: id, state })
+    );
   } catch (err) {
     const error = new Error("Failed to update user state in Redis");
     error.statusCode = 500;
@@ -54,7 +58,9 @@ export default async function stateRoutes(app) {
 
     await checkIfStateIsValid(state);
     await updateUserState(id, state);
-    return reply.code(200).send({ message: `User ${id} state updated to ${state}` });
+    return reply
+      .code(200)
+      .send({ message: `User ${id} state updated to ${state}` });
   });
 
   app.get("/state/:id", async (req, reply) => {
@@ -68,5 +74,3 @@ export default async function stateRoutes(app) {
     return reply.code(200).send({ users });
   });
 }
-
-

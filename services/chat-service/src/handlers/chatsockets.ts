@@ -1,17 +1,29 @@
 import { WebSocket } from "ws";
 import jwt from "jsonwebtoken";
-import { updateUserState } from "../utils/userStateApi.js";
+import {
+  subscribeUserChannel,
+  unsubscribeUserChannel,
+  wsByUserId,
+} from "../redis/subscribers.js";
+import Redis from "ioredis";
+import { handleConnection } from "./handleConnection.js";
+import { handleMessage } from "./handleMessage.js";
+import { handleDisconnect } from "./handleDisconnect.js";
 
 
 export interface User {
   id: string;
   username: string;
-  state?: string; // e.g., "online", "offline", "busy"
+  state?: string; // Allowed: "online", "offline", "busy"
 }
 
 const clients: Map<WebSocket, User> = new Map();
 
-const socketsByUserId: Map<string, Set<WebSocket>> = new Map();
+// Redis publisher for sending messages
+const redisPublisher = new Redis({
+  host: process.env.REDIS_HOST || "redis",
+  port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6378,
+});
 
 // Main WebSocket handler function (not exported directly)
 export default function chatsocketsHandler(connection: WebSocket, request: any) {
@@ -21,11 +33,23 @@ export default function chatsocketsHandler(connection: WebSocket, request: any) 
     connection.close();
     return;
   }
-  handleConnection(connection, user);
+
+  // On new connection
+  subscribeUserChannel(user.id); // Subscribe to user's private Redis channel
+  wsByUserId.set(user.id, connection); // Store WebSocket by userId
+  handleConnection(connection, user, clients); // Handle new connection
+
+  // Handle incoming messages
   connection.on("message", (message: string | Buffer) =>
-    handleMessage(connection, user, message)
+    handleMessage(connection, user, message, redisPublisher),
   );
-  connection.on("close", () => handleDisconnect(connection, user));
+
+  // Handle disconnection
+  connection.on("close", () => {
+    unsubscribeUserChannel(user.id);
+    wsByUserId.delete(user.id);
+    handleDisconnect(connection, user, clients);
+  });
 }
 
 // Helpers
@@ -59,164 +83,4 @@ function extractUserFromJWT(request: any): User | null {
   return null;
 }
 
-// Helper to broadcast to all clients
-function broadcastAll(payload: any) {
-  for (const [client] of clients) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(payload));
-    }
-  }
-}
-
-// Helper to broadcast to all except one
-function broadcastToOthers(except: WebSocket, payload: any) {
-  for (const [client] of clients) {
-    if (client !== except && client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(payload));
-    }
-  }
-}
-
-function handleConnection(connection: WebSocket, user: User) {
-  clients.set(connection, user);
-
-  // index by userId for direct messaging
-  let set = socketsByUserId.get(user.id);
-  if (!set) {
-    set = new Set();
-    socketsByUserId.set(user.id, set);
-  }
-  set.add(connection);
-
-  console.log(
-    `User ${user.username} connected. Total clients: ${clients.size}`
-  );
-  connection.send(
-    JSON.stringify({
-      type: "welcome",
-      message: `Welcome, ${user.username}!`,
-      user: { id: user.id, username: user.username },
-    })
-  );
-  broadcastToOthers(connection, {
-    type: "user_joined",
-    user: { id: user.id, username: user.username },
-  });
-}
-
-function handleDisconnect(connection: WebSocket, user: User) {
-  clients.delete(connection);
-
-  const set = socketsByUserId.get(user.id);
-  if (set) {
-    set.delete(connection);
-    if (set.size === 0) socketsByUserId.delete(user.id);
-  }
-
-  console.log(
-    `User ${user.username} disconnected. Total clients: ${clients.size}`
-  );
-  broadcastAll({
-    type: "user_left",
-    user: { id: user.id, username: user.username },
-  });
-}
-function handleMessage(
-  connection: WebSocket,
-  user: User,
-  message: string | Buffer,
-) {
-  const text = typeof message === 'string' ? message : message.toString();
-  console.log('WS raw from', user.username, ':', text);
-
-  let data: any;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    // plain chat text
-    broadcastAll({
-      type: 'message',
-      user: { id: user.id, username: user.username },
-      text,
-    });
-    return;
-  }
-
-// switch on type
-if (data.type === 'INVITE') {
-  const toUserId = String(data.toUserId);
-  console.log('Handling INVITE from', user.id, 'to', toUserId);
-
-  const targets = socketsByUserId.get(toUserId);
-  console.log('Targets for', toUserId, ':', targets?.size ?? 0);
-  if (!targets) {
-    console.log('No sockets for target', toUserId);
-    return;
-  }
-
-  for (const sock of targets) {
-    if (sock.readyState === WebSocket.OPEN) {
-      sock.send(
-        JSON.stringify({
-          type: 'INVITE_RECEIVED',
-          fromUserId: user.id,
-          fromUsername: user.username,
-          gameMode: data.gameMode ?? 'pong',
-        }),
-      );
-    }
-  }
-
-  return; // stop here for INVITE
-}
-
-
-if (data.type === 'INVITE_ACCEPT') {
-  // user = the one who clicked Accept
-  const invitedId = user.id;
-  const inviterId = String(data.fromUserId); // original challenger
-
-  const gameId = `game-${Date.now()}`;
-
-  console.log(
-    'INVITE_ACCEPT from',
-    invitedId,
-    'for inviter',
-    inviterId,
-    'gameId',
-    gameId,
-  );
-
-  const notifyUser = (userId: string, payload: any) => {
-    const targets = socketsByUserId.get(userId);
-    console.log('Targets for', userId, ':', targets?.size ?? 0);
-    if (!targets) return;
-    for (const sock of targets) {
-      if (sock.readyState === WebSocket.OPEN) {
-        sock.send(JSON.stringify(payload));
-      }
-    }
-  };
-
-  const payload = {
-    type: 'GAME_START',
-    gameId,
-    leftPlayerId: inviterId,
-    rightPlayerId: invitedId,
-
-  };
-
-  notifyUser(inviterId, payload);
-  notifyUser(invitedId, payload);
-
-  return;
-}
-
-// default: normal chat broadcast
-broadcastAll({
-  type: 'message',
-  user: { id: user.id, username: user.username },
-  text: data.text ?? text,
-});
-
-}
+export default chatsocketsHandler;

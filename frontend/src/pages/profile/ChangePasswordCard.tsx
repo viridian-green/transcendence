@@ -21,7 +21,7 @@ const passwordSchema = z
 	});
 
 interface ChangePasswordCardProps {
-	onUpdate: (newPassword: string) => void;
+	onUpdate: (newPassword: string) => Promise<void>;
 }
 
 export function ChangePasswordCard({ onUpdate }: ChangePasswordCardProps) {
@@ -34,14 +34,14 @@ export function ChangePasswordCard({ onUpdate }: ChangePasswordCardProps) {
 		confirmPassword: '',
 	});
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		try {
 			passwordSchema.parse({
 				password: formData.newPassword,
 				confirmPassword: formData.confirmPassword,
 			});
-			onUpdate(formData.newPassword);
+			await onUpdate(formData.newPassword);
 			if (error) {
 				setError(null);
 			}
@@ -65,7 +65,9 @@ export function ChangePasswordCard({ onUpdate }: ChangePasswordCardProps) {
 			<form onSubmit={handleSubmit} className='space-y-4'>
 				{/* New Password */}
 				<div className='flex flex-col space-y-2'>
-					<label htmlFor='new-password'>New Password</label>
+					<label htmlFor='new-password' className='text-text-muted'>
+						New Password
+					</label>
 					<div className='relative'>
 						<input
 							id='new-password'
@@ -93,7 +95,9 @@ export function ChangePasswordCard({ onUpdate }: ChangePasswordCardProps) {
 
 				{/* Confirm Password */}
 				<div className='flex flex-col space-y-2'>
-					<label htmlFor='confirm-password'>Confirm New Password</label>
+					<label htmlFor='confirm-password' className='text-text-muted'>
+						Confirm New Password
+					</label>
 					<div className='relative'>
 						<input
 							id='confirm-password'
