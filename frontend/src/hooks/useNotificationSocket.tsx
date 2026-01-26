@@ -36,15 +36,15 @@ export function useNotificationSocket(enabled: boolean) {
     }
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const search = new URLSearchParams(window.location.search);
-    const userParam = search.get('user') ?? 'alice';
-
-    const wsUrl = `${protocol}//${window.location.host}/api/notifications/websocket?user=${encodeURIComponent(userParam)}`;
-
+     const wsUrl = `${protocol}//${window.location.host}/api/notifications/websocket`;
     console.log('[NOTIFICATION SOCKET] connecting to', wsUrl);
 
     const socket = new WebSocket(wsUrl);
     ws.current = socket;
+
+    ws.current.onopen = () => setIsConnected(true);
+	ws.current.onclose = () => setIsConnected(false);
+	ws.current.onerror = () => setIsConnected(false);
 
     socket.onopen = () => {
       console.log('[NOTIFICATION SOCKET] connected');
@@ -163,12 +163,14 @@ export function useNotificationSocket(enabled: boolean) {
   }, [send]);
 
   return {
-    notifications,
-    isConnected,
-    unreadCount,
-    markAsRead,
-    markAllAsRead,
-    getNotifications,
-  };
+  notifications,
+  isConnected,
+  unreadCount,
+  markAsRead,
+  markAllAsRead,
+  getNotifications,
+  send,
+};
+
 }
 

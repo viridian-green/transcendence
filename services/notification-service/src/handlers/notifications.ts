@@ -1,10 +1,28 @@
 import { WebSocket } from "ws";
 import jwt from "jsonwebtoken";
+// import {
+//   subscribeUserChannel,
+//   unsubscribeUserChannel,
+//   wsByUserId,
+// } from "../redis/subscribers.js";
+// import Redis from "ioredis";
+// import { handleConnection } from "./handleConnection.js";
+// import { handleMessage } from "./handleMessage.js";
+// import { handleDisconnect } from "./handleDisconnect.js";
 
 export interface User {
   id: string;
   username: string;
+  state?: string; // Allowed: "online", "offline", "busy"
 }
+
+const clients: Map<WebSocket, User> = new Map();
+
+// // Redis publisher for sending meFssages
+// const redisPublisher = new Redis({
+//   host: process.env.REDIS_HOST || "redis",
+//   port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6378,
+// });
 
 export interface Notification {
   id: string;
@@ -19,15 +37,15 @@ export interface Notification {
   metadata?: Record<string, any>;
 }
 
-const clients: Map<WebSocket, User> = new Map();
 const socketsByUserId: Map<string, Set<WebSocket>> = new Map();
 const notificationsByUserId: Map<string, Notification[]> = new Map();
 
 // Main WebSocket handler function
 export default function notificationsHandler(connection: WebSocket, request: any) {
   const user = extractUserFromJWT(request);
+  console.log("hi", user);
   if (!user) {
-    connection.send(JSON.stringify({ error: "Authentication required" }));
+    connection.send(JSON.stringify({ error: "Authentication required xxx" }));
     connection.close();
     return;
   }
@@ -38,43 +56,34 @@ export default function notificationsHandler(connection: WebSocket, request: any
   connection.on("close", () => handleDisconnect(connection, user));
 }
 
-// Extract user from JWT token
+// Helpers
 function extractUserFromJWT(request: any): User | null {
-  const url = new URL(request.url, 'http://localhost');
-  const fakeUser = url.searchParams.get('user');
+  const cookieHeader = request.headers["cookie"] as string | undefined;
 
-  // Temporary fake users for development (same as chat-service)
-  if (fakeUser === 'alice') {
-    return { id: 'u1', username: 'alice' };
-  }
-  if (fakeUser === 'user2') {
-    return { id: 'u2', username: 'user2' };
-  }
+//   Fallback if no param / unknown
+  let cookies: Record<string, string> = {};
 
-  // TODO: Implement real JWT extraction from cookies
-  // const cookieHeader = request.headers["cookie"] as string | undefined;
-  // let cookies: Record<string, string> = {};
-  // if (cookieHeader) {
-  //   cookieHeader.split(";").forEach((cookie) => {
-  //     const parts = cookie.split("=");
-  //     if (parts.length === 2) {
-  //       cookies[parts[0].trim()] = decodeURIComponent(parts[1].trim());
-  //     }
-  //   });
-  // }
-  // const accessToken = cookies["access_token"];
-  // const jwtSecret = process.env.JWT_SECRET;
-  // if (accessToken && jwtSecret) {
-  //   try {
-  //     const decoded = jwt.verify(accessToken, jwtSecret) as any;
-  //     if (decoded.username && decoded.id) {
-  //       return { username: decoded.username, id: String(decoded.id) };
-  //     }
-  //   } catch (err) {
-  //     console.error("Invalid JWT:", err);
-  //     return null;
-  //   }
-  // }
+  if (cookieHeader) {
+    cookieHeader.split(";").forEach((cookie) => {
+      const parts = cookie.split("=");
+      if (parts.length === 2) {
+        cookies[parts[0].trim()] = decodeURIComponent(parts[1].trim());
+      }
+    });
+  }
+  const accessToken = cookies["access_token"];
+  const jwtSecret = process.env.JWT_SECRET;
+  if (accessToken && jwtSecret) {
+    try {
+      const decoded = jwt.verify(accessToken, jwtSecret) as any;
+      if (decoded.username && decoded.id) {
+        return { username: decoded.username, id: String(decoded.id) };
+      }
+    } catch (err) {
+      console.error("Invalid JWT:", err);
+      return null;
+    }
+  }
   return null;
 }
 
@@ -216,8 +225,68 @@ function handleDisconnect(connection: WebSocket, user: User) {
   );
 }
 
+// function handleMessage(
+//   connection: WebSocket,
+//   user: User,
+//   message: string | Buffer,
+// ) {
+//   const text = typeof message === 'string' ? message : message.toString();
+//   console.log('[NOTIFICATION WS] Message from',Fcre user.username, ':', text);
+
+//   let data: any;
+//   try {
+//     data = JSON.parse(text);
+//   } catch {
+//     connection.send(JSON.stringify({
+//       type: "error",
+//       message: "Invalid JSON format",
+//     }));
+//     return;
+//   }
+
+//   switch (data.type) {
+//     case 'mark_read':
+//       // Mark notification as read
+//       const notificationId = data.notificationId;
+//       const notifications = notificationsByUserId.get(user.id) || [];
+//       const notification = notifications.find(n => n.id === notificationId);
+//       if (notification) {
+//         notification.read = true;
+//         connection.send(JSON.stringify({
+//           type: "notification_read",
+//           notificationId,
+//         }));
+//       }
+//       break;
+
+//     case 'mark_all_read':
+//       // Mark all notifications as read
+//       const allNotifications = notificationsByUserId.get(user.id) || [];
+//       allNotifications.forEach(n => n.read = true);
+//       connection.send(JSON.stringify({
+//         type: "all_notifications_read",
+//       }));
+//       break;
+
+//     case 'get_notifications':
+//       // Get all notifications for user
+//       const userNotifications = notificationsByUserId.get(user.id) || [];
+//       connection.send(JSON.stringify({
+//         type: "notifications_list",
+//         notifications: userNotifications,
+//       }));
+//       break;
+
+//     default:
+//       connection.send(JSON.stringify({
+//         type: "error",
+//         message: `Unknown message type: ${data.type}`,
+//       }));
+//   }
+// }
+
 function handleMessage(
-  connection: WebSocket,
+ connection: WebSocket,
   user: User,
   message: string | Buffer,
 ) {
@@ -236,8 +305,7 @@ function handleMessage(
   }
 
   switch (data.type) {
-    case 'mark_read':
-      // Mark notification as read
+    case 'mark_read': {
       const notificationId = data.notificationId;
       const notifications = notificationsByUserId.get(user.id) || [];
       const notification = notifications.find(n => n.id === notificationId);
@@ -249,24 +317,76 @@ function handleMessage(
         }));
       }
       break;
+    }
 
-    case 'mark_all_read':
-      // Mark all notifications as read
+    case 'mark_all_read': {
       const allNotifications = notificationsByUserId.get(user.id) || [];
       allNotifications.forEach(n => n.read = true);
       connection.send(JSON.stringify({
         type: "all_notifications_read",
       }));
       break;
+    }
 
-    case 'get_notifications':
-      // Get all notifications for user
+    case 'get_notifications': {
       const userNotifications = notificationsByUserId.get(user.id) || [];
       connection.send(JSON.stringify({
         type: "notifications_list",
         notifications: userNotifications,
       }));
       break;
+    }
+
+    // NEW: allow client to ask server to create a notification
+    case 'create_notification': {
+      const payload = data.payload;
+      if (!payload || !payload.type || !payload.toUserId) {
+        connection.send(JSON.stringify({
+          type: 'error',
+          message: 'Invalid create_notification payload',
+        }));
+        break;
+      }
+
+      let notification: Notification;
+
+      switch (payload.type) {
+        case 'game_invite':
+          notification = createGameInviteNotification(
+            String(payload.toUserId),
+            user.id,
+            user.username,
+            payload.metadata?.gameMode ?? 'pong',
+          );
+          break;
+
+        case 'friend_request':
+          notification = createFriendRequestNotification(
+            String(payload.toUserId),
+            user.id,
+            user.username,
+          );
+          break;
+
+        default:
+          // generic notification
+          notification = {
+            id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            type: payload.type,
+            title: payload.title ?? 'Notification',
+            message: payload.message ?? '',
+            userId: String(payload.toUserId),
+            fromUserId: user.id,
+            fromUsername: user.username,
+            read: false,
+            createdAt: new Date(),
+            metadata: payload.metadata ?? {},
+          };
+      }
+
+      sendNotificationToUser(notification.userId, notification);
+      break;
+    }
 
     default:
       connection.send(JSON.stringify({
@@ -275,4 +395,3 @@ function handleMessage(
       }));
   }
 }
-

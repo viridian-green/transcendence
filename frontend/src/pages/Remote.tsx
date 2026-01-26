@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { PinkButton } from '@/components';
-import { useChatSocket } from '@/hooks/useChatSocket';
+import { useNotificationSocket } from '@/hooks/useNotificationSocket';
 import { useNavigate } from 'react-router-dom';
 
 type Friend = {
@@ -26,75 +26,94 @@ const Remote = () => {
   const [friends] = useState<Friend[]>(MOCK_FRIENDS);
   const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
   const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
-  const { send, lastRawMessage, isConnected } = useChatSocket(true);
+  const {
+  notifications,
+  isConnected,
+  unreadCount,
+  markAsRead,
+  markAllAsRead,
+  getNotifications,
+  send,
+} = useNotificationSocket(true);
 
-  useEffect(() => {
-    if (!lastRawMessage) return;
+useEffect(() => {
+  if (!notifications.length) return;
 
-    console.log('[REMOTE] raw WS message', lastRawMessage);
+  const latest = notifications[0];
 
-    if (lastRawMessage.type === 'INVITE_RECEIVED') {
-      setIncomingInvite({
-        fromUserId: lastRawMessage.fromUserId,
-        fromUsername: lastRawMessage.fromUsername,
-        gameMode: lastRawMessage.gameMode || 'pong',
-      });
-    }
+  if (latest.type === 'game_invite' && latest.metadata) {
+    setIncomingInvite({
+      fromUserId: latest.fromUserId ?? latest.metadata.fromUserId,
+      fromUsername: latest.fromUsername ?? latest.metadata.fromUsername,
+      gameMode: latest.metadata.gameMode ?? 'pong',
+    });
+  }
 
-    if (lastRawMessage.type === 'GAME_START') {
-      const { gameId, leftPlayerId, rightPlayerId, yourSide, leftPlayer, rightPlayer } = lastRawMessage;
-      console.log('[REMOTE] GAME_START', gameId, leftPlayerId, rightPlayerId);
+  if (latest.type === 'game_start' && latest.metadata) {
+    const {
+      gameId,
+      leftPlayerId,
+      rightPlayerId,
+      yourSide,
+      leftPlayer,
+      rightPlayer,
+    } = latest.metadata;
 
     navigate(`/game/${gameId}`, {
-        state: {
-          leftPlayerId: leftPlayerId,
-          rightPlayerId: rightPlayerId,
-          leftPlayer: leftPlayer,
-          rightPlayer: rightPlayer,
-          side: yourSide,
-          mode: 'remote'
-        },
-      });
-    }
-  }, [lastRawMessage]);
-
-  const handleChallenge = (friend: Friend) => {
+      state: {
+        leftPlayerId,
+        rightPlayerId,
+        leftPlayer,
+        rightPlayer,
+        side: yourSide,
+        mode: 'remote',
+      },
+    });
+  }
+}, [notifications, navigate]);
+const handleChallenge = (friend: Friend) => {
   if (friend.status !== 'online') return;
   if (!isConnected) {
-    console.warn('[REMOTE] cannot send INVITE, socket not connected');
+    console.warn('[REMOTE] cannot send invite, socket not connected');
     return;
   }
 
-  console.log('[REMOTE] sending INVITE', {
-    type: 'INVITE',
-    toUserId: friend.id,
-    gameMode: 'pong',
-  });
-
   send({
-    type: 'INVITE',
-    toUserId: friend.id,
-    gameMode: 'pong',
+    type: 'create_notification',
+    payload: {
+      type: 'game_invite',
+      title: 'Game invite',
+      message: `You have been invited to play by ${friend.username}`,
+      toUserId: friend.id,
+      metadata: {
+        gameMode: 'pong',
+      },
+    },
   });
 };
 
-  const handleInviteAccept = () => {
-    if (!incomingInvite || !isConnected) {
-      setIncomingInvite(null);
-      return;
-    }
-
-    send({
-      type: 'INVITE_ACCEPT',
-      fromUserId: incomingInvite.fromUserId,
-    });
-
+const handleInviteAccept = () => {
+  if (!incomingInvite || !isConnected) {
     setIncomingInvite(null);
-  };
+    return;
+  }
 
-  const handleInviteDecline = () => {
-    setIncomingInvite(null);
-  };
+  send({
+    type: 'create_notification',
+    payload: {
+      type: 'game_start',
+      title: 'Game starting',
+      message: 'Remote game starting',
+      toUserId: incomingInvite.fromUserId,
+      metadata: {
+        // whatever your backend needs to create/join the game
+      },
+    },
+  });
+
+  setIncomingInvite(null);
+};
+
 
   return (
     <div className='bg-bg flex min-h-screen flex-col items-center justify-center gap-6'>
