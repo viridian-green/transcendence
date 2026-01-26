@@ -92,6 +92,10 @@ const handleChallenge = (friend: Friend) => {
   });
 };
 
+const handleInviteDecline = () => {
+  setIncomingInvite(null);
+};
+
 const handleInviteAccept = () => {
   if (!incomingInvite || !isConnected) {
     setIncomingInvite(null);
