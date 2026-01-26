@@ -221,9 +221,6 @@ if (data.type === 'INVITE_ACCEPT') {
     yourSide: 'right'
   });
 
-  notifyUser(inviterId, payload);
-  notifyUser(invitedId, payload);
-
   return;
 }
 
