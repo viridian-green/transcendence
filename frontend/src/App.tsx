@@ -20,7 +20,7 @@ import {
 	ProfileSettings,
 } from '@pages/index';
 import DropdownMenuAvatar from './components/DropdownMenuAvatar';
-import ChatWidget from './components/ChatWidget';
+import ChatWidget from './components/chat/ChatWidget';
 import { useAuth } from './hooks/useAuth';
 
 function App() {

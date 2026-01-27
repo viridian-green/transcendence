@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { FaComments, FaTimes } from 'react-icons/fa';
-import { MessageInput } from './chat/MessageInput';
-import { useAuth } from '../hooks/useAuth';
-import { useOnlineUsersList } from '../hooks/useOnlineUsersList';
+import { MessageInput } from './MessageInput';
+import { useAuth } from '../../hooks/useAuth';
+import UsersList from './OnlineUsersList';
 import './ChatWidget.css';
 
 
@@ -20,9 +20,8 @@ const ChatWidget = () => {
   const { user } = useAuth();
   console.log('Current user in ChatWidget:', user);
 
-  const { users: onlinePeople, loading: loadingOnline, error: errorOnline } = useOnlineUsersList(user?.id ? String(user.id) : undefined);
+  // const { users: onlinePeople, loading: loadingOnline, error: errorOnline } = useOnlineUsersList(user?.id ? String(user.id) : undefined);
 
- console.log('Online people:', onlinePeople);
   const openPrivateTab = (person: { id: number; name: string }) => {
     setPrivateTabs((tabs) => {
       if (tabs.find((t) => t.id === person.id)) return tabs;
@@ -54,35 +53,21 @@ const ChatWidget = () => {
     }
     if (activeTab === 'people') {
       return (
-        <div className="chat-list">
-          <div className="chat-friends-header-separator" style={{ display: 'flex', alignItems: 'center', gap: '0.5em', margin: '0.5em 0' }}>
-            <h3 className="chat-friends-header text-xs uppercase">Online Players</h3>
-            <hr style={{ flex: 1, border: 0, borderTop: '1px solid #ccc', margin: 0 }} />
-          </div>
-          {loadingOnline && <div>Loading online users...</div>}
-          {errorOnline && <div>Error: {errorOnline}</div>}
-          {onlinePeople.map(person => (
-            <div key={person.id}>
-              <div
-                className="chat-list-item"
-                onClick={() => openPrivateTab({ id: Number(person.id), name: person.username })}
-              >
-                {person.username}
-              </div>
-            </div>
-          ))}
-        </div>
+        <UsersList
+          onUserClick={(user) => openPrivateTab({ id: Number(user.id), name: user.username })}
+          currentUserId={user?.id ? String(user.id) : ''}
+        />
       );
     }
     // Private tab
-    const user = privateTabs.find(t => t.id === activeTab);
-    if (user) {
+    const privateUser = privateTabs.find(t => t.id === activeTab);
+    if (privateUser) {
       return (
         <div className="chat-tab-content">
           <div className="chat-header">
-            {user.name}
+            {privateUser.name}
           </div>
-          <div className="chat-messages">Conversation with {user.name}...</div>
+          <div className="chat-messages">Conversation with {privateUser.name}...</div>
           <MessageInput onSend={() => {}} disabled={false} />
         </div>
       );

@@ -9,6 +9,10 @@
   background: var(--color-surface);
 }
 
+.chat-labels {
+  color: var(--color-text-secondary);
+}
+
 .chat-expand-btn {
   background: #f472b6;
   color: white;
