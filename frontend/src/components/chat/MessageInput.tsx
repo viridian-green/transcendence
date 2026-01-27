@@ -16,15 +16,16 @@ export function MessageInput({
 		}
 	};
 	return (
-		<div className='input-area'>
+		<div className="flex items-end w-full gap-2 p-2 border-t border-gray-200">
 			<input
+				className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
 				value={value}
 				onChange={(e) => setValue(e.target.value)}
 				onKeyDown={(e) => e.key === 'Enter' && send()}
 				placeholder='Type a message...'
 			/>
 			<button
-				className='cursor-pointer rounded bg-stone-600 px-4 py-2 font-bold text-white hover:bg-blue-800'
+				className='cursor-pointer rounded bg-pink-500 px-4 py-2 font-bold text-white hover:bg-pink-600 disabled:opacity-50'
 				onClick={send}
 				disabled={disabled}
 			>
