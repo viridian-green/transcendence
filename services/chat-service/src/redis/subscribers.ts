@@ -17,7 +17,7 @@ export function setupSubscribers(io?: any) {
     if (channel === "presence:updates" && io) {
       io.emit("onlineUsersUpdated");
     } else if (channel === "chat:general") {
-      wsByUserId.forEach((ws) => {
+      wsByUserId.forEach((ws, userId) => {
         if (ws.readyState === ws.OPEN)
           ws.send(message);
       });
