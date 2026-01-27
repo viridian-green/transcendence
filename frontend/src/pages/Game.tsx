@@ -16,6 +16,8 @@ const Game = () => {
 	const [gameState, setGameState] = useState<GameState | null>(null);
 	const wsRef = useRef<WebSocket | null>(null);
 
+
+
 	useEffect(() => {
         console.log('[GAME] Debug', {side, mode, leftPlayerId: state?.leftPlayerId, rightPlayerId: state?.rightPlayerId });
 		if (typeof window === 'undefined') return;
@@ -77,8 +79,7 @@ const Game = () => {
 			switch (event.key) {
 				case 'w':
 				case 'W':
-					if (mode === 'AI') break; // Disable W/S keys for AI mode
-                    if (mode === 'remote' && side === 'right') break;
+					if (mode === 'AI' || mode === 'remote') break;
 					ws.send(
 						JSON.stringify({
 							type: 'MOVE_PADDLE',
@@ -89,8 +90,7 @@ const Game = () => {
 
 				case 's':
 				case 'S':
-					if (mode === 'AI') break; // Disable W/S keys for AI mode
-                    if (mode === 'remote' && side === 'right') break;
+					if (mode === 'AI' || mode === 'remote') break;
 					ws.send(
 						JSON.stringify({
 							type: 'MOVE_PADDLE',
@@ -100,7 +100,15 @@ const Game = () => {
 					break;
 
 				case 'ArrowUp':
-                    if (mode === 'remote' && side === 'left') break;
+                    if (mode === 'remote' && side === 'left') {
+						ws.send(
+							JSON.stringify({
+								type: 'MOVE_PADDLE',
+								payload: { playerIndex: 0, direction: 'up' },
+							}),
+						);
+						break;
+					}
 					ws.send(
 						JSON.stringify({
 							type: 'MOVE_PADDLE',
@@ -110,7 +118,15 @@ const Game = () => {
 					break;
 
 				case 'ArrowDown':
-                    if (mode === 'remote' && side === 'left') break;
+                    if (mode === 'remote' && side === 'left') {
+						ws.send(
+							JSON.stringify({
+								type: 'MOVE_PADDLE',
+								payload: { playerIndex: 0, direction: 'down' },
+							}),
+						);
+						break;
+					}
 					ws.send(
 						JSON.stringify({
 							type: 'MOVE_PADDLE',
@@ -145,8 +161,7 @@ const Game = () => {
 				case 'W':
 				case 's':
 				case 'S':
-					if (mode === 'AI') break;
-                    if (mode === 'remote' && side === 'right') break;
+					if (mode === 'AI' || mode === 'remote') break;
 					ws.send(
 						JSON.stringify({
 							type: 'STOP_PADDLE',
@@ -157,7 +172,15 @@ const Game = () => {
 
 				case 'ArrowUp':
 				case 'ArrowDown':
-                    if (mode === 'remote' && side === 'left') break;
+                    if (mode === 'remote' && side === 'left') {
+						ws.send(
+							JSON.stringify({
+								type: 'STOP_PADDLE',
+								payload: { playerIndex: 0 },
+							}),
+						);
+						break;
+					}
 					ws.send(
 						JSON.stringify({
 							type: 'STOP_PADDLE',

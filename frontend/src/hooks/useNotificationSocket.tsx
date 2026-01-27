@@ -14,7 +14,7 @@ export interface Notification {
 }
 
 export interface NotificationSocketMessage {
-  type: 'welcome' | 'notification' | 'pending_notifications' | 'notification_read' | 'all_notifications_read' | 'notifications_list' | 'error';
+  type: 'welcome' | 'notification' | 'pending_notifications' | 'notification_read' | 'all_notifications_read' | 'notifications_list' | 'GAME_START' | 'error';
   message?: string;
   user?: { id: string; username: string };
   payload?: Notification;
@@ -73,6 +73,13 @@ export function useNotificationSocket(enabled: boolean) {
             break;
 
           case 'notification':
+            if (data.payload) {
+              setNotifications((prev) => [data.payload!, ...prev]);
+              setUnreadCount((prev) => prev + 1);
+            }
+            break;
+
+             case 'GAME_START':
             if (data.payload) {
               setNotifications((prev) => [data.payload!, ...prev]);
               setUnreadCount((prev) => prev + 1);

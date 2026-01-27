@@ -262,7 +262,7 @@ function handleMessage(
             type: 'INVITE_RECEIVED',
             fromUserId: user.id,
             fromUsername: user.username,
-            gameMode: data.gameMode ?? 'pong',
+            gameMode: data.gameMode ?? 'remote',
           }),
         );
       }
@@ -342,15 +342,7 @@ function handleMessage(
             String(payload.toUserId),
             user.id,
             user.username,
-            payload.metadata?.gameMode ?? 'pong',
-          );
-          break;
-
-        case 'friend_request':
-          notification = createFriendRequestNotification(
-            String(payload.toUserId),
-            user.id,
-            user.username,
+            payload.metadata?.gameMode ?? 'remote',
           );
           break;
 

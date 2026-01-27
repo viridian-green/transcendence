@@ -10,7 +10,6 @@ import { handleConnection } from "./handleConnection.js";
 import { handleMessage } from "./handleMessage.js";
 import { handleDisconnect } from "./handleDisconnect.js";
 
-
 export interface User {
   id: string;
   username: string;
