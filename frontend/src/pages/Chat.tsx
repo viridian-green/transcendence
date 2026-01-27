@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { MessageInput } from '../components/chat/MessageInput';
 import { AllMessages } from '../components/chat/AllMessages';
 import { PrivateMessages } from '@/components/chat/PrivateMessages';
-import UsersList from '../hooks/useOnlineUsersList';
+import UsersList from '../components/chat/OnlineUsersList';
 import { useChatSocket } from '../hooks/useChatSocket';
 import { usePresenceSocket } from '../hooks/usePresenceSocket';
 import { useAuth } from '@/hooks/useAuth';

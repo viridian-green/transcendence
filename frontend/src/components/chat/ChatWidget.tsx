@@ -3,6 +3,7 @@ import { FaComments, FaTimes } from 'react-icons/fa';
 import { MessageInput } from './MessageInput';
 import { useAuth } from '../../hooks/useAuth';
 import UsersList from './OnlineUsersList';
+import { useFetchOnlineUsers } from '../../hooks/useFetchOnlineUsers';
 import './ChatWidget.css';
 
 
@@ -18,10 +19,14 @@ const ChatWidget = () => {
   const [activeTab, setActiveTab] = useState<'agora' | 'people' | number>('agora');
   const [privateTabs, setPrivateTabs] = useState<{ id: number; name: string }[]>([]);
   const { user } = useAuth();
+  const currentUserId = user?.id ? String(user.id) : undefined;
   console.log('Current user in ChatWidget:', user);
 
-  // const { users: onlinePeople, loading: loadingOnline, error: errorOnline } = useOnlineUsersList(user?.id ? String(user.id) : undefined);
 
+  // Use the modular hook to get online users
+  const { users: onlinePeople, loading: loadingOnline, error: errorOnline } = useFetchOnlineUsers(currentUserId);
+
+  console.log('Online people:', onlinePeople);
   const openPrivateTab = (person: { id: number; name: string }) => {
     setPrivateTabs((tabs) => {
       if (tabs.find((t) => t.id === person.id)) return tabs;
@@ -54,8 +59,11 @@ const ChatWidget = () => {
     if (activeTab === 'people') {
       return (
         <UsersList
+          users={onlinePeople}
+          loading={loadingOnline}
+          error={errorOnline}
           onUserClick={(user) => openPrivateTab({ id: Number(user.id), name: user.username })}
-          currentUserId={user?.id ? String(user.id) : ''}
+          currentUserId={currentUserId}
         />
       );
     }
