@@ -23,7 +23,7 @@ export type Friend = {
 };
 
 // Game phase types
-export type GamePhase = 'countdown' | 'playing' | 'paused' | 'ended';
+export type GamePhase = 'countdown' | 'playing' | 'ended';
 
 // Game state structure that will be received from server
 export interface GameState {
@@ -57,7 +57,7 @@ export interface GameState {
 // WebSocket message types (examples)
 // NOTE: it is a contract between client and server, but currently not used in the codebase
 export interface WSMessage<TWSMessage> {
-	type: 'GAME_STATE' | 'TOGGLE_PAUSE' | 'MOVE_PADDLE';
+	type: 'GAME_STATE' | 'MOVE_PADDLE';
 	payload?: TWSMessage; // TODO replace by actual type
 }
 
