@@ -34,6 +34,7 @@ jobs:
         cp services/game-service/.env.example services/game-service/.env
         cp services/user-service/.env.example services/user-service/.env
         cp services/chat-service/.env.example services/chat-service/.env
+        cp services/notification-service/.env.example services/notification-service/.env
 
     - name: Build and run containers
       run: |
