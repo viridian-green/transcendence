@@ -16,13 +16,6 @@ export function handlePresenceConnection(connection, request) {
     connection.close();
     return;
   }
-  console.log('Extracted user from JWT:', user);
-  console.log(`User ${user.username} connected to presence service`);
-  console.log('Presence WebSocket handler invoked:', {
-    user: user.username,
-    headers: request.headers,
-    url: request.url
-  });
 
   // Set user online immediately
   updateUserState(user.id, "online");
