@@ -34,16 +34,8 @@ export function setupSubscribers(io?: any) {
   });
 }
 
-  export function subscribePresenceUpdates() {
-    redisSubscriber.subscribe("presence:updates", (err: any) =>{
-    if (err) {
-      console.error("Failed to subscribe to presence updates:", err);
-    }
-  });
-}
-
 export function subscribeGeneralChat() {
-    redisSubscriber.subscribe("chat:general", (err: any) => {
+  redisSubscriber.subscribe("chat:general", (err: any) => {
     if (err) {
       console.error("Failed to subscribe to general chat:", err);
     }

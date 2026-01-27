@@ -1,12 +1,11 @@
 import Fastify from "fastify";
 import websocket from "@fastify/websocket";
 import ChatsocketsRoute from "./routes/chatsockets.js";
-import OnlineUsersRoute from "./routes/onlineUsers.js";
+// import OnlineUsersRoute from "./routes/onlineUsers.js";
 import { Server as SocketIOServer } from "socket.io";
 import {
   setupSubscribers,
   subscribeGeneralChat,
-  subscribePresenceUpdates,
 } from "./redis/subscribers.js";
 
 const fastify = Fastify({
@@ -18,7 +17,7 @@ await fastify.register(websocket);
 
 // Register ChatSockets WebSockets routes
 await fastify.register(ChatsocketsRoute);
-await fastify.register(OnlineUsersRoute);
+// await fastify.register(OnlineUsersRoute);
 
 const PORT = process.env.CHAT_PORT ? parseInt(process.env.CHAT_PORT, 10) : 3004;
 
@@ -27,8 +26,6 @@ const io = new SocketIOServer(fastify.server, {
   cors: { origin: "*" }, // adjust as needed
 });
 
-// Setup Redis presence subscriber to emit updates via socket.io
-subscribePresenceUpdates();
 subscribeGeneralChat();
 setupSubscribers(io);
 

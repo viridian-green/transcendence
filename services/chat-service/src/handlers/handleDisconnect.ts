@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { User } from "./chatsockets";
+import { User } from "../types.js";
 
 export function handleDisconnect(
   connection: WebSocket,
