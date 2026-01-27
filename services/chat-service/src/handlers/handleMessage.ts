@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { User } from "./chatsockets";
+import { User } from "../types.js";
 import Redis from "ioredis";
 
 const MESSAGE_MAX_LENGTH = 5000;
