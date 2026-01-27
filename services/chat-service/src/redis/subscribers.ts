@@ -34,8 +34,6 @@ export function setupSubscribers(io?: any) {
   });
 }
 
-
-// Removed unused function subscribePresenceUpdates
 export function subscribeGeneralChat() {
   redisSubscriber.subscribe("chat:general", (err: any) => {
     if (err) {
