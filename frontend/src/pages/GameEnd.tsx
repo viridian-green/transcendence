@@ -19,7 +19,7 @@ const GameEnd = () => {
 		if (state.mode === 'AI') {
 			navigate(`/game/${gameId}`, {
 				state: {
-					leftPlayer: 'Computer',
+					leftPlayer: 'AI',
 					rightPlayer: 'You',
 					mode: 'AI',
 				},
