@@ -6,7 +6,6 @@ import { Server as SocketIOServer } from "socket.io";
 import {
   setupSubscribers,
   subscribeGeneralChat,
-  subscribePresenceUpdates,
 } from "./redis/subscribers.js";
 
 const fastify = Fastify({
@@ -27,8 +26,6 @@ const io = new SocketIOServer(fastify.server, {
   cors: { origin: "*" }, // adjust as needed
 });
 
-// Setup Redis presence subscriber to emit updates via socket.io
-subscribePresenceUpdates();
 subscribeGeneralChat();
 setupSubscribers(io);
 
