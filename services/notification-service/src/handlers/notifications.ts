@@ -43,7 +43,6 @@ const notificationsByUserId: Map<string, Notification[]> = new Map();
 // Main WebSocket handler function
 export default function notificationsHandler(connection: WebSocket, request: any) {
   const user = extractUserFromJWT(request);
-  console.log("hi", user);
   if (!user) {
     connection.send(JSON.stringify({ error: "Authentication required xxx" }));
     connection.close();
@@ -225,66 +224,6 @@ function handleDisconnect(connection: WebSocket, user: User) {
   );
 }
 
-// function handleMessage(
-//   connection: WebSocket,
-//   user: User,
-//   message: string | Buffer,
-// ) {
-//   const text = typeof message === 'string' ? message : message.toString();
-//   console.log('[NOTIFICATION WS] Message from',Fcre user.username, ':', text);
-
-//   let data: any;
-//   try {
-//     data = JSON.parse(text);
-//   } catch {
-//     connection.send(JSON.stringify({
-//       type: "error",
-//       message: "Invalid JSON format",
-//     }));
-//     return;
-//   }
-
-//   switch (data.type) {
-//     case 'mark_read':
-//       // Mark notification as read
-//       const notificationId = data.notificationId;
-//       const notifications = notificationsByUserId.get(user.id) || [];
-//       const notification = notifications.find(n => n.id === notificationId);
-//       if (notification) {
-//         notification.read = true;
-//         connection.send(JSON.stringify({
-//           type: "notification_read",
-//           notificationId,
-//         }));
-//       }
-//       break;
-
-//     case 'mark_all_read':
-//       // Mark all notifications as read
-//       const allNotifications = notificationsByUserId.get(user.id) || [];
-//       allNotifications.forEach(n => n.read = true);
-//       connection.send(JSON.stringify({
-//         type: "all_notifications_read",
-//       }));
-//       break;
-
-//     case 'get_notifications':
-//       // Get all notifications for user
-//       const userNotifications = notificationsByUserId.get(user.id) || [];
-//       connection.send(JSON.stringify({
-//         type: "notifications_list",
-//         notifications: userNotifications,
-//       }));
-//       break;
-
-//     default:
-//       connection.send(JSON.stringify({
-//         type: "error",
-//         message: `Unknown message type: ${data.type}`,
-//       }));
-//   }
-// }
-
 function handleMessage(
  connection: WebSocket,
   user: User,
@@ -304,40 +243,87 @@ function handleMessage(
     return;
   }
 
-  switch (data.type) {
-    case 'mark_read': {
-      const notificationId = data.notificationId;
-      const notifications = notificationsByUserId.get(user.id) || [];
-      const notification = notifications.find(n => n.id === notificationId);
-      if (notification) {
-        notification.read = true;
-        connection.send(JSON.stringify({
-          type: "notification_read",
-          notificationId,
-        }));
+  // Handle INVITE
+  if (data.type === 'INVITE') {
+    const toUserId = String(data.toUserId);
+    console.log('Handling INVITE from', user.id, 'to', toUserId);
+
+    const targets = socketsByUserId.get(toUserId);
+    console.log('Targets for', toUserId, ':', targets?.size ?? 0);
+    if (!targets) {
+      console.log('No sockets for target', toUserId);
+      return;
+    }
+
+    for (const sock of targets) {
+      if (sock.readyState === WebSocket.OPEN) {
+        sock.send(
+          JSON.stringify({
+            type: 'INVITE_RECEIVED',
+            fromUserId: user.id,
+            fromUsername: user.username,
+            gameMode: data.gameMode ?? 'pong',
+          }),
+        );
       }
-      break;
     }
+    return;
+  }
 
-    case 'mark_all_read': {
-      const allNotifications = notificationsByUserId.get(user.id) || [];
-      allNotifications.forEach(n => n.read = true);
-      connection.send(JSON.stringify({
-        type: "all_notifications_read",
-      }));
-      break;
-    }
+  // Handle INVITE_ACCEPT
+  if (data.type === 'INVITE_ACCEPT') {
+    // user = the one who clicked Accept
+    const invitedId = user.id;
+    const inviterId = String(data.fromUserId);
+    const invitedUsername = user.username;
+    const inviterUsername = String(data.fromUsername);
+    const gameId = `game-${Date.now()}`;
 
-    case 'get_notifications': {
-      const userNotifications = notificationsByUserId.get(user.id) || [];
-      connection.send(JSON.stringify({
-        type: "notifications_list",
-        notifications: userNotifications,
-      }));
-      break;
-    }
+    console.log(
+      'INVITE_ACCEPT from',
+      invitedId,
+      'for inviter',
+      inviterId,
+      'gameId',
+      gameId,
+    );
 
-    // NEW: allow client to ask server to create a notification
+    const notifyUser = (userId: string, payload: any) => {
+      const targets = socketsByUserId.get(userId);
+      console.log('Targets for', userId, ':', targets?.size ?? 0);
+      if (!targets) return;
+      for (const sock of targets) {
+        if (sock.readyState === WebSocket.OPEN) {
+          sock.send(JSON.stringify(payload));
+        }
+      }
+    };
+
+    notifyUser(inviterId, {
+      type: 'GAME_START',
+      gameId,
+      leftPlayerId: inviterId,
+      rightPlayerId: invitedId,
+      leftPlayer: inviterUsername,
+      rightPlayer: invitedUsername,
+      yourSide: 'left'
+    });
+
+    notifyUser(invitedId, {
+      type: 'GAME_START',
+      gameId,
+      leftPlayerId: inviterId,
+      rightPlayerId: invitedId,
+      leftPlayer: inviterUsername,
+      rightPlayer: invitedUsername,
+      yourSide: 'right'
+    });
+
+    return;
+  }
+
+  // ...existing code...
+  switch (data.type) {
     case 'create_notification': {
       const payload = data.payload;
       if (!payload || !payload.type || !payload.toUserId) {
