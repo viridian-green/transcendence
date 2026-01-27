@@ -1,12 +1,28 @@
 import WebSocket from "ws";
-import { updateUserState, getUserState, getOnlineUsers, isUserOnline } from "../presenceService.js";
+import { updateUserState } from "../presenceService.js";
+import { extractUserFromJWT } from "../utils/extractUserFromJWT.js";
 
 // Track active connections
 const activeConnections = new Map();
 const heartbeatIntervals = new Map();
 
-export function handlePresenceConnection(connection, request, user) {
+export function handlePresenceConnection(connection, request) {
+  const user = extractUserFromJWT(request);
+  if (!user) {
+    console.log('Extracted user from JWT: null');
+    connection.send(
+      JSON.stringify({ error: "Authentication required" })
+    );
+    connection.close();
+    return;
+  }
+  console.log('Extracted user from JWT:', user);
   console.log(`User ${user.username} connected to presence service`);
+  console.log('Presence WebSocket handler invoked:', {
+    user: user.username,
+    headers: request.headers,
+    url: request.url
+  });
 
   // Set user online immediately
   updateUserState(user.id, "online");
@@ -61,7 +77,6 @@ export function handlePresenceConnection(connection, request, user) {
       );
     }
   });
-
   // Handle disconnection
   connection.on("close", async () => {
     console.log(`User ${user.username} disconnected from presence service`);
