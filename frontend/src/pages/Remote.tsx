@@ -61,16 +61,18 @@ useEffect(() => {
 
     navigate(`/game/${gameId}`, {
       state: {
-        leftPlayerId,
-        rightPlayerId,
-        leftPlayer,
-        rightPlayer,
+        leftPlayerId: leftPlayerId,
+        rightPlayerId: rightPlayerId,
+        leftPlayer: leftPlayer,
+        rightPlayer: rightPlayer,
         side: yourSide,
-        mode: 'remote',
+        mode: 'remote'
       },
     });
   }
-}, [notifications, navigate]);
+}, [notifications]);
+
+
 const handleChallenge = (friend: Friend) => {
   if (friend.status !== 'online') return;
   if (!isConnected) {

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 
 export interface Notification {
   id: string;
-  type: 'game_invite' | 'friend_request' | 'friend_accepted' | 'game_start' | 'game_end' | 'message' | 'system';
+  type: 'game_invite' | 'game_start' | 'game_end' | 'message' | 'system';
   title: string;
   message: string;
   userId: string;
@@ -41,10 +41,6 @@ export function useNotificationSocket(enabled: boolean) {
 
     const socket = new WebSocket(wsUrl);
     ws.current = socket;
-
-    ws.current.onopen = () => setIsConnected(true);
-	ws.current.onclose = () => setIsConnected(false);
-	ws.current.onerror = () => setIsConnected(false);
 
     socket.onopen = () => {
       console.log('[NOTIFICATION SOCKET] connected');
