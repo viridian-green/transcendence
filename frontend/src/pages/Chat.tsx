@@ -4,11 +4,13 @@ import { AllMessages } from '../components/chat/AllMessages';
 import { PrivateMessages } from '@/components/chat/PrivateMessages';
 import UsersList from '../components/chat/UsersList';
 import { useChatSocket } from '../hooks/useChatSocket';
+import { usePresenceSocket } from '../hooks/usePresenceSocket';
 import { useAuth } from '@/hooks/useAuth';
 import type { ChatRenderMessage } from '@/types/chat';
 
 export default function Chat() {
 	const { user } = useAuth();
+	const { isConnected: isPresenceConnected } = usePresenceSocket(Boolean(user));
 
 	const [openConversations, setOpenConversations] = useState<{ id: string; username: string }[]>(
 		[],
@@ -55,7 +57,8 @@ export default function Chat() {
 		<div className='chat-container'>
 			<h1>Chat</h1>
 			<div className='status'>
-				{isConnected ? '🟢 Your are online' : '🔴 You are offline'}
+				{isConnected ? '🟢 Chat Connected' : '🔴 Chat Disconnected'}<br />
+				{isPresenceConnected ? '🟢 Presence Connected' : '🔴 Presence Disconnected'}
 			</div>
 			<AllMessages messages={messages} currentUsername={user?.username} />
 			<MessageInput

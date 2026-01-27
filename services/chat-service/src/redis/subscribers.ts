@@ -17,7 +17,7 @@ export function setupSubscribers(io?: any) {
     if (channel === "presence:updates" && io) {
       io.emit("onlineUsersUpdated");
     } else if (channel === "chat:general") {
-      wsByUserId.forEach((ws) => {
+      wsByUserId.forEach((ws, userId) => {
         if (ws.readyState === ws.OPEN)
           ws.send(message);
       });
@@ -29,20 +29,39 @@ export function setupSubscribers(io?: any) {
       }
     }
   });
+  redisSubscriber.on("error", (err: any) => {
+    console.error("Redis subscriber error:", err);
+  });
 }
 
-export function subscribePresenceUpdates() {
-  redisSubscriber.subscribe("presence:updates");
+  export function subscribePresenceUpdates() {
+    redisSubscriber.subscribe("presence:updates", (err: any) =>{
+    if (err) {
+      console.error("Failed to subscribe to presence updates:", err);
+    }
+  });
 }
 
 export function subscribeGeneralChat() {
-  redisSubscriber.subscribe("chat:general");
+    redisSubscriber.subscribe("chat:general", (err: any) => {
+    if (err) {
+      console.error("Failed to subscribe to general chat:", err);
+    }
+  });
 }
 
 export function subscribeUserChannel(userId: string) {
-  redisSubscriber.subscribe(`user:${userId}`);
+  redisSubscriber.subscribe(`user:${userId}`, (err: any) => {
+    if (err) {
+      console.error(`Failed to subscribe to user channel ${userId}:`, err);
+    }
+  });
 }
 
 export function unsubscribeUserChannel(userId: string) {
-  redisSubscriber.unsubscribe(`user:${userId}`);
+  redisSubscriber.unsubscribe(`user:${userId}`, (err: any) => {
+    if (err) {
+      console.error(`Failed to unsubscribe from user channel ${userId}:`, err);
+    }
+  });
 }

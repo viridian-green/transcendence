@@ -10,3 +10,5 @@ function findSocketByUserId(
   }
   return undefined;
 }
+
+export default findSocketByUserId;

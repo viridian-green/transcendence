@@ -1,4 +1,4 @@
-import redis from "../redis.js";
+import { redisClient } from "../redis.js";
 
 const ALLOWED_STATES = ["online", "busy", "offline"];
 
@@ -14,8 +14,8 @@ async function checkIfStateIsValid(state) {
 
 async function updateUserState(id, state) {
   try {
-    await redis.set(`user:state:${id}`, state);
-    await redis.publish(
+    await redisClient.set(`user:state:${id}`, state);
+    await redisClient.publish(
       "presence:updates",
       JSON.stringify({ userId: id, state })
     );
@@ -28,7 +28,7 @@ async function updateUserState(id, state) {
 
 async function getUserState(id) {
   try {
-    const state = await redis.get(`user:state:${id}`);
+    const state = await redisClient.get(`user:state:${id}`);
     return state || "offline";
   } catch (err) {
     const error = new Error("Failed to get user state from Redis");
@@ -38,9 +38,9 @@ async function getUserState(id) {
 }
 
 async function getOnlineUsers() {
-  const keys = await redis.keys("user:state:*");
+  const keys = await redisClient.keys("user:state:*");
   if (!keys.length) return [];
-  const states = await redis.mget(...keys);
+  const states = await redisClient.mget(...keys);
   return keys
     .map((key, i) =>
       states[i] === "online" ? key.replace("user:state:", "") : null
