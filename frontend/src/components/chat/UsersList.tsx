@@ -24,20 +24,31 @@ const UsersList: React.FC<UsersListProps> = ({ onUserClick, currentUserId }) => 
 			setLoading(true);
 			setError(null);
 
-			const response = await fetch('api/chat/online-users');
+			// Fetch online users directly from the presence service
+			const response = await fetch('/api/presence/online-users');
 			if (!response.ok) throw new Error('Failed to fetch online users');
 			const data = await response.json();
-			const ids: string[] = data.users || [];
-
-			if (ids.length === 0) {
-				setUsers([]);
-				return;
+			// Expecting data to be an array of user objects or ids
+			// If only ids are returned, fetch user details as before
+			let usersList: User[] = [];
+			if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0].id) {
+				// Already user objects
+				usersList = data;
+			} else if (Array.isArray(data.users) && typeof data.users[0] === 'object' && data.users[0].id) {
+				usersList = data.users;
+			} else if (Array.isArray(data.users)) {
+				// If only ids are returned
+				const ids: string[] = data.users;
+				if (ids.length === 0) {
+					setUsers([]);
+					return;
+				}
+				const detailsRes = await fetch(`/api/users?ids=${ids.join(',')}`);
+				if (!detailsRes.ok) throw new Error('Failed to fetch user details');
+				const details = await detailsRes.json();
+				usersList = details.users;
 			}
-
-			const detailsRes = await fetch(`/api/users?ids=${ids.join(',')}`);
-			if (!detailsRes.ok) throw new Error('Failed to fetch user details');
-			const details = await detailsRes.json();
-			const filteredUsers = details.users.filter((user: User) => user.id !== currentUserId);
+			const filteredUsers = usersList.filter((user: User) => user.id !== currentUserId);
 			setUsers(filteredUsers || []);
 		} catch (err: any) {
 			setError(err.message || 'Unknown error');
