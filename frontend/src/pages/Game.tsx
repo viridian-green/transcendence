@@ -9,7 +9,7 @@ const Game = () => {
 	const { state } = useLocation();
 	const leftPlayer = state?.leftPlayer ?? 'Player 1';
 	const rightPlayer = state?.rightPlayer ?? 'Player 2';
-	const mode = state?.mode ?? 'classic'; // Default to classic if not provided
+	const mode = state?.mode ?? 'local'; // Default to local if not provided
 	const { gameId } = useParams<{ gameId: string }>();
 
 	const [gameState, setGameState] = useState<GameState | null>(null);
@@ -52,14 +52,12 @@ const Game = () => {
 
 		const handleKeyDown = (event: KeyboardEvent) => {
 			if (ws.readyState !== WebSocket.OPEN) return;
-
-			// Avoid repeating events if key is held down
-			if (event.repeat) return;
-
 			if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(event.key)) {
 				// Prevent scrolling the page
 				event.preventDefault();
 			}
+			// Avoid repeating events if key is held down
+			if (event.repeat) return;
 
 			switch (event.key) {
 				case 'w':
@@ -158,7 +156,7 @@ const Game = () => {
 			ws.close();
 			wsRef.current = null;
 		};
-	}, [navigate, gameId]);
+	}, [navigate, gameId, mode]);
 
 	const handlePauseToggle = () => {
 		wsRef.current?.send(JSON.stringify({ type: 'TOGGLE_PAUSE' }));
@@ -184,9 +182,9 @@ const Game = () => {
 	}, [gameState, navigate, leftPlayer, rightPlayer, mode]);
 
 	return (
-		<div className='bg-bg flex min-h-screen flex-col items-center justify-center gap-4'>
-			<h1 className='text-accent-pink font-retro mb-4 text-4xl font-bold'>Game Room</h1>
-			<div className='flex w-[800px] justify-between'>
+		<div className='flex flex-1 flex-col items-center justify-center gap-6'>
+			<h1 className='text-accent-pink font-retro text-4xl font-bold'>Game Room</h1>
+			<div className={`flex w-[800px] justify-between`}>
 				<p>{leftPlayer}</p>
 				<p>{rightPlayer}</p>
 			</div>

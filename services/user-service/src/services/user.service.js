@@ -17,6 +17,9 @@ export async function updateUser(app, userId, updateData) {
         updateData.password = await hashPassword(updateData.password);
     }
 
+    if (updateData.bio) {
+        updateData.bio = updateData.bio.slice(0, 150);
+    }
 
     const fields = [];
     const values = [];
@@ -33,7 +36,7 @@ export async function updateUser(app, userId, updateData) {
         UPDATE users
         SET ${fields.join(", ")}
         WHERE id = $${index}
-        RETURNING id, username, email
+        RETURNING id, username, email, avatar, bio
     `;
 
     const { rows } = await app.pg.query(query, values);
@@ -50,7 +53,7 @@ export async function updateUser(app, userId, updateData) {
 export async function getUserById(app, userId) {
     const { rows } = await app.pg.query(
         `
-        SELECT id, username, email, avatar
+        SELECT id, username, email, avatar, bio
         FROM users
         WHERE id = $1
         `,
@@ -64,6 +67,20 @@ export async function getUserById(app, userId) {
     }
 
     return rows[0];
+}
+
+export async function getUsernamesByIds(app, idsArray) {
+
+    const { rows } = await app.pg.query(
+        `
+        SELECT id, username
+        FROM users
+        WHERE id = ANY($1)
+        `,
+        [idsArray]
+    );
+
+    return rows;
 }
 
 export async function updateUserAvatar(app, userId, filename) {

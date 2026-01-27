@@ -1,4 +1,4 @@
-.PHONY: setup up dev down logs logsdev restart restartdev nocache rebuild rebuilddev clean prune open usertest usertable
+.PHONY: setup up dev down logs logsdev restart restartdev nocache rebuild rebuilddev clean prune open usertest usertable env env-check env-sync-overwrite
 
 
 ## === Bootstrap ===
@@ -41,13 +41,13 @@ logsdev: setup
 down:
 	docker compose down
 
-# Restart with rebuild (base stack)
-restart: setup
-	docker compose up -d --build
+# Restart
+restart:
+	docker compose up -d
 
-# Restart with rebuild (dev stack)
+# Restart dev
 restartdev: setup
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 
 ## === Targeted rebuilds ===
@@ -100,6 +100,15 @@ rebuild: clean setup
 rebuilddev: clean setup
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d
 
+## === Env management ===
+env:
+	@for file in $$(find . -name ".env.example"); do cp "$$file" "$${file%.example}"; done
+	@echo "Environment variables synced from .env.example files"
+
+# Check that .env files match their .env.example counterparts
+env-check:
+	@bash scripts/check-env-examples.sh
+
 ## === Misc ===
 open:
 	open https://localhost:8443
@@ -110,21 +119,21 @@ open:
 user1:
 	@curl -X POST https://localhost:8443/api/auth/register \
 		-H "Content-Type: application/json" \
-		-d '{"email":"user@example.com","username":"u1","password":"Password123!"}' \
+		-d '{"email":"a@a.aa","username":"u1","password":"Password123!"}' \
 		-k
 	@echo ""
 
 user2:
 	@curl -X POST https://localhost:8443/api/auth/register \
 		-H "Content-Type: application/json" \
-		-d '{"email":"user2@example.com","username":"u2","password":"Password123!"}' \
+		-d '{"email":"b@b.bb","username":"u2","password":"Password123!"}' \
 		-k
 	@echo ""
 
 user3:
 	@curl -X POST https://localhost:8443/api/auth/register \
 		-H "Content-Type: application/json" \
-		-d '{"email":"user3@example.com","username":"u3","password":"Password123!"}' \
+		-d '{"email":"c@c.cc","username":"u3","password":"Password123!"}' \
 		-k
 	@echo ""
 

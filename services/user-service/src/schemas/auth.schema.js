@@ -21,9 +21,10 @@ export const registerSchema = z.object ({
 });
 
 export const loginSchema = z.object({
-    username: z
+    email: z
         .string()
-        .min(1, "Username is required"),
+        .min(1, "Email is required")
+        .email("Invalid email address"),
 
     password: z
         .string()
@@ -49,6 +50,10 @@ export const updateUserSchema = z.object({
         .regex(/[a-z]/, "Password must contain at least one lowercase letter")
         .regex(/[0-9]/, "Password must contain at least one number")
         .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character")
+        .optional(),
+    bio: z
+        .string()
+        .max(150)
         .optional(),
 }).refine(
         data => Object.keys(data).length > 0,

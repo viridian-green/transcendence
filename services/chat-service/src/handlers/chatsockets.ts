@@ -1,15 +1,29 @@
 import { WebSocket } from "ws";
 import jwt from "jsonwebtoken";
-import { updateUserState } from "../utils/userStateApi.js";
+import {
+  subscribeUserChannel,
+  unsubscribeUserChannel,
+  wsByUserId,
+} from "../redis/subscribers.js";
+import Redis from "ioredis";
+import { handleConnection } from "./handleConnection.js";
+import { handleMessage } from "./handleMessage.js";
+import { handleDisconnect } from "./handleDisconnect.js";
 
 export interface User {
   id: string;
   username: string;
-  state?: string; // e.g., "online", "offline", "busy"
+  state?: string; // Allowed: "online", "offline", "busy"
 }
 
 // Map to keep track of connected clients and their user info
 const clients: Map<WebSocket, User> = new Map();
+
+// Redis publisher for sending messages
+const redisPublisher = new Redis({
+  host: process.env.REDIS_HOST || "redis",
+  port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6378,
+});
 
 // Main WebSocket handler function (not exported directly)
 function chatsocketsHandler(connection: WebSocket, request: any) {
@@ -19,11 +33,23 @@ function chatsocketsHandler(connection: WebSocket, request: any) {
     connection.close();
     return;
   }
-  handleConnection(connection, user);
+
+  // On new connection
+  subscribeUserChannel(user.id); // Subscribe to user's private Redis channel
+  wsByUserId.set(user.id, connection); // Store WebSocket by userId
+  handleConnection(connection, user, clients); // Handle new connection
+
+  // Handle incoming messages
   connection.on("message", (message: string | Buffer) =>
-    handleMessage(connection, user, message)
+    handleMessage(connection, user, message, redisPublisher),
   );
-  connection.on("close", () => handleDisconnect(connection, user));
+
+  // Handle disconnection
+  connection.on("close", () => {
+    unsubscribeUserChannel(user.id);
+    wsByUserId.delete(user.id);
+    handleDisconnect(connection, user, clients);
+  });
 }
 
 // Helpers
@@ -52,79 +78,6 @@ function extractUserFromJWT(request: any): User | null {
     }
   }
   return null;
-}
-
-function handleConnection(connection: WebSocket, user: User) {
-  clients.set(connection, user);
-  user.state = "online";
-  updateUserState(user.id, user.state);
-  console.log(
-    `User ${user.username} connected. Total clients: ${clients.size}`
-  );
-  connection.send(
-    JSON.stringify({
-      type: "welcome",
-      message: `Welcome, ${user.username}!`,
-      user: { id: user.id, username: user.username, state: user.state },
-    })
-  );
-  // Broadcast to all other clients that this user joined and is online
-  broadcastToOthers(connection, {
-    type: "user_joined",
-    user: { id: user.id, username: user.username, state: user.state },
-  });
-}
-
-function handleMessage(
-  connection: WebSocket,
-  user: User,
-  message: string | Buffer
-) {
-  const text = typeof message === "string" ? message : message.toString();
-  console.log(`Received from ${user.username}:`, text);
-  // Broadcast to all connected clients
-  broadcastAll({
-    type: "message",
-    user: { id: user.id, username: user.username },
-    text,
-  });
-}
-
-function handleDisconnect(connection: WebSocket, user: User) {
-  clients.delete(connection);
-  user.state = "offline";
-  updateUserState(user.id, user.state);
-  console.log(
-    `User ${user.username} disconnected. Total clients: ${clients.size}`
-  );
-  // Notify others that user left and is now offline
-  broadcastAll({
-    type: "user_left",
-    user: { id: user.id, username: user.username, state: user.state },
-  });
-  // Optionally broadcast state change
-  broadcastAll({
-    type: "user_state",
-    user: { id: user.id, username: user.username, state: user.state },
-  });
-}
-
-// Helper to broadcast to all clients
-function broadcastAll(payload: any) {
-  for (const [client] of clients) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(payload));
-    }
-  }
-}
-
-// Helper to broadcast to all except one
-function broadcastToOthers(except: WebSocket, payload: any) {
-  for (const [client] of clients) {
-    if (client !== except && client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(payload));
-    }
-  }
 }
 
 export default chatsocketsHandler;

@@ -1,7 +1,7 @@
 import { Avatar, Card, CardTitle, ErrorMessage } from '@/components';
 import { Camera, Save } from '@/icons';
 import type { UserProfile } from '@/shared.types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import z, { ZodError } from 'zod';
 
 const profileUpdateSchema = z.object({
@@ -10,19 +10,32 @@ const profileUpdateSchema = z.object({
 		.string()
 		.min(1, 'Username is required')
 		.max(15, 'Username must be at most 15 characters'),
-	bio: z.string().max(160, 'Bio must be at most 160 characters'),
+	bio: z.string().max(150, 'Bio must be at most 150 characters'),
 	avatar: z.string(),
 });
 
 interface ProfileSettingsCardProps {
 	profile: UserProfile;
-	onUpdate: (profile: UserProfile) => void;
+	avatar: string | null;
+	onUpdate: (profile: UserProfile, avatarFile: File | null) => Promise<void>;
 }
 
-export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardProps) {
+export function ProfileSettingsCard({ profile, avatar, onUpdate }: ProfileSettingsCardProps) {
 	const [formData, setFormData] = useState(profile);
-	const [previewUrl, setPreviewUrl] = useState(profile.avatar);
+	const [avatarFile, setAvatarFile] = useState<File | null>(null);
+	const [previewUrl, setPreviewUrl] = useState(
+		avatar ||
+			`https://ui-avatars.com/api/?name=${encodeURIComponent(profile.username)}&size=${128 * 2}`,
+	);
 	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		setFormData(profile);
+		setPreviewUrl(
+			avatar ||
+				`https://ui-avatars.com/api/?name=${encodeURIComponent(profile.username)}&size=${128 * 2}`,
+		);
+	}, [profile, avatar]);
 
 	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -31,13 +44,13 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 			reader.onloadend = () => {
 				const result = reader.result as string;
 				setPreviewUrl(result);
-				setFormData({ ...formData, avatar: result });
+				setAvatarFile(file);
 			};
 			reader.readAsDataURL(file);
 		}
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		try {
 			profileUpdateSchema.parse({
@@ -46,7 +59,7 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 				bio: formData.bio,
 				avatar: formData.avatar,
 			});
-			onUpdate(formData);
+			await onUpdate(formData, avatarFile);
 			if (error) {
 				setError(null);
 			}
@@ -56,6 +69,9 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 			} else {
 				setError('An unexpected error occurred.');
 			}
+		} finally {
+			// Clean up the avatar file input
+			setAvatarFile(null);
 		}
 	};
 
@@ -86,7 +102,9 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 
 				{/* Username */}
 				<div className='flex flex-col space-y-2'>
-					<label htmlFor='username'>Username</label>
+					<label htmlFor='username' className='text-text-muted'>
+						Username
+					</label>
 					<input
 						type='text'
 						id='username'
@@ -98,7 +116,9 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 
 				{/* Email */}
 				<div className='flex flex-col space-y-2'>
-					<label htmlFor='email'>Email</label>
+					<label htmlFor='email' className='text-text-muted'>
+						Email
+					</label>
 					<input
 						type='email'
 						id='email'
@@ -110,12 +130,22 @@ export function ProfileSettingsCard({ profile, onUpdate }: ProfileSettingsCardPr
 
 				{/* Bio */}
 				<div className='flex flex-col space-y-2'>
-					<label htmlFor='bio'>Bio</label>
+					<div className='flex items-center justify-between'>
+						<label htmlFor='bio' className='text-text-muted'>
+							Bio
+						</label>
+						<span
+							className={`text-sm ${(formData.bio?.length || 0) > 150 ? 'text-red-500' : 'text-text-secondary'}`}
+						>
+							{formData.bio?.length || 0}/150
+						</span>
+					</div>
 					<textarea
 						id='bio'
-						value={formData.bio}
+						value={formData.bio || ''}
 						onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
 						rows={4}
+						maxLength={150}
 						className='border-border bg-elevated resize-none rounded-md px-2 py-1 focus:border-(--color-accent-pink)'
 						placeholder='Tell us about yourself...'
 					/>

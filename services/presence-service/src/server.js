@@ -1,6 +1,8 @@
 import app from "./app.js";
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3005;
+const PORT = process.env.PRESENCE_PORT
+  ? parseInt(process.env.PRESENCE_PORT, 10)
+  : 3005;
 
 const start = async () => {
   try {
@@ -13,5 +15,3 @@ const start = async () => {
 };
 
 start();
-
-

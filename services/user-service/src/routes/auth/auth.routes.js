@@ -6,7 +6,7 @@ import {
     insertUserInDb,
     signToken,
     parseLoginBody,
-    ensureExistingUsername,
+    ensureExistingEmail,
     ensureValidPassword
 } from "../../services/auth.service.js";
 
@@ -39,9 +39,9 @@ export default async function authRoutes(app) {
 
     // Login user
     app.post("/login", async (req, reply) => {
-        const { username, password } = await parseLoginBody(req);
+        const { email, password } = await parseLoginBody(req);
 
-        const user = await ensureExistingUsername(app, username);
+        const user = await ensureExistingEmail(app, email);
         await ensureValidPassword(password, user);
 
         const token = await signToken(app, user);

@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import {
 	Home,
 	NotFound,
@@ -12,20 +12,18 @@ import {
 	PublicOnlyRoute,
 	GameEnd,
 	GameStart,
+	AIGameStart,
 	Chat,
 	TermsOfService,
 	PrivacyPolicy,
 	Profile,
 	ProfileSettings,
 } from '@pages/index';
-import TopRightAvatar from './pages/TopRightAvatar';
+import DropdownMenuAvatar from './components/DropdownMenuAvatar';
 import { useAuth } from './hooks/useAuth';
 
 function App() {
 	const { isLoggedIn, isLoading } = useAuth();
-	const location = useLocation();
-	const showTopAvatar =
-		location.pathname !== '/profile' && location.pathname !== '/settings' && isLoggedIn;
 
 	if (isLoading) {
 		return <Loading />;
@@ -33,13 +31,20 @@ function App() {
 
 	return (
 		<div className='flex min-h-screen flex-col'>
-			{showTopAvatar && (
-				<nav className='fixed top-0 right-0 z-50 p-6'>
-					<TopRightAvatar />
+			{isLoggedIn && (
+				<nav className='bg-surface border-border sticky top-0 z-50 flex h-16 items-center justify-between border-b px-6'>
+					<button
+						className='font-retro text-accent-pink no-scale text-xl leading-none'
+						onClick={() => (window.location.href = '/home')}
+						type='button'
+					>
+						Retroscendence
+					</button>
+					<DropdownMenuAvatar />
 				</nav>
 			)}
 
-			<main className='grow'>
+			<main className='flex flex-1 flex-col'>
 				<Suspense fallback={<Loading />}>
 					<Routes>
 						<Route
@@ -91,6 +96,14 @@ function App() {
 							}
 						/>
 						<Route
+							path='/AI-game-start'
+							element={
+								<ProtectedRoute>
+									<AIGameStart />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
 							path='/game/:gameId'
 							element={
 								<ProtectedRoute>
@@ -130,7 +143,7 @@ function App() {
 					</Routes>
 				</Suspense>
 			</main>
-			<footer className='border-border bg-surface text-text-muted space-x-2 border-t p-6 text-center text-sm'>
+			<footer className='border-border bg-surface text-text-muted flex h-16 items-center justify-center gap-2 border-t px-6 text-center text-sm'>
 				<Link to='/privacy-policy' className='hover:text-text-secondary'>
 					Privacy Policy
 				</Link>

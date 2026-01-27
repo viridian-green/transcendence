@@ -24,8 +24,7 @@ const GameEnd = () => {
 					mode: 'AI',
 				},
 			});
-		}
-		else {
+		} else {
 			navigate(`/game/${gameId}`, { state: { leftPlayer, rightPlayer } });
 		}
 	};
@@ -53,16 +52,14 @@ const GameEnd = () => {
 	}
 
 	return (
-		<div className='flex min-h-screen flex-col items-center justify-center gap-6'>
-			<section className='flex flex-col items-center justify-center gap-6'>
-				<p className='text-accent-pink font-retro text-6xl font-bold'>Winner</p>
-				<p className='text-accent-amber text-2xl'>{winnerAlias}</p>
-				<p className='text-2xl'>{`${leftPlayerScore} : ${rightPlayerScore}`}</p>
-				<div className='flex flex-row justify-center gap-20 text-center text-xl'>
-					<PinkButton text='Home' onClick={handleHome} />
-					<PinkButton text='New Game' onClick={handleGameStart} />
-				</div>
-			</section>
+		<div className='flex flex-1 flex-col items-center justify-center gap-6'>
+			<p className='text-accent-pink font-retro text-4xl font-bold'>Winner</p>
+			<p className='text-accent-amber text-2xl'>{winnerAlias}</p>
+			<p className='text-2xl'>{`${leftPlayerScore} : ${rightPlayerScore}`}</p>
+			<div className='flex flex-row justify-center gap-20 text-center text-xl'>
+				<PinkButton text='Home' onClick={handleHome} />
+				<PinkButton text='New Game' onClick={handleGameStart} />
+			</div>
 		</div>
 	);
 };
