@@ -11,6 +11,7 @@ import { handleDisconnect } from "./handleDisconnect.js";
 import extractUserFromJWT from "../utils/extractUserFromJWT.js";
 import { User } from "../types.js";
 
+// Map to keep track of connected clients and their user info
 const clients: Map<WebSocket, User> = new Map();
 
 // Redis publisher for sending messages
@@ -22,7 +23,6 @@ const redisPublisher = new Redis({
 // Main WebSocket handler function (not exported directly)
 function chatsocketsHandler(connection: WebSocket, request: any) {
   const user = extractUserFromJWT(request);
-
   if (!user) {
     connection.send(JSON.stringify({ type: "error", error: "Authentication required" }));
     connection.close();

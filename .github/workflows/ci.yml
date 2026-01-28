@@ -82,7 +82,7 @@ jobs:
 
     - name: Dump logs on failure
       if: failure()
-      run: docker compose logs user
+      run: docker compose logs
 
 
 

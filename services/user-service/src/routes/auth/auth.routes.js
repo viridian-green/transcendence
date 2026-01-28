@@ -9,7 +9,6 @@ import {
     ensureExistingEmail,
     ensureValidPassword
 } from "../../services/auth.service.js";
-import { updateUserState} from "../../services/state.service.js"
 /**
  * Authentication routes
  * Handles user registration, login, and signout
@@ -24,7 +23,6 @@ export default async function authRoutes(app) {
 
         const hashedPassword = await hashPassword(password);
         const user = await insertUserInDb(app, username, hashedPassword, email);
-        await updateUserState(user.id, 'offline');
         const token = await signToken(app, user);
 
         return reply

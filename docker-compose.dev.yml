@@ -204,3 +204,4 @@ networks:
 
 volumes:
   postgres_data:
+  frontend_dist:
