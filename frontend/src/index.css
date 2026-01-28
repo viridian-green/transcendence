@@ -81,4 +81,31 @@ button:active {
 	transform: none !important;
 }
 
+.color-brand {
+	color: var(--color-accent-pink);
+}
+
+.color-blue {
+	color: var(--color-accent-blue);
+}
+
+/* Dark mode scrollbar styling */
+::-webkit-scrollbar {
+	width: 10px;
+	background: var(--color-elevated);
+}
+::-webkit-scrollbar-thumb {
+	background: var(--color-text-secondary);
+	border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: var(--color-accent-pink);
+}
+
+/* Firefox */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-border) var(--color-surface);
+}
+
 @tailwind utilities;
