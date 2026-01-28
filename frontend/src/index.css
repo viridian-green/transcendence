@@ -57,6 +57,7 @@
 	--color-accent-amber: #fbbf24;
 
 	--color-status-online: #4ade80; /* #00FF85 */
+	--color-status-offline: #ef4444; /* red-500 */
 }
 
 body {
@@ -87,6 +88,14 @@ button:active {
 
 .color-blue {
 	color: var(--color-accent-blue);
+}
+
+.color-online {
+	color: var(--color-status-online);
+}
+
+.color-offline {
+	color: var(--color-status-offline);
 }
 
 /* Dark mode scrollbar styling */
