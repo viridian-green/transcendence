@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Socket } from 'socket.io-client';
 
 export type OnlineUser = {
 	id: string;
 	username: string;
 };
 
-export function useFetchOnlineUsers(currentUserId?: string, socket?: Socket) {
+// Accepts a native WebSocket instance (not socket.io-client)
+export function useFetchOnlineUsers(currentUserId?: string, socket?: WebSocket | null) {
 	const [users, setUsers] = useState<OnlineUser[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -58,9 +58,18 @@ export function useFetchOnlineUsers(currentUserId?: string, socket?: Socket) {
 		fetchOnlineUsers();
 
 		if (socket) {
-			socket.on('onlineUsersUpdated', fetchOnlineUsers);
+			// Native WebSocket: listen for 'message' events
+			const handler = (event: MessageEvent) => {
+				try {
+					const data = JSON.parse(event.data);
+					if (data.type === 'onlineUsersUpdated') {
+						fetchOnlineUsers();
+					}
+				} catch {}
+			};
+			socket.addEventListener('message', handler);
 			return () => {
-				socket.off('onlineUsersUpdated', fetchOnlineUsers);
+				socket.removeEventListener('message', handler);
 			};
 		}
 		// eslint-disable-next-line
