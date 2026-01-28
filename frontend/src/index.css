@@ -98,6 +98,10 @@ button:active {
 	color: var(--color-status-offline);
 }
 
+.color-muted {
+	color: var(--color-text-border);
+}
+
 /* Dark mode scrollbar styling */
 ::-webkit-scrollbar {
 	width: 10px;

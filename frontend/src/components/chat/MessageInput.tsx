@@ -16,9 +16,9 @@ export function MessageInput({
 		}
 	};
 	return (
-		<div className="flex items-end w-full gap-2 p-2 border-t border-gray-200">
+		<div className='flex w-full items-end gap-2'>
 			<input
-				className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400"
+				className='flex-1 rounded border px-3 py-2 text-sm focus:border-[var(--color-accent-pink)] focus:outline-none'
 				value={value}
 				onChange={(e) => setValue(e.target.value)}
 				onKeyDown={(e) => e.key === 'Enter' && send()}

@@ -18,7 +18,7 @@ export function AllMessages({
 		}
 	}, [messages]);
 	return (
-		<div className='messages h-full snap-y snap-end overflow-y-auto'>
+		<div className='chat-messages h-full snap-y snap-end overflow-y-auto'>
 			{messages.map((msg, i) => (
 				<div key={i} className='message overflow-hidden py-2 break-words'>
 					{msg.kind === 'chat' ? (
