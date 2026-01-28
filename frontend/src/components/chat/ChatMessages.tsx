@@ -4,7 +4,7 @@ export type ChatRenderMessage =
 	| { kind: 'chat'; username: string; text: string }
 	| { kind: 'system'; text: string };
 
-export function AllMessages({
+export function ChatMessages({
 	messages,
 	currentUsername,
 }: {
@@ -33,7 +33,7 @@ export function AllMessages({
 							<span>{msg.text}</span>
 						</>
 					) : (
-						<span className='text-gray-500'>{msg.text}</span>
+						<span className='text-blue'>{msg.text}</span>
 					)}
 				</div>
 			))}

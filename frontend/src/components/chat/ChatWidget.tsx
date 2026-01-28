@@ -9,7 +9,8 @@ import { usePresenceSocket } from '@/hooks/usePresenceSocket';
 import { useChatSocket } from '@/hooks/useChatSocket';
 import ChatHeader from './ChatHeader';
 import ChatTabs from './ChatTabs';
-import { AllMessages } from './AllMessages';
+import { ChatMessages } from './ChatMessages';
+import { PrivateMessages } from './PrivateMessages';
 
 const TABS = [
 	{ key: 'agora', label: 'Agora' },
@@ -29,7 +30,6 @@ const ChatWidget = () => {
 	const {
 		ws,
 		messages: generalMessages,
-		isConnected,
 		sendMessage,
 	} = useChatSocket(Boolean(user), undefined, (from, text, kind = 'chat') => {
 		// Open conversation if not already open
@@ -58,10 +58,7 @@ const ChatWidget = () => {
 		sendMessage({ type: 'private_msg', text, to: String(toId) });
 		setPrivateMessages((prev) => ({
 			...prev,
-			[toId]: [
-				...(prev[toId] || []),
-				{ text, username: user?.username, from: currentUserId, to: toId },
-			],
+			[toId]: [...(prev[toId] || []), { kind: 'chat', username: user?.username, text }],
 		}));
 	};
 
@@ -87,7 +84,7 @@ const ChatWidget = () => {
 		if (activeTab === 'agora') {
 			return (
 				<div className='chat-tab-content'>
-					<AllMessages messages={generalMessages} currentUsername={user?.username} />
+					<ChatMessages messages={generalMessages} currentUsername={user?.username} />
 					<MessageInput onSend={sendGeneralMessage} disabled={!connected} />
 				</div>
 			);
@@ -111,13 +108,7 @@ const ChatWidget = () => {
 			const msgs = privateMessages[privateUser.id] || [];
 			return (
 				<div className='chat-tab-content'>
-					<div className='chat-messages'>
-						{msgs.map((msg, idx) => (
-							<div key={idx}>
-								<b>{msg.username}:</b> {msg.text}
-							</div>
-						))}
-					</div>
+					<ChatMessages messages={msgs} currentUsername={user?.username || ''} />
 					<MessageInput
 						onSend={(text) => sendPrivateMessage(privateUser.id, text)}
 						disabled={!connected}
