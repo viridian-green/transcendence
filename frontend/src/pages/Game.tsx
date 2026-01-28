@@ -1,4 +1,3 @@
-import { PinkButton } from '@/components';
 import Canvas from './Canvas';
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
@@ -99,14 +98,6 @@ const Game = () => {
 						}),
 					);
 					break;
-				case ' ':
-					// TODO: handle pause on the server (send back pause state)
-					ws.send(
-						JSON.stringify({
-							type: 'TOGGLE_PAUSE',
-						}),
-					);
-					break;
 				case 'Escape':
 					// TODO check with Adele if this is the desired behavior
 					ws.close();
@@ -158,10 +149,6 @@ const Game = () => {
 		};
 	}, [navigate, gameId, mode]);
 
-	const handlePauseToggle = () => {
-		wsRef.current?.send(JSON.stringify({ type: 'TOGGLE_PAUSE' }));
-	};
-
 	useEffect(() => {
 		if (gameState?.phase === 'ended') {
 			const winner =
@@ -189,11 +176,6 @@ const Game = () => {
 				<p>{rightPlayer}</p>
 			</div>
 			<Canvas gameState={gameState} />
-			<PinkButton
-				className='text-accent-pink'
-				text={gameState?.phase === 'paused' ? 'Resume' : 'Pause'}
-				onClick={handlePauseToggle}
-			/>
 		</div>
 	);
 };

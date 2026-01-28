@@ -68,14 +68,6 @@ export function movePaddle(state, playerIndex, direction) {
   if (direction === 'down') paddle.dy = speed;
 }
 
-export function togglePause(state) {
-  if (state.game.phase === 'playing') {
-    state.game.phase = 'paused';
-  } else if (state.game.phase === 'paused') {
-    state.game.phase = 'playing';
-  }
-}
-
 export function moveBall(state) {
   const { ball: ballCfg } = GAME_CONFIG;
   const ball = state.ball;
