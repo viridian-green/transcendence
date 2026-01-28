@@ -51,6 +51,8 @@ jobs:
        fi
        echo "All required secrets are set"
 
+    - name: Wait for services
+      run: sleep 20
 
     - name: Run user-service register tests
       run: |
