@@ -103,9 +103,6 @@ case 'RESET_GAME':
     case 'STOP_PADDLE':
       stopPaddle(state, payload.playerIndex);
       break;
-    case 'TOGGLE_PAUSE':
-      togglePause(state);
-      break;
     default:
       console.warn('[GAME WS] Unknown message type:', type);
   }
