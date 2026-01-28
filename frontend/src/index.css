@@ -57,6 +57,7 @@
 	--color-accent-amber: #fbbf24;
 
 	--color-status-online: #4ade80; /* #00FF85 */
+	--color-status-offline: #ef4444; /* red-500 */
 }
 
 body {
@@ -79,6 +80,45 @@ button:active {
 .no-scale:hover,
 .no-scale:active {
 	transform: none !important;
+}
+
+.color-brand {
+	color: var(--color-accent-pink);
+}
+
+.color-blue {
+	color: var(--color-accent-blue);
+}
+
+.color-online {
+	color: var(--color-status-online);
+}
+
+.color-offline {
+	color: var(--color-status-offline);
+}
+
+.color-muted {
+	color: var(--color-text-border);
+}
+
+/* Dark mode scrollbar styling */
+::-webkit-scrollbar {
+	width: 10px;
+	background: var(--color-elevated);
+}
+::-webkit-scrollbar-thumb {
+	background: var(--color-text-secondary);
+	border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: var(--color-accent-pink);
+}
+
+/* Firefox */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-border) var(--color-surface);
 }
 
 @tailwind utilities;

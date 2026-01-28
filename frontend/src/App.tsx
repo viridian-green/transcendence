@@ -13,13 +13,13 @@ import {
 	GameEnd,
 	GameStart,
 	AIGameStart,
-	Chat,
 	TermsOfService,
 	PrivacyPolicy,
 	Profile,
 	ProfileSettings,
 } from '@pages/index';
 import DropdownMenuAvatar from './components/DropdownMenuAvatar';
+import ChatWidget from './components/chat/ChatWidget';
 import { useAuth } from './hooks/useAuth';
 
 function App() {
@@ -80,14 +80,6 @@ function App() {
 							}
 						/>
 						<Route
-							path='/chat'
-							element={
-								<ProtectedRoute>
-									<Chat />
-								</ProtectedRoute>
-							}
-						/>
-						<Route
 							path='/game-start'
 							element={
 								<ProtectedRoute>
@@ -143,6 +135,7 @@ function App() {
 					</Routes>
 				</Suspense>
 			</main>
+			<ChatWidget />
 			<footer className='border-border bg-surface text-text-muted flex h-16 items-center justify-center gap-2 border-t px-6 text-center text-sm'>
 				<Link to='/privacy-policy' className='hover:text-text-secondary'>
 					Privacy Policy
