@@ -52,11 +52,11 @@ const GameEnd = () => {
 	}
 
 	return (
-		<div className='flex flex-1 flex-col items-center justify-center gap-6'>
+		<div className='flex flex-1 flex-col items-center justify-center gap-6 p-4'>
 			<p className='text-accent-pink font-retro text-4xl font-bold'>Winner</p>
 			<p className='text-accent-amber text-2xl'>{winnerAlias}</p>
 			<p className='text-2xl'>{`${leftPlayerScore} : ${rightPlayerScore}`}</p>
-			<div className='flex flex-row justify-center gap-20 text-center text-xl'>
+			<div className='flex flex-col md:flex-row items-center justify-center gap-6 md:gap-20 text-center text-xl'>
 				<PinkButton text='Home' onClick={handleHome} />
 				<PinkButton text='New Game' onClick={handleGameStart} />
 			</div>

@@ -280,7 +280,7 @@ const Game = () => {
 						onContextMenu={(e) => e.preventDefault()}
 						onPointerDown={(e) => {
 							e.preventDefault();
-							console.log('Botton Pressed - State:', wsRef.current?.readyState);
+							//console.log('Botton Pressed - State:', wsRef.current?.readyState);
 							if (wsRef.current?.readyState === WebSocket.OPEN) {
 								wsRef.current.send(
 									JSON.stringify({
@@ -292,7 +292,7 @@ const Game = () => {
 						}}
 						onPointerUp={(e) => {
 							e.preventDefault();
-							console.log('Botton Released');
+							//console.log('Botton Released');
 							if (wsRef.current?.readyState === WebSocket.OPEN) {
 								wsRef.current.send(
 									JSON.stringify({
