@@ -1,9 +1,9 @@
 import React from 'react';
 
 type User = {
-  id: string;
-  username: string;
-  // Add avatar or other fields if needed
+	id: string;
+	username: string;
+	// Add avatar or other fields if needed
 };
 
 interface UsersListProps {
@@ -19,12 +19,10 @@ const UsersList: React.FC<UsersListProps> = ({ users, loading, error, onUserClic
 	if (error) return <div>Error: {error}</div>;
 
 	return (
-		<div className="m-4 text-white flex flex-col gap-4">
-			<div className="chat-labels relative flex items-center">
-				<h3 className='private-message text-xs text-white uppercase m-0'>
-					Online Users
-				</h3>
-				<hr className="flex-1 ml-2 border-t" />
+		<div className='m-4 flex flex-col gap-4 text-white'>
+			<div className='chat-labels relative flex items-center'>
+				<h3 className='private-message m-0 text-xs text-white uppercase'>Online Users</h3>
+				<hr className='ml-2 flex-1 border-t' />
 			</div>
 			{users.length === 0 ? (
 				<div className="text-sm">No users online.</div>

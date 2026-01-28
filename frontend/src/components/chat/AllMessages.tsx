@@ -1,3 +1,5 @@
+import { useRef, useEffect } from 'react';
+
 export type ChatRenderMessage =
 	| { kind: 'chat'; username: string; text: string }
 	| { kind: 'system'; text: string };
@@ -9,20 +11,24 @@ export function AllMessages({
 	messages: ChatRenderMessage[];
 	currentUsername?: string;
 }) {
+	const messagesEndRef = useRef<HTMLDivElement>(null);
+	useEffect(() => {
+		if (messagesEndRef.current) {
+			messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
+		}
+	}, [messages]);
 	return (
-		<div className='messages'>
+		<div className='messages h-full snap-y snap-end overflow-y-auto'>
 			{messages.map((msg, i) => (
-				<div key={i} className='message px-4 py-2'>
+				<div key={i} className='message overflow-hidden py-2 break-words'>
 					{msg.kind === 'chat' ? (
 						<>
 							<strong
-								className={`font-semibold ${
-									msg.username === currentUsername
-										? 'text-fuchsia-600'
-										: 'text-blue-600'
-								}`}
+								className={
+									msg.username === currentUsername ? 'color-brand' : 'color-blue'
+								}
 							>
-								{msg.username}:
+								{msg.username}:{' '}
 							</strong>{' '}
 							<span>{msg.text}</span>
 						</>
@@ -31,6 +37,7 @@ export function AllMessages({
 					)}
 				</div>
 			))}
+			<div ref={messagesEndRef} className='snap-end' />
 		</div>
 	);
 }
