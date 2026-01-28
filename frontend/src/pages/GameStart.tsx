@@ -57,7 +57,7 @@ const GameStart = () => {
 	return (
 		<div className='flex flex-1 flex-col items-center justify-center gap-6 p-4'>
 			<section className='flex flex-col items-center justify-center gap-6'>
-				<p className='text-accent-pink font-retro text-4xl font-bold'>Game Start</p>
+				<p className='text-accent-pink font-retro text-4xl font-bold text-center'>Game Start</p>
 				<label htmlFor='opponent' className='text-2xl'>
 					Who are you playing with?
 				</label>
