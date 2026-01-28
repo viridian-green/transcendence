@@ -51,9 +51,6 @@ jobs:
        fi
        echo "All required secrets are set"
 
-    - name: Wait for services
-      run: sleep 20
-
     - name: Run user-service register tests
       run: |
         chmod +x init-scripts/test-scripts/user-service/register.sh
@@ -85,7 +82,7 @@ jobs:
 
     - name: Dump logs on failure
       if: failure()
-      run: docker compose logs
+      run: docker compose logs user
 
 
 
