@@ -19,13 +19,15 @@ const UsersList: React.FC<UsersListProps> = ({ users, loading, error, onUserClic
 	if (error) return <div>Error: {error}</div>;
 
 	return (
-		<div className='m-4 flex flex-col gap-4 text-white'>
+		<div className='flex flex-col gap-4 text-white'>
 			<div className='chat-labels relative flex items-center'>
-				<h3 className='private-message m-0 text-xs text-white uppercase'>Online Users</h3>
+				<h3 className='private-message text-color-muted m-0 text-xs uppercase'>
+					Online Users
+				</h3>
 				<hr className='ml-2 flex-1 border-t' />
 			</div>
 			{users.length === 0 ? (
-				<div className="text-sm">No users online.</div>
+				<div className='color[var(--color-text-muted)] text-sm'>No users online.</div>
 			) : (
 				<ul>
 					{users.map((user) => (
