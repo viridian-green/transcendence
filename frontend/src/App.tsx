@@ -13,7 +13,6 @@ import {
 	GameEnd,
 	GameStart,
 	AIGameStart,
-	Chat,
 	TermsOfService,
 	PrivacyPolicy,
 	Profile,
@@ -77,14 +76,6 @@ function App() {
 							element={
 								<ProtectedRoute>
 									<Home />
-								</ProtectedRoute>
-							}
-						/>
-						<Route
-							path='/chat'
-							element={
-								<ProtectedRoute>
-									<Chat />
 								</ProtectedRoute>
 							}
 						/>

@@ -98,7 +98,6 @@ const Home: FC = () => {
 						<PinkButton text='AI Opponent' onClick={handleAIGameStart} />
 						<PinkButton text='Local' onClick={handleLocalGameStart} />
 						<PinkButton text='Remote' onClick={handleRemoteGameStart} />
-						<PinkButton text='Chat' onClick={() => navigate('/chat')} />
 					</div>
 				</section>
 			)}
