@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FaComments } from 'react-icons/fa';
-import { MessageInput } from './MessageInput';
 import { useAuth } from '../../hooks/useAuth';
-import UsersList from './OnlineUsersList';
 import { useFetchOnlineUsers } from '../../hooks/useFetchOnlineUsers';
-import './ChatWidget.css';
 import { usePresenceSocket } from '@/hooks/usePresenceSocket';
 import { useChatSocket } from '@/hooks/useChatSocket';
+import './ChatWidget.css';
+import UsersList from './OnlineUsersList';
+import { MessageInput } from './MessageInput';
 import ChatHeader from './ChatHeader';
 import ChatTabs from './ChatTabs';
 import { ChatMessages } from './ChatMessages';
-import { PrivateMessages } from './PrivateMessages';
 
 const TABS = [
 	{ key: 'agora', label: 'Agora' },
