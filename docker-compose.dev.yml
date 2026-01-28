@@ -147,6 +147,24 @@ services:
     networks:
       - transcendence-network
 
+  notification:
+    container_name: notification_dev
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile.dev
+    depends_on:
+      database:
+        condition: service_healthy
+    env_file: ./services/notification-service/.env
+    ports:
+      - "3006:3006"
+    networks:
+      - transcendence-network
+    volumes:
+      - ./services/notification-service:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev"]
+
   api-gateway:
     container_name: api_gateway_dev
     build:
@@ -186,3 +204,4 @@ networks:
 
 volumes:
   postgres_data:
+  frontend_dist:
