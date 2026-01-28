@@ -7,11 +7,13 @@ import { useFetchOnlineUsers } from '../../hooks/useFetchOnlineUsers';
 import './ChatWidget.css';
 import { usePresenceSocket } from '@/hooks/usePresenceSocket';
 import { useChatSocket } from '@/hooks/useChatSocket';
+import { io, Socket } from 'socket.io-client';
 
 const TABS = [
 	{ key: 'agora', label: 'Agora' },
 	{ key: 'people', label: 'People' },
 ];
+const socket: Socket = io('/api/chat', { autoConnect: true }); // Adjust path/URL as needed
 
 const ChatWidget = () => {
 	const [expanded, setExpanded] = useState(false);
@@ -19,7 +21,6 @@ const ChatWidget = () => {
 	const [privateTabs, setPrivateTabs] = useState<{ id: number; name: string }[]>([]);
 	const { user } = useAuth();
 	const currentUserId = String(user?.id);
-	// Assume chat and presence use the same connection for now
 	const { isConnected: isPresenceConnected } = usePresenceSocket(Boolean(user));
 	const { isConnected } = useChatSocket(Boolean(user));
 	console.log('Current user in ChatWidget:', user);
@@ -29,7 +30,7 @@ const ChatWidget = () => {
 		users: onlinePeople,
 		loading: loadingOnline,
 		error: errorOnline,
-	} = useFetchOnlineUsers(currentUserId);
+	} = useFetchOnlineUsers(currentUserId, socket);
 
 	console.log('Online people:', onlinePeople);
 	const openPrivateTab = (person: { id: number; name: string }) => {
