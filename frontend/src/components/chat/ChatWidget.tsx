@@ -23,22 +23,31 @@ const ChatWidget = () => {
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'agora' | 'people' | number>('agora');
 	const [privateTabs, setPrivateTabs] = useState<{ id: number; name: string }[]>([]);
+	const [privateMessages, setPrivateMessages] = useState({});
 
-	// Use chat socket hook for all chat logic
+	// Use chat socket hook for all chat logic, with private message handler
 	const {
 		ws,
 		messages: generalMessages,
 		isConnected,
 		sendMessage,
-	} = useChatSocket(Boolean(user));
+	} = useChatSocket(Boolean(user), undefined, (from, text, kind = 'chat') => {
+		// Open conversation if not already open
+		setPrivateTabs((prev) => {
+			if (prev.some((u) => String(u.id) === String(from.id))) return prev;
+			return [...prev, { id: Number(from.id), name: from.username }];
+		});
+		// Add message to private messages
+		setPrivateMessages((prev) => ({
+			...prev,
+			[from.id]: [...(prev[from.id] || []), { kind, username: from.username, text }],
+		}));
+	});
 	const {
 		users: onlinePeople,
 		loading: loadingOnline,
 		error: errorOnline,
 	} = useFetchOnlineUsers(currentUserId, ws.current);
-
-	// --- Private message state ---
-	const [privateMessages, setPrivateMessages] = useState({});
 
 	const sendGeneralMessage = (text: string) => {
 		if (!text) return;
@@ -102,7 +111,6 @@ const ChatWidget = () => {
 			const msgs = privateMessages[privateUser.id] || [];
 			return (
 				<div className='chat-tab-content'>
-					<div className='chat-header py-4'>{privateUser.name}</div>
 					<div className='chat-messages'>
 						{msgs.map((msg, idx) => (
 							<div key={idx}>
