@@ -97,6 +97,7 @@ function handleDisconnect(connection: WebSocket, user: User) {
     `[NOTIFICATION WS] User ${user.username} disconnected. Total clients: ${clients.size}`
   );
 }
+
 function handleMessage(
   connection: WebSocket,
   user: User,
@@ -141,26 +142,29 @@ if (data.type === 'INVITE') {
   return;
 }
 
-
 if (data.type === 'INVITE_ACCEPT') {
   // user = the one who clicked Accept
   const invitedId = user.id;
   const inviterId = String(data.fromUserId);
-    const invitedUsername = user.username;
-  const inviterUsername = String(data.fromUsername);
+  const invitedUsername = user.username;
+
+  // Look up inviter's username from socketsByUserId or clients
+  let inviterUsername = 'undefined';
+  const inviterSockets = socketsByUserId.get(inviterId);
+  if (inviterSockets && inviterSockets.size > 0) {
+    // Get the first socket and its user
+    for (const sock of inviterSockets) {
+      const inviterUser = clients.get(sock);
+      if (inviterUser && inviterUser.username) {
+        inviterUsername = inviterUser.username;
+        break;
+      }
+    }
+  }
 
   const gameId = `game-${Date.now()}`;
 
-  console.log(
-    'INVITE_ACCEPT from',
-    invitedId,
-    'for inviter',
-    inviterId,
-    'gameId',
-    gameId,
-  );
-
-
+  console.log("---------------------> invited user", invitedUsername, "---------------------> inviter user" ,inviterUsername);
 
   const notifyUser = (userId: string, payload: any) => {
     const targets = socketsByUserId.get(userId);

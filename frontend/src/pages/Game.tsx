@@ -18,7 +18,6 @@ const Game = () => {
 
 
 	useEffect(() => {
-        console.log('[GAME] Debug', {side, mode, leftPlayerId: state?.leftPlayerId, rightPlayerId: state?.rightPlayerId });
 		if (typeof window === 'undefined') return;
 		// Prevent scrolling while in game -> hide overflow
 		// document.body.style.overflow = 'hidden';
@@ -29,15 +28,10 @@ const Game = () => {
 			return;
 		}
 
-		// const protocol = window.location.protocol === 'https:' ? 'ws:' : 'wss:';
         const wsUrl = `wss://${window.location.host}/api/game/${gameId}?mode=${mode}`;
 
-        // console.log('[GAME] Debug', {backendHost });
-        console.log('[GAME SOCKET] connecting to', wsUrl);
+        // console.log('[GAME SOCKET] connecting to', wsUrl);
         const ws = new WebSocket(wsUrl);
-
-        console.log('Connected to game server');
-
 
 		ws.onopen = () => {
 			console.log('Connected to game server');
