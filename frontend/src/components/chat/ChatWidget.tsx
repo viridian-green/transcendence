@@ -119,15 +119,14 @@ const ChatWidget = () => {
 	};
 
 	return (
-		<div
-			className={`chat-widget ${expanded ? 'expanded' : ''}`}
-		>
+		<div className={`chat-widget ${expanded ? 'expanded' : ''}`}>
 			{expanded ? (
 				<div className='chat-container'>
 					<ChatHeader
 						username={user?.username}
 						isConnected={ws.current?.readyState === WebSocket.OPEN}
 						isPresenceConnected={isPresenceConnected}
+						onClose={() => setExpanded(false)}
 					/>
 					<ChatTabs
 						activeTab={activeTab}
