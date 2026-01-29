@@ -209,5 +209,4 @@ The routes are ordered with specific paths before generic ones to avoid route co
 
 ## Future improvements
 
-- Filter friends by status (pending vs accepted) in the GET endpoint
-- Online status integration (handled by presence service, can be filtered on frontend)
+- Filter friends by status (accepted only) in the GET endpoint
