@@ -31,7 +31,7 @@ const GlobalAlert = ({ message, type, visible, onClose, onAccept, onDecline, acc
         <p className="mb-4 text-lg font-semibold text-center">
           {message}
         </p>
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-center gap-2 w-full mt-4">
           {onDecline && (
             <PinkButton
               text={declineText}
