@@ -11,8 +11,9 @@ export function useFriends() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch('http://localhost:3003/users/friends', { credentials: 'include' });
-        if (!res.ok) throw new Error('Failed to fetch friends');
+        const res = await fetch('/api/users/friends', { credentials: 'include' });
+        if (!res.ok)
+            throw new Error('Failed to fetch friends');
         const data = await res.json();
         setFriends(Array.isArray(data) ? data : data.friends);
       } catch (err) {
