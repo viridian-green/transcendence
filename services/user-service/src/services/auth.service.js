@@ -94,6 +94,26 @@ export async function ensureValidPassword(password, user) {
     }
 }
 
+export async function ensureUserIsNotOnline(app, userId) {
+    const response = await fetch(`http://presence:3005/state/${userId}`, {
+        method: "GET",
+        credentials: "include",
+    });
+
+    if (!response.ok) {
+        const err = new Error("Failed to check user state");
+        err.statusCode = 500;
+        throw err;
+    }
+
+    const userState = await response.json();
+
+    if (userState.state === "online") {
+        const err = new Error("User is already online");
+        err.statusCode = 409;
+        throw err;
+    }
+}
 /**
  * Authenticate middleware - reads user info from headers
  * The API Gateway handles JWT verification and passes user info via headers

@@ -35,6 +35,24 @@ export function ensureNotSelf(userId, friendId) {
     }
 }
 
+export async function acceptFriendRequest(app, userId, friendId) {
+    const { rows, rowCount } = await app.pg.query(
+        `
+        UPDATE friends
+        SET status = 'accepted'
+        WHERE (user_one = $1 AND user_two = $2)
+        OR (user_one = $2 AND user_two = $1)
+        RETURNING *
+        `, [userId, friendId]
+    );
+    if (rowCount === 0) {
+        const err = new Error("Can't find friendship request");
+        err.statusCode = 404;
+        throw err;
+    }
+    return rows[0];
+}
+
 export async function createFriendRequest(app, userId, friendId) {
     const userOne = Math.min(userId, friendId);
     const userTwo = Math.max(userId, friendId);
@@ -69,7 +87,8 @@ export async function getFriendsList(app, userId) {
         SELECT u.id, u.username, u.avatar, u.bio FROM friends f
         JOIN users u ON (u.id = f.user_two AND f.user_one = $1)
                      OR (u.id = f.user_one AND f.user_two = $1)
-        WHERE f.user_one = $1 OR f.user_two = $1
+        WHERE (f.user_one = $1 OR f.user_two = $1)
+        AND f.status = 'accepted'
         `, [userId]
     );
 
