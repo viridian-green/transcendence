@@ -116,21 +116,19 @@ open:
 
 ## === Testing ===
 # Create test user
-user1:
+users:
 	@curl -X POST https://localhost:8443/api/auth/register \
 		-H "Content-Type: application/json" \
 		-d '{"email":"a@a.aa","username":"u1","password":"Password123!"}' \
 		-k
 	@echo ""
 
-user2:
 	@curl -X POST https://localhost:8443/api/auth/register \
 		-H "Content-Type: application/json" \
 		-d '{"email":"b@b.bb","username":"u2","password":"Password123!"}' \
 		-k
 	@echo ""
 
-user3:
 	@curl -X POST https://localhost:8443/api/auth/register \
 		-H "Content-Type: application/json" \
 		-d '{"email":"c@c.cc","username":"u3","password":"Password123!"}' \
