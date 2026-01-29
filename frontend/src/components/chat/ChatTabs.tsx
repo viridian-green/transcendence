@@ -32,22 +32,19 @@ const ChatTabs: React.FC<ChatTabsProps> = ({
 			{privateTabs.map((tab) => (
 				<button
 					key={tab.id}
-					className={`chat-tab-btn${activeTab === tab.id ? ' active' : ''}`} //keep the space before active
+					className={`chat-tab-btn flex items-center${activeTab === tab.id ? ' active' : ''}`} //keep the space before active
 					onClick={() => setActiveTab(tab.id)}
-					style={{ display: 'flex', alignItems: 'center' }}
 				>
 					{tab.name}
-					<span style={{ marginLeft: 6 }}>
 						<span
 							onClick={(e) => {
 								e.stopPropagation();
 								closePrivateTab(tab.id);
 							}}
-							className='close pointer close-btn-hover'
+							className='close pointer close-btn-hover ml-1'
 						>
 							×
 						</span>
-					</span>
 				</button>
 			))}
 		</div>
