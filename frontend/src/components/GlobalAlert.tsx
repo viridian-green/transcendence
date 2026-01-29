@@ -23,19 +23,34 @@ const GlobalAlert = ({ message, type, visible, onClose, onAccept, onDecline }: G
   }
 
   return (
-    <div
-      className="fixed top-4 left-1/2 z-50 -translate-x-1/2 rounded px-6 py-3 shadow-lg flex flex-col items-center"
-      style={{ background: bgColor, color: textColor }}
-    >
-      <div>{message}</div>
-      {type === 'received' ? (
-        <div className="mt-4 flex gap-4">
-          <PinkButton text="Accept" onClick={onAccept} />
-          <PinkButton text="Decline" onClick={onDecline} className="border-gray-400 hover:bg-gray-400" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="rounded-lg bg-surface p-6 shadow-lg min-w-[320px] max-w-[90vw]">
+        <p className="mb-4 text-lg font-semibold text-center">
+          {message}
+        </p>
+        <div className="flex justify-end gap-2">
+          {type === 'received' ? (
+            <>
+              <PinkButton
+                text="Cancel"
+                className="px-3 py-1"
+                onClick={onDecline}
+              />
+              <PinkButton
+                text="Accept"
+                className="px-3 py-1"
+                onClick={onAccept}
+              />
+            </>
+          ) : (
+            <PinkButton
+              text="Close"
+              className="px-3 py-1"
+              onClick={onClose}
+            />
+          )}
         </div>
-      ) : (
-        <button onClick={onClose} className="ml-4 mt-4 px-4 py-2 rounded bg-[var(--color-border)] hover:bg-[var(--color-surface)]">Close</button>
-      )}
+      </div>
     </div>
   );
 };
