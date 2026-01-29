@@ -121,7 +121,6 @@ const ChatWidget = () => {
 	return (
 		<div
 			className={`chat-widget ${expanded ? 'expanded' : ''}`}
-			style={{ background: 'var(--color-surface)' }}
 		>
 			{expanded ? (
 				<div className='chat-container'>

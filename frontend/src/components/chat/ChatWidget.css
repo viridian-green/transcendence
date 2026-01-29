@@ -11,7 +11,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
-	background: var(--color-surface);
+	border: var(--color-accent-pink);
 }
 
 .chat-labels {
@@ -19,7 +19,7 @@
 }
 
 .chat-expand-btn {
-	background: #f472b6;
+	background: var(--color-accent-pink);
 	color: white;
 	border: none;
 	border-radius: 50%;
@@ -31,11 +31,12 @@
 	justify-content: center;
 	cursor: pointer;
 	transition: background 0.2s;
-	background: var(--color-surface);
+	border: solid 2px var(--color-accent-pink);
+	background-color: var(--color-surface);
 }
 
 .chat-expand-btn:hover {
-	background: #ec4899;
+	background: var(--color-accent-pink);
 }
 
 .chat-widget.expanded .chat-container {
@@ -47,7 +48,7 @@
 	overflow: hidden;
 	display: flex;
 	flex-direction: column;
-	background: var(--color-surface);
+	border: var(--color-accent-pink);
 	padding: 16px;
 	row-gap: 16px;
 }
