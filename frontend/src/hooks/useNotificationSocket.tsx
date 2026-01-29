@@ -4,7 +4,7 @@ import type { ChatServerMessage, ChatRenderMessage } from '@/types/chat';
 export function useNotificationSocket(enabled: boolean) {
   const [messages] = useState<ChatRenderMessage[]>([]);
   const [isConnected, setIsConnected] = useState(false);
-  const [lastRawMessage] = useState<any | null>(null);
+  const [lastRawMessage] = useState<undefined | null>(null);
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
