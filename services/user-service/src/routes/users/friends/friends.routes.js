@@ -38,5 +38,15 @@ export default async function friendsRoute(app) {
             friendship: rows[0]
         });
     });
+
+    //get friends list
+    //GET /friends
+    app.get('/', { preHandler: app.authenticate }, async (req, reply) => {
+        const userId = req.user.id;
+        const friendsMap = await getFriendsList(app, userId);
+        const friends = Array.from(friendsMap.values());
+
+        return reply.code(200).send(friends);
+    })
 }
 
