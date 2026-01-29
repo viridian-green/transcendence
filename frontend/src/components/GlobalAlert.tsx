@@ -3,14 +3,17 @@ import PinkButton from './PinkButton';
 
 interface GlobalAlertProps {
   message: string;
-  type: string;
+  type?: string;
   visible: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   onAccept?: () => void;
   onDecline?: () => void;
+  acceptText?: string;
+  declineText?: string;
+  closeText?: string;
 }
 
-const GlobalAlert = ({ message, type, visible, onClose, onAccept, onDecline }: GlobalAlertProps) => {
+const GlobalAlert = ({ message, type, visible, onClose, onAccept, onDecline, acceptText = 'Accept', declineText = 'Decline', closeText = 'Close' }: GlobalAlertProps) => {
   if (!visible) return null;
   let bgColor = 'var(--color-surface)';
   let textColor = 'var(--color-text-primary)';
@@ -29,22 +32,23 @@ const GlobalAlert = ({ message, type, visible, onClose, onAccept, onDecline }: G
           {message}
         </p>
         <div className="flex justify-end gap-2">
-          {type === 'received' ? (
-            <>
-              <PinkButton
-                text="Cancel"
-                className="px-3 py-1"
-                onClick={onDecline}
-              />
-              <PinkButton
-                text="Accept"
-                className="px-3 py-1"
-                onClick={onAccept}
-              />
-            </>
-          ) : (
+          {onDecline && (
             <PinkButton
-              text="Close"
+              text={declineText}
+              className="px-3 py-1"
+              onClick={onDecline}
+            />
+          )}
+          {onAccept && (
+            <PinkButton
+              text={acceptText}
+              className="px-3 py-1"
+              onClick={onAccept}
+            />
+          )}
+          {onClose && !onAccept && !onDecline && (
+            <PinkButton
+              text={closeText}
               className="px-3 py-1"
               onClick={onClose}
             />
