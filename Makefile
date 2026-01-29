@@ -135,6 +135,25 @@ users:
 		-k
 	@echo ""
 
+	@curl -X POST https://localhost:8443/api/auth/register \
+		-H "Content-Type: application/json" \
+		-d '{"email":"d@d.dd","username":"u4","password":"Password123!"}' \
+		-k
+	@echo ""
+
+	@curl -X POST https://localhost:8443/api/auth/register \
+		-H "Content-Type: application/json" \
+		-d '{"email":"e@e.ee","username":"u5","password":"Password123!"}' \
+		-k
+	@echo ""
+
+	@curl -X POST https://localhost:8443/api/auth/register \
+		-H "Content-Type: application/json" \
+		-d '{"email":"f@f.ff","username":"u6","password":"Password123!"}' \
+		-k
+	@echo ""
+
+
 # Check for existing users in table
 usertable:
 	docker exec postgres_db psql -U myuser -d user_db -c "SELECT id, username, email, created_at FROM users ORDER BY id;"
