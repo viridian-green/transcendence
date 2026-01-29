@@ -87,7 +87,8 @@ export async function getFriendsList(app, userId) {
         SELECT u.id, u.username, u.avatar, u.bio FROM friends f
         JOIN users u ON (u.id = f.user_two AND f.user_one = $1)
                      OR (u.id = f.user_one AND f.user_two = $1)
-        WHERE f.user_one = $1 OR f.user_two = $1
+        WHERE (f.user_one = $1 OR f.user_two = $1)
+        AND f.status = 'accepted'
         `, [userId]
     );
 
