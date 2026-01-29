@@ -1,12 +1,10 @@
 # Friends System
 
-The friends system allow users to create connections with other users. It supports sending friend requests, removing friendships and retrieving a user's friends list. With further development of the project, other routes may come into necessity.
+The friends system allows users to create connections with other users. It supports sending friend requests, accepting/rejecting requests, removing friendships, and retrieving a user's friends list.
 
-**Not still supported:**
+**Current limitations:**
 
-- Accepting a request
-- Checking a friend's status (_online, offline_)
-- Get list is raw (returns all friendships, both accepted and pending)
+- Checking a friend's status (_online, offline_) - handled by presence service
 
 ## Database model
 
@@ -30,9 +28,10 @@ CREATE TABLE IF NOT EXISTS friends (
 ### Notes
 
 - A friendship always involves two users
-- `status` represents the relationship state, albeit for now it's not possible for user to accept a friendship.
-- `ON DELETE CASCADE` ensures friendships are removed if a user is deleted.
-- A unique constraint that prevents duplicate friendships, even though this is constraint is also checked in service.
+- `status` represents the relationship state: `'pending'` (default) or `'accepted'`
+- Users can accept or reject pending friend requests
+- `ON DELETE CASCADE` ensures friendships are removed if a user is deleted
+- A unique constraint prevents duplicate friendships, and this is also checked in the service layer
 
 ## Routes
 
@@ -53,10 +52,85 @@ Sends a friend request to the user with the given id.
 
 #### Response
 
-- `200 OK`- request created, friendshipId.
-- `400 Bad Request` - user tried to add themselves.
-- `404 Not Found`- friend not found in database.
-- `409`- user tried to add existing friend.
+- `201 Created` - request created, returns friendship object
+- `400 Bad Request` - user tried to add themselves
+- `404 Not Found` - friend not found in database
+- `409 Conflict` - user tried to add existing friend or friendship already exists
+
+#### Example Response
+
+```json
+{
+  "id": 1,
+  "user_one": 1,
+  "user_two": 3,
+  "status": "pending",
+  "created_at": "2025-12-24T10:42:00.000Z"
+}
+```
+
+### Accept friend request
+
+```bash
+POST /api/users/friends/:id/accept
+```
+
+Accepts a pending friend request from the user with the given id.
+
+- Requires auth
+- Cannot accept from yourself
+- Updates the friendship status from `'pending'` to `'accepted'`
+
+#### Response
+
+- `200 OK` - friendship accepted, returns updated friendship object
+- `400 Bad Request` - user tried to accept from themselves
+- `404 Not Found` - friend not found or friendship request doesn't exist
+
+#### Example Response
+
+```json
+{
+  "id": 1,
+  "user_one": 1,
+  "user_two": 3,
+  "status": "accepted",
+  "created_at": "2025-12-24T10:42:00.000Z"
+}
+```
+
+### Reject friend request
+
+```bash
+POST /api/users/friends/:id/reject
+```
+
+Rejects a pending friend request from the user with the given id. This deletes the friendship record.
+
+- Requires auth
+- Cannot reject from yourself
+- Deletes the friendship record
+
+#### Response
+
+- `200 OK` - friend request rejected, returns deleted friendship object
+- `400 Bad Request` - user tried to reject from themselves
+- `404 Not Found` - friend not found or friendship request doesn't exist
+
+#### Example Response
+
+```json
+{
+  "message": "Friend rejected",
+  "friendship": {
+    "id": 1,
+    "user_one": 1,
+    "user_two": 3,
+    "status": "pending",
+    "created_at": "2025-12-24T10:42:00.000Z"
+  }
+}
+```
 
 ### Get friends list
 
@@ -64,10 +138,11 @@ Sends a friend request to the user with the given id.
 GET /api/users/friends
 ```
 
-Returns all friendships of the authenticated user.
+Returns all friends of the authenticated user as user profile objects.
 
 - Requires auth
-- Returns **both** pending and accepted friendships
+- Returns user profiles (id, username, avatar, bio) for all friends
+- Returns both pending and accepted friendships
 
 #### Response
 
@@ -76,11 +151,16 @@ Returns all friendships of the authenticated user.
 ```json
 [
   {
-    "id": 1,
-    "user_one": 1,
-    "user_two": 3,
-    "status": "accepted",
-    "created_at": "2025-12-24T10:42:00.000Z"
+    "id": 3,
+    "username": "friend_username",
+    "avatar": "user-3-1234567890.jpg",
+    "bio": "Friend's bio"
+  },
+  {
+    "id": 5,
+    "username": "another_friend",
+    "avatar": "default.png",
+    "bio": null
   }
 ]
 ```
@@ -118,7 +198,16 @@ Removes existing friendship or cancels pending request.
 }
 ```
 
+## Route Ordering
+
+The routes are ordered with specific paths before generic ones to avoid route conflicts:
+1. `POST /:id/accept` - must come before `POST /:id`
+2. `POST /:id/reject` - must come before `POST /:id`
+3. `POST /:id` - generic route for creating friend requests
+4. `DELETE /:id` - for removing friends
+5. `GET /` - for getting friends list
+
 ## Future improvements
 
-- Accept/reject friend requests
-- Online status integration
+- Filter friends by status (pending vs accepted) in the GET endpoint
+- Online status integration (handled by presence service, can be filtered on frontend)
