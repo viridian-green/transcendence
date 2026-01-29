@@ -1,8 +1,5 @@
 import { useRef, useEffect } from 'react';
-
-export type ChatRenderMessage =
-	| { kind: 'chat'; username: string; text: string }
-	| { kind: 'system'; text: string };
+import type { ChatRenderMessage } from '@/types/chat';
 
 export function ChatMessages({
 	messages,
