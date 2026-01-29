@@ -183,7 +183,7 @@ const Game = () => {
 			</div>
 
 			{/* Mobile Controls */}
-			<div className='flex w-full max-w-[800px] justify-between px-4 md:hidden'>
+			<div className='flex w-full max-w-[800px] justify-between px-4 xl:hidden'>
 				{/* Left Player Controls - Only show if not AI mode */}
 				<div className='flex flex-col gap-4 touch-none'>
 					{mode !== 'AI' && (
