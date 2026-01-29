@@ -32,9 +32,12 @@ const ProfileSettings = () => {
 				username: user.username,
 				email: user.email,
 				bio: user.bio || '',
+				avatar: user.avatar, // Update avatar in profile state
 			});
 			if (avatarFile) {
-				await updateAvatar(avatarFile);
+				const newAvatar = await updateAvatar(avatarFile);
+				// Update profile state with new avatar filename
+				setProfile((prev) => ({ ...prev, avatar: newAvatar }));
 			}
 			setToast({ show: true, message: 'Profile updated successfully!', type: 'success' });
 		} catch {

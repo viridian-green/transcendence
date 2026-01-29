@@ -39,15 +39,33 @@ export function ProfileSettingsCard({ profile, avatar, onUpdate }: ProfileSettin
 
 	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
-		if (file) {
-			const reader = new FileReader();
-			reader.onloadend = () => {
-				const result = reader.result as string;
-				setPreviewUrl(result);
-				setAvatarFile(file);
-			};
-			reader.readAsDataURL(file);
+		if (!file) return;
+
+		// Validate file type
+		const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+		if (!allowedTypes.includes(file.type)) {
+			setError('Invalid file type. Only JPEG, PNG, and GIF images are allowed.');
+			return;
 		}
+
+		// Validate file size (5MB limit)
+		const maxSize = 5 * 1024 * 1024; // 5MB
+		if (file.size > maxSize) {
+			setError('File size too large. Maximum size is 5MB.');
+			return;
+		}
+
+		const reader = new FileReader();
+		reader.onloadend = () => {
+			const result = reader.result as string;
+			setPreviewUrl(result);
+			setAvatarFile(file);
+			setError(null); // Clear any previous errors
+		};
+		reader.onerror = () => {
+			setError('Failed to read file.');
+		};
+		reader.readAsDataURL(file);
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -63,6 +81,9 @@ export function ProfileSettingsCard({ profile, avatar, onUpdate }: ProfileSettin
 			if (error) {
 				setError(null);
 			}
+			// Reset preview to use the new avatar from the server
+			// This will be updated by the useEffect when avatar prop changes
+			setAvatarFile(null);
 		} catch (err) {
 			if (err instanceof ZodError) {
 				setError(err.issues[0].message);
