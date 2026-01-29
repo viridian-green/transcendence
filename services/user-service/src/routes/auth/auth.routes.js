@@ -7,7 +7,8 @@ import {
     signToken,
     parseLoginBody,
     ensureExistingEmail,
-    ensureValidPassword
+    ensureValidPassword,
+    ensureUserIsNotOnline
 } from "../../services/auth.service.js";
 /**
  * Authentication routes
@@ -44,7 +45,7 @@ export default async function authRoutes(app) {
         await ensureValidPassword(password, user);
 
         const token = await signToken(app, user);
-
+        await ensureUserIsNotOnline(app, user.id);
         return reply
             .setCookie("access_token", token, {
                 httpOnly: true,
