@@ -16,12 +16,5 @@ export function PrivateMessages({
 	onSend,
 }: PrivateMessagesProps) {
 	const [input, setInput] = useState('');
-
-	// const handleSend = () => {
-	// 	if (input.trim()) {
-	// 		onSend(input);
-	// 		setInput('');
-	// 	}
-	// };
 	return <ChatMessages messages={messages} currentUsername={currentUsername} />;
 }
