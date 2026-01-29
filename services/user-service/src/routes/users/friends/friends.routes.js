@@ -38,13 +38,5 @@ export default async function friendsRoute(app) {
             friendship: rows[0]
         });
     });
-
-    //get friends list
-    //GET /friends
-    app.get('/', { preHandler: app.authenticate }, async (req, reply) => {
-        const userId = req.user.id;
-        const rows = await getFriendsList(app, userId);
-
-        return reply.code(200).send(rows);
-    })
 }
+
