@@ -53,8 +53,9 @@ export default async function updateUserRoute(app) {
                 ? path.join('uploads/avatars', currentUser.avatar)
                 : null;
 
-            // generate new filename
-            const filename = `user-${req.user.id}${ext}`;
+            // Generate new filename with timestamp to ensure uniqueness and force cache refresh
+            const timestamp = Date.now();
+            const filename = `user-${req.user.id}-${timestamp}${ext}`;
             const filepath = path.join('uploads/avatars', filename);
 
             // ensure uploads directory exists
@@ -69,13 +70,34 @@ export default async function updateUserRoute(app) {
             // update database
             const avatar = await updateUserAvatar(app, req.user.id, filename);
 
-            // delete old avatar file if it exists and is not the default
+            // Delete old avatar file if it exists and is not the default
             if (oldAvatarPath && fs.existsSync(oldAvatarPath) && oldAvatarPath !== filepath) {
                 try {
                     fs.unlinkSync(oldAvatarPath);
+                    app.log.info(`Deleted old avatar file: ${oldAvatarPath}`);
                 } catch (err) {
                     app.log.warn(`Failed to delete old avatar file: ${oldAvatarPath}`, err);
                 }
+            }
+
+            // Clean up any other old avatar files for this user (matching pattern user-{id}-*.{ext})
+            // This handles cases where old files might not have been deleted
+            try {
+                const files = fs.readdirSync(uploadDir);
+                const userAvatarPattern = new RegExp(`^user-${req.user.id}-\\d+\\.[a-zA-Z]+$`);
+                files.forEach((file) => {
+                    if (userAvatarPattern.test(file) && file !== filename) {
+                        const oldFile = path.join(uploadDir, file);
+                        try {
+                            fs.unlinkSync(oldFile);
+                            app.log.info(`Deleted old avatar file: ${oldFile}`);
+                        } catch (err) {
+                            app.log.warn(`Failed to delete old avatar file: ${oldFile}`, err);
+                        }
+                    }
+                });
+            } catch (err) {
+                app.log.warn('Failed to clean up old avatar files', err);
             }
 
             return reply.code(200).send({ avatar });
