@@ -6,7 +6,9 @@ import {
     deleteFriendship,
     getFriendsList,
     acceptFriendRequest
-} from '../../../services/friends.service.js'
+} from '../../../services/friends.service.js';
+
+const { notifyFriendInviteWS } = require('../../utils/notifyFriendInviteWS.js');
 
 export default async function friendsRoute(app) {
     // Accept friend request - must come before /:id to avoid route conflict
@@ -49,6 +51,9 @@ export default async function friendsRoute(app) {
         await ensureNoExistingFriendship(app, userId, friendId);
 
         const friendshipId = await createFriendRequest(app, userId, friendId);
+
+        // Notify the invited user via WebSocket
+        notifyFriendInviteWS(friendId, userId, req.user.username);
 
         return reply.code(201).send(friendshipId);
     })
