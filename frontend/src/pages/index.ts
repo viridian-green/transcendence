@@ -6,7 +6,6 @@ export { default as Landing } from './Landing';
 export { default as Registration } from './auth/Registration';
 export { default as Login } from './auth/Login';
 export { default as ProtectedRoute } from './ProtectedRoute';
-export { default as Chat } from './Chat';
 export { default as DropdownMenuAvatar } from '../components/DropdownMenuAvatar';
 export { default as PublicOnlyRoute } from './PublicOnlyRoute';
 export { default as Canvas } from './Canvas';

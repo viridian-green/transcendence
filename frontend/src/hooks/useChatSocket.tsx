@@ -86,5 +86,5 @@ export function useChatSocket(
 		}
 	};
 
-	return { messages, isConnected, sendMessage };
+	return { messages, isConnected, sendMessage, ws };
 }
