@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FaComments } from 'react-icons/fa';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetchOnlineUsers } from '../../hooks/useFetchOnlineUsers';
+import { useFriends } from '../../hooks/useFriends';
 import { usePresenceSocket } from '@/hooks/usePresenceSocket';
 import { useChatSocket } from '@/hooks/useChatSocket';
 import './ChatWidget.css';
@@ -24,6 +25,7 @@ const ChatWidget = () => {
 	const [activeTab, setActiveTab] = useState<'agora' | 'people' | number>('agora');
 	const [privateTabs, setPrivateTabs] = useState<{ id: number; name: string }[]>([]);
 	const [privateMessages, setPrivateMessages] = useState({});
+	const { friends, loading: loadingFriends, error: errorFriends } = useFriends();
 
 	// Use chat socket hook for all chat logic, with private message handler
 	const {
@@ -92,8 +94,9 @@ const ChatWidget = () => {
 			return (
 				<UsersList
 					users={onlinePeople}
-					loading={loadingOnline}
-					error={errorOnline}
+					friends={friends}
+					loading={loadingOnline || loadingFriends}
+					error={errorOnline || errorFriends}
 					onUserClick={(user) =>
 						openPrivateTab({ id: Number(user.id), name: user.username })
 					}
