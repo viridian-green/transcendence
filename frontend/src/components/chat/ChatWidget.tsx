@@ -19,13 +19,13 @@ const TABS = [
 
 const ChatWidget = () => {
 	const { user } = useAuth();
-	const currentUserId = String(user?.id);
+	const currentUserId = user?.id ? String(user.id) : undefined;
 	const { isConnected: isPresenceConnected } = usePresenceSocket(Boolean(user));
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'agora' | 'people' | number>('agora');
 	const [privateTabs, setPrivateTabs] = useState<{ id: number; name: string }[]>([]);
 	const [privateMessages, setPrivateMessages] = useState({});
-	const { friends, loading: loadingFriends, error: errorFriends } = useFriends();
+	const { friends, loading: loadingFriends, error: errorFriends } = useFriends(currentUserId);
 
 	// Use chat socket hook for all chat logic, with private message handler
 	const {

@@ -55,7 +55,7 @@ const UsersList: React.FC<UsersListProps> = ({ users, friends, loading, error, o
 					<hr className='ml-2 flex-1 border-t' />
 				</div>
 				{onlineOthers.length === 0 ? (
-					<div className='color[var(--color-text-muted)] text-sm'>No other users online.</div>
+					<div className='color[var(--color-text-muted)] text-sm'>No users online.</div>
 				) : (
 					<ul>
 						{onlineOthers.map((user) => (
@@ -70,10 +70,28 @@ const UsersList: React.FC<UsersListProps> = ({ users, friends, loading, error, o
 								</span>
 								<button
 									className='ml-2 rounded bg-pink-600 px-2 py-1 text-xs text-white'
-									onClick={(e) => {
+									onClick={async (e) => {
 										e.stopPropagation();
-										// TODO: Implement invite logic here
-										alert(`Friend invite sent to ${user.username}`);
+										try {
+											// Check presence state from presence service
+											const stateRes = await fetch(`/api/presence/state/${user.id}`);
+											if (!stateRes.ok)
+												throw new Error('Could not check user presence');
+											const { state } = await stateRes.json();
+											if (state !== 'online') {
+												alert('You can only invite users who are online and not busy.');
+												return;
+											}
+											const res = await fetch(`/api/users/friends/${user.id}`, {
+												method: 'POST',
+												credentials: 'include',
+											});
+											if (!res.ok)
+												throw new Error('Failed to send friend invite');
+											alert(`Friend invite sent to ${user.username}`);
+										} catch (err) {
+											alert(err instanceof Error ? err.message : 'Unknown error');
+										}
 									}}
 								>
 									Add Friend
