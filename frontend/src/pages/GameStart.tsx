@@ -34,7 +34,8 @@ const GameStart = () => {
 			return;
 		}
 		const gameId = nanoid();
-		navigate(`/game/${gameId}`, { state: { leftPlayer, rightPlayer } });
+		navigate(`/game/${gameId}`, { state: { leftPlayer, rightPlayer, mode: 'classic',
+      side: loginUser.position   } });
 	};
 
 	const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {

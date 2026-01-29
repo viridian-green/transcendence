@@ -10,6 +10,7 @@ import authPlugin from "./plugins/auth.js";
 import userRoutes from "./routes/user.js";
 import chatRoutes from "./routes/chat.js";
 import presenceRoutes from "./routes/presence.js";
+import notificationRoutes from "./routes/notification.js";
 import healthRoute from "./health.js";
 
 
@@ -25,9 +26,11 @@ const start = async () => {
         await fastify.register(authPlugin);
         await fastify.register(chatRoutes);
         await fastify.register(presenceRoutes);
+        await fastify.register(notificationRoutes);
         await fastify.register(healthRoute);
         await fastify.register(gameRoutes);
         await fastify.register(userRoutes);
+
 
         //DEBUGGING - This is needed to print the routes
         await fastify.ready();

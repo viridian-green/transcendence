@@ -275,6 +275,9 @@ transcendence/
 curl https://localhost:8443/api/users/me -k -b cookies.txt
 ```
 
+"Tests remote user"
+url = remote?user=alice
+url = remote?user=user2
 
 ### READS:
 [Bcrypt](https://www.npmjs.com/package/bcrypt)

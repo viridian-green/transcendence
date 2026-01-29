@@ -69,4 +69,4 @@ assert_status "{
   \"email\":\"valid_$UNIQ@test.com\"
 }" 201
 
-# echo "✅ Register route tests passed"
+#echo "✅ Register route tests passed"
