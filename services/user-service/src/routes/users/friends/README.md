@@ -138,11 +138,11 @@ Rejects a pending friend request from the user with the given id. This deletes t
 GET /api/users/friends
 ```
 
-Returns all friends of the authenticated user as user profile objects.
+Returns all accepted friends of the authenticated user as user profile objects.
 
 - Requires auth
-- Returns user profiles (id, username, avatar, bio) for all friends
-- Returns both pending and accepted friendships
+- Returns user profiles (id, username, avatar, bio) for accepted friends only
+- Pending friend requests are not included in the response
 
 #### Response
 
