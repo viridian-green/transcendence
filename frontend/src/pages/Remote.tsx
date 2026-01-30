@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import type { Friend } from '@/shared.types';
 import { useFriendsWithStatus } from '@/hooks/useFriendsPresence';
 
-
 type InvitePopupState = {
   fromUserId: string;
   fromUsername: string;
@@ -21,8 +20,6 @@ const { send, lastRawMessage, isConnected } = useNotificationSocket(true);
 
 
 useEffect(() => {
-
-
 
   if (!lastRawMessage) return;
 

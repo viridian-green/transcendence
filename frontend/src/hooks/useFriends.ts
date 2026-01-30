@@ -30,7 +30,6 @@ export function useFriends(userId?: string | number) {
       }
     };
     fetchFriends();
-    console.log('[FETCH] friends:', JSON.stringify(friends, null, 2));
   }, [userId]);
 
   return { friends, loading, error };

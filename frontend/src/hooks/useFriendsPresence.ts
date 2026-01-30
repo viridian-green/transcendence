@@ -7,7 +7,9 @@ import { useAuth } from '@/hooks/useAuth';
 export function useFriendsWithStatus() {
   const { user } = useAuth();
   const { friends } = useFriends(user?.id);
-  const { users:onlineUsers } = useFetchOnlineUsers();
+  const { users:onlineUsers } = useFetchOnlineUsers(user?.id, );
+
+    console.log('[ONLINE USERS] friends:', JSON.stringify(friends, null, 2));
 
   const friendsWithStatus = friends.map(friend => ({
     ...friend,
