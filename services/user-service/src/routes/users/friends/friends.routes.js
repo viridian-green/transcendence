@@ -4,12 +4,42 @@ import {
     ensureNotSelf,
     createFriendRequest,
     deleteFriendship,
-    getFriendsList
+    getFriendsList,
+    acceptFriendRequest
 } from '../../../services/friends.service.js'
 
 export default async function friendsRoute(app) {
-    //add friend
-    //POST /friends/:id
+    // Accept friend request - must come before /:id to avoid route conflict
+    // POST /friends/:id/accept
+    app.post('/:id/accept', { preHandler: app.authenticate }, async (req, reply) => {
+        const userId = req.user.id;
+        const friendId = Number(req.params.id);
+
+        ensureNotSelf(userId, friendId);
+        await ensureUserExists(app, friendId);
+        //await ensureNoExistingFriendship(app, userId, friendId);
+        const friendshipId = await acceptFriendRequest(app, userId, friendId);
+        return reply.code(200).send(friendshipId);
+    })
+
+    // Reject friend request - must come before /:id to avoid route conflict
+    // POST /friends/:id/reject
+    app.post('/:id/reject', { preHandler: app.authenticate }, async (req, reply) => {
+        const userId = req.user.id;
+        const friendId = Number(req.params.id);
+
+        ensureNotSelf(userId, friendId);
+        await ensureUserExists(app, friendId);
+        //await ensureNoExistingFriendship(app, userId, friendId);
+        const rows = await deleteFriendship(app, userId, friendId);
+        return reply.code(200).send({
+            message: 'Friend rejected',
+            friendship: rows[0]
+        });
+    })
+
+    // Add friend
+    // POST /friends/:id
     app.post('/:id', { preHandler: app.authenticate }, async (req, reply) => {
         const userId = req.user.id;
         const friendId = Number(req.params.id);

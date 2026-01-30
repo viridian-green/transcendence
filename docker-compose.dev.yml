@@ -102,6 +102,8 @@ services:
       COOKIE_SECRET: ${COOKIE_SECRET}
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
+    volumes:
+      - ./services/user-service/uploads:/app/uploads
     healthcheck:
       test: ["CMD", "curl", "-f", "http://user:3003/health"]
       interval: 5s
