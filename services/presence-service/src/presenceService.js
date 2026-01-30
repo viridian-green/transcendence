@@ -6,7 +6,6 @@ export async function updateUserState(userId, state) {
     if (!ALLOWED_STATES.includes(state)) {
       throw new Error(`Invalid state. Allowed: ${ALLOWED_STATES.join(", ")}`);
     }
-  
     try {
       await redisClient.set(`user:state:${userId}`, state);
       await redisPublisher.publish(
@@ -19,7 +18,6 @@ export async function updateUserState(userId, state) {
       throw new Error("Failed to update user state in Redis");
     }
   }
-  
 export async function getUserState(userId) {
     try {
       const state = await redisClient.get(`user:state:${userId}`);
@@ -29,13 +27,12 @@ export async function getUserState(userId) {
       return "offline";
     }
   }
-  
 export async function getOnlineUsers() {
     try {
       const keys = await redisClient.keys("user:state:*");
       if (!keys.length)
         return [];
-  
+
       const states = await redisClient.mget(...keys);
       return keys
         .map((key, i) =>
@@ -47,7 +44,6 @@ export async function getOnlineUsers() {
       return [];
     }
   }
-  
 export async function isUserOnline(userId) {
     const state = await this.getUserState(userId);
     return state === "online";

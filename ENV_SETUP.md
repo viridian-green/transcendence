@@ -19,6 +19,12 @@ cp services/user-service/.env.example services/user-service/.env
 # Game Service
 cp services/game-service/.env.example services/game-service/.env
 
+# Chat Service
+cp services/chat-service/.env.example services/chat-service/.env
+
+# Notification Service
+cp services/notification-service/.env.example services/notification-service/.env
+
 # Frontend
 cp frontend/.env.example frontend/.env
 ```
@@ -55,6 +61,17 @@ Contains shared infrastructure configuration:
 - Database connection URL
 - Server configuration
 
+### `services/chat-service/.env`
+
+- Server configuration
+- Redis connection (if needed)
+
+### `services/notification-service/.env`
+
+- Server port (default: 3006)
+- JWT secret for authentication
+- Node environment
+
 ## Important Notes
 
 1. **Never commit `.env` files** - they contain secrets
@@ -76,4 +93,7 @@ ls -la .env
 ls -la api-gateway/.env
 ls -la services/*/.env
 ls -la frontend/.env
+
+# Or specifically check notification service
+ls -la services/notification-service/.env
 ```

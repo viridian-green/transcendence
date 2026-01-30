@@ -134,6 +134,22 @@ services:
     networks:
       - transcendence-network
 
+  notification:
+    container_name: notification
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      database:
+        condition: service_healthy
+    env_file: ./services/notification-service/.env
+    ports:
+      - "3006:3006"
+    networks:
+      - transcendence-network
+
   api-gateway:
     container_name: api-gateway
     build:

@@ -43,8 +43,10 @@ export default async function friendsRoute(app) {
     //GET /friends
     app.get('/', { preHandler: app.authenticate }, async (req, reply) => {
         const userId = req.user.id;
-        const rows = await getFriendsList(app, userId);
+        const friendsMap = await getFriendsList(app, userId);
+        const friends = Array.from(friendsMap.values());
 
-        return reply.code(200).send(rows);
+        return reply.code(200).send(friends);
     })
 }
+

@@ -1,7 +1,6 @@
 import Fastify from "fastify";
 import websocket from "@fastify/websocket";
 import ChatsocketsRoute from "./routes/chatsockets.js";
-// import OnlineUsersRoute from "./routes/onlineUsers.js";
 import { Server as SocketIOServer } from "socket.io";
 import {
   setupSubscribers,
