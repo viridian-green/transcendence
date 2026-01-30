@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaComments } from 'react-icons/fa';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetchOnlineUsers } from '../../hooks/useFetchOnlineUsers';
@@ -24,26 +24,54 @@ const ChatWidget = () => {
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'agora' | 'people' | number>('agora');
 	const [privateTabs, setPrivateTabs] = useState<{ id: number; name: string }[]>([]);
-	const [privateMessages, setPrivateMessages] = useState({});
-	const { friends, loading: loadingFriends, error: errorFriends } = useFriends(currentUserId);
+	const [privateMessages, setPrivateMessages] = useState(() => {
+		const saved = localStorage.getItem('privateMessages');
+		return saved ? JSON.parse(saved) : {};
+	});
+	const [generalMessages, setGeneralMessages] = useState(() => {
+		const saved = localStorage.getItem('generalMessages');
+		return saved ? JSON.parse(saved) : [];
+	});
 
 	// Use chat socket hook for all chat logic, with private message handler
 	const {
 		ws,
-		messages: generalMessages,
+		messages: socketGeneralMessages,
 		sendMessage,
-	} = useChatSocket(Boolean(user), undefined, (from, text, kind = 'chat') => {
-		// Open conversation if not already open
-		setPrivateTabs((prev) => {
-			if (prev.some((u) => String(u.id) === String(from.id))) return prev;
-			return [...prev, { id: Number(from.id), name: from.username }];
-		});
-		// Add message to private messages
-		setPrivateMessages((prev) => ({
-			...prev,
-			[from.id]: [...(prev[from.id] || []), { kind, username: from.username, text }],
-		}));
-	});
+	} = useChatSocket(
+		Boolean(user),
+		undefined,
+		(from, text, kind = 'chat') => {
+			// Open conversation if not already open
+			setPrivateTabs((prev) => {
+				if (prev.some((u) => String(u.id) === String(from.id))) return prev;
+				return [...prev, { id: Number(from.id), name: from.username }];
+			});
+			// Add message to private messages
+			setPrivateMessages((prev) => {
+				const updated = {
+					...prev,
+					[from.id]: [...(prev[from.id] || []), { kind, username: from.username, text }],
+				};
+				localStorage.setItem('privateMessages', JSON.stringify(updated));
+				return updated;
+			});
+		},
+		generalMessages // Pass messages from localStorage as initialMessages
+	);
+
+	// Sync general messages from socket to state and localStorage
+	useEffect(() => {
+		setGeneralMessages(socketGeneralMessages);
+	}, [socketGeneralMessages]);
+
+	useEffect(() => {
+		localStorage.setItem('generalMessages', JSON.stringify(generalMessages));
+	}, [generalMessages]);
+
+	useEffect(() => {
+		localStorage.setItem('privateMessages', JSON.stringify(privateMessages));
+	}, [privateMessages]);
 	const {
 		users: onlinePeople,
 		loading: loadingOnline,
@@ -53,14 +81,23 @@ const ChatWidget = () => {
 	const sendGeneralMessage = (text: string) => {
 		if (!text) return;
 		sendMessage({ type: 'general_msg', text });
+		setGeneralMessages((prev) => {
+			const updated = [...prev, { kind: 'chat', username: user?.username, text }];
+			localStorage.setItem('generalMessages', JSON.stringify(updated));
+			return updated;
+		});
 	};
 	const sendPrivateMessage = (toId: number, text: string) => {
 		if (!text) return;
 		sendMessage({ type: 'private_msg', text, to: String(toId) });
-		setPrivateMessages((prev) => ({
-			...prev,
-			[toId]: [...(prev[toId] || []), { kind: 'chat', username: user?.username, text }],
-		}));
+		setPrivateMessages((prev) => {
+			const updated = {
+				...prev,
+				[toId]: [...(prev[toId] || []), { kind: 'chat', username: user?.username, text }],
+			};
+			localStorage.setItem('privateMessages', JSON.stringify(updated));
+			return updated;
+		});
 	};
 
 	const openPrivateTab = (person: { id: number; name: string }) => {
@@ -122,15 +159,14 @@ const ChatWidget = () => {
 	};
 
 	return (
-		<div
-			className={`chat-widget ${expanded ? 'expanded' : ''}`}
-		>
+		<div className={`chat-widget ${expanded ? 'expanded' : ''}`}>
 			{expanded ? (
 				<div className='chat-container'>
 					<ChatHeader
 						username={user?.username}
 						isConnected={ws.current?.readyState === WebSocket.OPEN}
 						isPresenceConnected={isPresenceConnected}
+						onClose={() => setExpanded(false)}
 					/>
 					<ChatTabs
 						activeTab={activeTab}
