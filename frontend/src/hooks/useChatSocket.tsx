@@ -9,8 +9,9 @@ export function useChatSocket(
 		text: string,
 		kind: 'chat' | 'system',
 	) => void,
+	initialMessages: ChatRenderMessage[] = [],
 ) {
-	const [messages, setMessages] = useState<ChatRenderMessage[]>([]);
+	const [messages, setMessages] = useState<ChatRenderMessage[]>(initialMessages);
 	const [isConnected, setIsConnected] = useState(false);
 	const ws = useRef<WebSocket | null>(null);
 

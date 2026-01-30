@@ -18,19 +18,19 @@ export function ChatMessages({
 		<div className='chat-messages h-full snap-y snap-end overflow-y-auto'>
 			{messages.map((msg, i) => (
 				<div key={i} className='message overflow-hidden py-2 break-words'>
-					{msg.kind === 'chat' ? (
+					{msg.kind === 'system' ? (
+						<span className='text-[var(--color-text-muted)]'>{msg.text}</span>
+					) : (
 						<>
 							<strong
 								className={
-									msg.username === currentUsername ? 'color-brand' : 'color-blue'
+									msg.username === currentUsername ? 'color-brand bold' : 'color-blue bold'
 								}
 							>
 								{msg.username}:{' '}
 							</strong>{' '}
 							<span>{msg.text}</span>
 						</>
-					) : (
-						<span className='text-blue'>{msg.text}</span>
 					)}
 				</div>
 			))}
