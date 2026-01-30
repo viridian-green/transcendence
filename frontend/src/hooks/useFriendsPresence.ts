@@ -9,7 +9,7 @@ export function useFriendsWithStatus() {
   const { friends } = useFriends(user?.id);
   const { users: onlineUsers } = useFetchOnlineUsers(user?.id);
 
-    console.log('[ONLINE USERS] friends:', JSON.stringify(friends, null, 2));
+  console.log('[ONLINE USERS] friends:', JSON.stringify(friends, null, 2));
 
   const friendsWithStatus = friends.map(friend => ({
     ...friend,
