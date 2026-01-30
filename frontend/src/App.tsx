@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { isPublicRoute } from './utils/routes';
 import {
 	Home,
 	NotFound,
@@ -25,6 +26,7 @@ import { useAuth } from './hooks/useAuth';
 
 function App() {
 	const { isLoggedIn, isLoading } = useAuth();
+	const location = useLocation();
 
 	if (isLoading) {
 		return <Loading />;
@@ -144,7 +146,7 @@ function App() {
 					</Routes>
 				</Suspense>
 			</main>
-			<ChatWidget />
+			{!isPublicRoute(location.pathname) && <ChatWidget />}
 			<footer className='border-border bg-surface text-text-muted flex h-16 items-center justify-center gap-2 border-t px-6 text-center text-sm'>
 				<Link to='/privacy-policy' className='hover:text-text-secondary'>
 					Privacy Policy
