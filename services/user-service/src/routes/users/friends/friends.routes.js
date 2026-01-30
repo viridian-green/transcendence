@@ -8,7 +8,7 @@ import {
     acceptFriendRequest
 } from '../../../services/friends.service.js';
 
-const { notifyFriendInviteWS } = require('../../utils/notifyFriendInviteWS.js');
+import { notifyFriendInviteWS } from '../../../utils/notifyFriendInviteWS.js';
 
 export default async function friendsRoute(app) {
     // Accept friend request - must come before /:id to avoid route conflict

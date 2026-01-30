@@ -1,5 +1,4 @@
-// User-service: send friend invite notification to notification-service via WebSocket
-const WebSocket = require('ws');
+import { WebSocket } from 'ws';
 
 const NOTIFICATION_WS_URL = process.env.NOTIFICATION_WS_URL || 'ws://notification-service:3006';
 let ws = null;
@@ -28,4 +27,4 @@ function notifyFriendInviteWS(toUserId, fromUserId, fromUsername) {
   }
 }
 
-module.exports = { notifyFriendInviteWS };
+export { notifyFriendInviteWS };
