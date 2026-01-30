@@ -1,19 +1,10 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState } from 'react';
 import { PinkButton } from '@/components';
 import { useNotificationSocket } from '@/hooks/useNotificationSocket';
 import { useNavigate } from 'react-router-dom';
+import type { Friend } from '@/shared.types';
+import { useFriendsWithStatus } from '@/hooks/useFriendsPresence';
 
-type Friend = {
-  id: string;
-  username: string;
-  status: 'online' | 'offline' | 'ingame';
-};
-
-const MOCK_FRIENDS: Friend[] = [
-  { id: '1', username: 'u1', status: 'online' },
-  { id: '2', username: 'u2', status: 'online' },
-  { id: '3', username: 'u3', status: 'online' },
-];
 
 type InvitePopupState = {
   fromUserId: string;
@@ -22,16 +13,22 @@ type InvitePopupState = {
 } | null;
 
 const Remote = () => {
-  const navigate = useNavigate();
-  const [friends] = useState<Friend[]>(MOCK_FRIENDS);
-  const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
-  const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
-  const { send, lastRawMessage, isConnected } = useNotificationSocket(true);
+const navigate = useNavigate();
+const { friends } = useFriendsWithStatus();
+const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
+const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
+const { send, lastRawMessage, isConnected } = useNotificationSocket(true);
 
-  useEffect(() => {
-    if (!lastRawMessage) return;
 
-    console.log('[REMOTE] raw WS message', lastRawMessage);
+useEffect(() => {
+
+
+
+  if (!lastRawMessage) return;
+
+  console.log('[REMOTE] raw WS message', lastRawMessage);
+
+  console.log('[REMOTE] friends:', JSON.stringify(friends, null, 2));
 
     if (lastRawMessage.type === 'INVITE_RECEIVED') {
       setIncomingInvite({
@@ -43,7 +40,6 @@ const Remote = () => {
 
     if (lastRawMessage.type === 'GAME_START') {
       const { gameId, leftPlayerId, rightPlayerId, yourSide, leftPlayer, rightPlayer } = lastRawMessage;
-      console.log('[REMOTE] GAME_START', gameId, leftPlayerId, rightPlayerId);
 
     navigate(`/game/${gameId}`, {
         state: {
@@ -119,26 +115,25 @@ const Remote = () => {
                 <p className='text-lg font-semibold'>{friend.username}</p>
                 <p className='text-sm text-text-secondary'>
                   {friend.status === 'online' && 'Online'}
-                  {friend.status === 'ingame' && 'Playing'}
+                  {friend.status === 'busy' && 'Playing'}
                   {friend.status === 'offline' && 'Offline'}
                 </p>
               </div>
               <span
                 className={`ml-4 h-3 w-3 rounded-full ${
                   friend.status === 'online'
-                    ? 'bg-green-500'
-                    : friend.status === 'ingame'
-                    ? 'bg-yellow-500'
-                    : 'bg-gray-500'
+                    ? '#4ade80'
+                    : friend.status === 'busy'
+                    ? '#fbbf24'
+                    : '#ef4444'
                 }`}
               />
             </button>
 
             <PinkButton
               text='Challenge'
-              className='ml-4 text-accent-pink disabled:opacity-50'
+              className={`ml-4 text-accent-pink ${friend.status !== 'online' || !isConnected ? 'opacity-50' : ''}`}
               onClick={() => handleChallenge(friend)}
-              disabled={friend.status !== 'online' || !isConnected}
             />
           </div>
         ))}
