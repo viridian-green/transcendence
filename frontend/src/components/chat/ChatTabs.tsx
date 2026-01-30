@@ -6,6 +6,7 @@ interface ChatTabsProps {
 	tabs: { key: string; label: string }[];
 	privateTabs: { id: number; name: string }[];
 	closePrivateTab: (id: number) => void;
+	unreadPrivate?: { [id: number]: number };
 }
 
 const ChatTabs: React.FC<ChatTabsProps> = ({
@@ -14,6 +15,7 @@ const ChatTabs: React.FC<ChatTabsProps> = ({
 	tabs,
 	privateTabs,
 	closePrivateTab,
+	unreadPrivate = {},
 }) => (
 	<>
 		<div
@@ -23,7 +25,7 @@ const ChatTabs: React.FC<ChatTabsProps> = ({
 			{tabs.map((tab) => (
 				<button
 					key={tab.key}
-					className={`chat-tab-btn${activeTab === tab.key ? ' active' : ''}`} //keep the space before active
+					className={`chat-tab-btn${activeTab === tab.key ? ' active' : ''}`}
 					onClick={() => setActiveTab(tab.key)}
 				>
 					{tab.label}
@@ -32,19 +34,24 @@ const ChatTabs: React.FC<ChatTabsProps> = ({
 			{privateTabs.map((tab) => (
 				<button
 					key={tab.id}
-					className={`chat-tab-btn flex items-center${activeTab === tab.id ? ' active' : ''}`} //keep the space before active
+					className={`chat-tab-btn flex items-center${activeTab === tab.id ? ' active' : ''}`}
 					onClick={() => setActiveTab(tab.id)}
 				>
 					{tab.name}
-						<span
-							onClick={(e) => {
-								e.stopPropagation();
-								closePrivateTab(tab.id);
-							}}
-							className='close pointer close-btn-hover ml-1'
-						>
-							×
+					{unreadPrivate[tab.id] > 0 && (
+						<span className='chat-unread-badge ml-1 rounded-xs bg-[var(--color-accent-pink)] px-1 text-[0.7rem]'>
+							{unreadPrivate[tab.id]}
 						</span>
+					)}
+					<span
+						onClick={(e) => {
+							e.stopPropagation();
+							closePrivateTab(tab.id);
+						}}
+						className='close pointer close-btn-hover ml-1'
+					>
+						×
+					</span>
 				</button>
 			))}
 		</div>

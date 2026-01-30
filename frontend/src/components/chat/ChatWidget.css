@@ -160,6 +160,9 @@
 	overflow-y: auto;
 	font-size: 0.97rem;
 	color: white;
-	/* height: 100%; */
 }
 
+.chat-unread-badge {
+	color: var(--color-bg);
+	font-weight: bold;
+}
