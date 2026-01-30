@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
+import './ChatWidget.css';
 import { FaComments } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetchOnlineUsers } from '../../hooks/useFetchOnlineUsers';
 import { usePresenceSocket } from '@/hooks/usePresenceSocket';
 import { useChatSocket } from '@/hooks/useChatSocket';
-import './ChatWidget.css';
-import UsersList from './OnlineUsersList';
+import { useUnreadPrivateMessages } from '../../hooks/useUnreadPrivateMessages';
+import { useLocalStorageState } from '../../hooks/useLocalStorageState';
+import { ChatMessages } from './ChatMessages';
 import { MessageInput } from './MessageInput';
 import ChatHeader from './ChatHeader';
+import UsersList from './OnlineUsersList';
 import ChatTabs from './ChatTabs';
-import { ChatMessages } from './ChatMessages';
 
 const TABS = [
 	{ key: 'agora', label: 'Agora' },
@@ -22,15 +24,15 @@ const ChatWidget = () => {
 	const { isConnected: isPresenceConnected } = usePresenceSocket(Boolean(user));
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'agora' | 'people' | number>('agora');
-	const [privateTabs, setPrivateTabs] = useState<{ id: number; name: string }[]>([]);
-	const [privateMessages, setPrivateMessages] = useState(() => {
-		const saved = localStorage.getItem('privateMessages');
-		return saved ? JSON.parse(saved) : {};
-	});
-	const [generalMessages, setGeneralMessages] = useState(() => {
-		const saved = localStorage.getItem('generalMessages');
-		return saved ? JSON.parse(saved) : [];
-	});
+	const [privateTabs, setPrivateTabs] = useLocalStorageState('privateTabs', []);
+	const [privateMessages, setPrivateMessages] = useLocalStorageState('privateMessages', {});
+	const [generalMessages, setGeneralMessages] = useLocalStorageState('generalMessages', []);
+	const { unreadPrivate, totalUnread } = useUnreadPrivateMessages(
+		privateTabs,
+		privateMessages,
+		expanded,
+		activeTab,
+	);
 
 	// Use chat socket hook for all chat logic, with private message handler
 	const {
@@ -56,7 +58,7 @@ const ChatWidget = () => {
 				return updated;
 			});
 		},
-		generalMessages // Pass messages from localStorage as initialMessages
+		generalMessages, // Pass messages from localStorage as initialMessages
 	);
 
 	// Sync general messages from socket to state and localStorage
@@ -64,13 +66,7 @@ const ChatWidget = () => {
 		setGeneralMessages(socketGeneralMessages);
 	}, [socketGeneralMessages]);
 
-	useEffect(() => {
-		localStorage.setItem('generalMessages', JSON.stringify(generalMessages));
-	}, [generalMessages]);
-
-	useEffect(() => {
-		localStorage.setItem('privateMessages', JSON.stringify(privateMessages));
-	}, [privateMessages]);
+	// ...localStorage logic now handled by useLocalStorageState hook...
 	const {
 		users: onlinePeople,
 		loading: loadingOnline,
@@ -171,6 +167,7 @@ const ChatWidget = () => {
 						setActiveTab={setActiveTab}
 						tabs={TABS}
 						privateTabs={privateTabs}
+						unreadPrivate={unreadPrivate}
 						closePrivateTab={closePrivateTab}
 					/>
 					<div className='chat-content'>
@@ -180,6 +177,11 @@ const ChatWidget = () => {
 			) : (
 				<button className='chat-expand-btn' onClick={() => setExpanded(true)}>
 					<FaComments size={28} />
+					{totalUnread > 0 && (
+						<span className='chat-unread-badge absolute -top-1.5 -right-2 z-20 rounded-full bg-[var(--color-accent-amber)] px-2 py-1 text-xs font-bold'>
+							{totalUnread}
+						</span>
+					)}
 				</button>
 			)}
 		</div>
