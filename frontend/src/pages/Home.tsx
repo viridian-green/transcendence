@@ -56,7 +56,7 @@ const Home: FC = () => {
 						(fadeIn ? ' animate-slide-in' : ' animate-slide-out')
 					}
 				>
-					<h1 className='text-accent-pink font-retro text-center text-6xl font-bold'>
+					<h1 className='text-accent-pink font-retro text-center text-4xl md:text-6xl font-bold'>
 						{welcomeMessage}
 					</h1>
 					<svg
@@ -93,8 +93,8 @@ const Home: FC = () => {
 			)}
 			{showRest && (
 				<section className='animate-fade-in flex flex-col items-center justify-center gap-6'>
-					<p className='text-2xl'>Choose your game mode:</p>
-					<div className='flex flex-row justify-center gap-20 text-center text-xl'>
+					<p className='text-xl md:text-2xl'>Choose your game mode:</p>
+					<div className='flex flex-col md:flex-row justify-center gap-6 md:gap-20 text-center text-xl'>
 						<PinkButton text='AI Opponent' onClick={handleAIGameStart} />
 						<PinkButton text='Local' onClick={handleLocalGameStart} />
 						<PinkButton text='Remote' onClick={handleRemoteGameStart} />
