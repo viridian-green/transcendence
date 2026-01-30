@@ -24,6 +24,7 @@ const ChatWidget = () => {
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'agora' | 'people' | number>('agora');
 	const [privateTabs, setPrivateTabs] = useState<{ id: number; name: string }[]>([]);
+	const { friends, loading: loadingFriends, error: errorFriends } = useFriends(currentUserId);
 	const [privateMessages, setPrivateMessages] = useState(() => {
 		const saved = localStorage.getItem('privateMessages');
 		return saved ? JSON.parse(saved) : {};
