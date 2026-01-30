@@ -157,3 +157,7 @@ users:
 # Check for existing users in table
 usertable:
 	docker exec postgres_db psql -U myuser -d user_db -c "SELECT id, username, email, created_at FROM users ORDER BY id;"
+
+friendstable:
+	docker exec postgres_db psql -U myuser -d user_db -c "SELECT * FROM friends ORDER BY id;"
+
