@@ -20,7 +20,7 @@ export function useFriends(userId?: string | number) {
 				const res = await fetch('/api/users/friends', { credentials: 'include' });
 				if (!res.ok) throw new Error('Failed to fetch friends');
 				const data = await res.json();
-				setFriends(Array.isArray(data) ? data : data.friends);
+				setFriends(data);
 			} catch (err) {
 				setError(err instanceof Error ? err.message : 'Unknown error');
 				setFriends([]);

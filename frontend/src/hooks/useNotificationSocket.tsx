@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import type { ChatServerMessage, ChatRenderMessage } from '@/types/chat';
+import type { ChatServerMessage, ChatRenderMessage } from '@/components/chat/types/chat';
 
 export function useNotificationSocket(enabled: boolean) {
   const [messages, setMessages] = useState<ChatRenderMessage[]>([]);
