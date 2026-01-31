@@ -23,9 +23,9 @@ function UsersList({ users, friends, loading, error, onUserClick }: UsersListPro
 	if (error) return <div>Error: {error}</div>;
 
 	// Get online friends and online others
-	const friendIds = new Set(friends.map(f => String(f.id)));
-	const onlineFriends = users.filter(u => friendIds.has(String(u.id)));
-	const onlineOthers = users.filter(u => !friendIds.has(String(u.id)));
+	const friendIds = new Set(friends.map((f) => String(f.id)));
+	const onlineFriends = users.filter((u) => friendIds.has(String(u.id)));
+	const onlineOthers = users.filter((u) => !friendIds.has(String(u.id)));
 
 	return (
 		<div className='flex flex-col gap-4 text-white'>
@@ -39,7 +39,9 @@ function UsersList({ users, friends, loading, error, onUserClick }: UsersListPro
 						<hr className='ml-2 flex-1 border-t' />
 					</div>
 					{onlineFriends.length === 0 ? (
-						<div className='color[var(--color-text-muted)] text-sm'>No friends online.</div>
+						<div className='color[var(--color-text-muted)] text-sm'>
+							No friends online.
+						</div>
 					) : (
 						<ul>
 							{onlineFriends.map((user) => (
@@ -57,9 +59,7 @@ function UsersList({ users, friends, loading, error, onUserClick }: UsersListPro
 			)}
 			{/* Online Others Section */}
 			<div className='chat-labels relative flex items-center'>
-				<h3 className='private-message text-color-muted m-0 text-xs uppercase'>
-					Others
-				</h3>
+				<h3 className='private-message text-color-muted m-0 text-xs uppercase'>Others</h3>
 				<hr className='ml-2 flex-1 border-t' />
 			</div>
 			{onlineOthers.length === 0 ? (
@@ -71,10 +71,7 @@ function UsersList({ users, friends, loading, error, onUserClick }: UsersListPro
 							key={user.id}
 							className='flex items-center justify-between px-4 py-2 hover:bg-[var(--color-border)]'
 						>
-							<span
-								className='cursor-pointer'
-								onClick={() => onUserClick(user)}
-							>
+							<span className='cursor-pointer' onClick={() => onUserClick(user)}>
 								{user.username}
 							</span>
 							<button
@@ -83,14 +80,18 @@ function UsersList({ users, friends, loading, error, onUserClick }: UsersListPro
 									e.stopPropagation();
 									try {
 										// Check presence state from presence service
-										const stateRes = await fetch(`/api/presence/state/${user.id}`);
-										if (!stateRes.ok) throw new Error('Could not check user presence');
+										const stateRes = await fetch(
+											`/api/presence/state/${user.id}`,
+										);
+										if (!stateRes.ok)
+											throw new Error('Could not check user presence');
 										const { state } = await stateRes.json();
 										if (state !== 'online') {
 											setAlert({
 												visible: true,
-												message: 'You can only invite users who are online and not busy.',
-												type: 'error'
+												message:
+													'You can only invite users who are online and not busy.',
+												type: 'error',
 											});
 											return;
 										}
@@ -98,7 +99,8 @@ function UsersList({ users, friends, loading, error, onUserClick }: UsersListPro
 											method: 'POST',
 											credentials: 'include',
 										});
-										if (!res.ok) throw new Error('Failed to send friend invite');
+										if (!res.ok)
+											throw new Error('Failed to send friend invite');
 										setAlert({
 											visible: true,
 											message: `Friend invite sent to ${user.username}`,
@@ -108,8 +110,11 @@ function UsersList({ users, friends, loading, error, onUserClick }: UsersListPro
 									} catch (err) {
 										setAlert({
 											visible: true,
-											message: err instanceof Error ? err.message : 'Unknown error',
-											type: 'error'
+											message:
+												err instanceof Error
+													? err.message
+													: 'Unknown error',
+											type: 'error',
 										});
 									}
 								}}
@@ -124,7 +129,6 @@ function UsersList({ users, friends, loading, error, onUserClick }: UsersListPro
 				message={alert.message}
 				visible={alert.visible}
 				type={alert.type}
-				userId={alert.userId}
 				onClose={() => setAlert({ ...alert, visible: false })}
 			/>
 		</div>
