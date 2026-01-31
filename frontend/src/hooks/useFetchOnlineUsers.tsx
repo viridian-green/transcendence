@@ -25,6 +25,7 @@ export function useFetchOnlineUsers(currentUserId?: string, socket?: WebSocket |
 				credentials: 'include',
 			});
 			const data = await response.json();
+			if (!response.ok) throw new Error(data.message || 'Failed to fetch online users');
 			const usersList = Array.isArray(data) ? data : data.users;
 			if (usersList && usersList.length && typeof usersList[0] === 'string') {
 				// If only IDs are returned, fetch user details
