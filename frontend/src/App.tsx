@@ -7,7 +7,7 @@ import {
 	Game,
 	Landing,
 	Login,
-    Remote,
+	Remote,
 	Registration,
 	ProtectedRoute,
 	PublicOnlyRoute,
@@ -31,9 +31,9 @@ function App() {
 	}
 
 	return (
-		<div className='flex min-h-screen flex-col'>
+		<div className='flex min-h-screen min-w-[375px] flex-col'>
 			{isLoggedIn && (
-				<nav className='bg-surface border-border sticky top-0 z-50 flex h-16 items-center justify-between border-b px-6'>
+				<nav className='bg-surface border-border sticky top-0 z-50 flex h-16 items-center justify-between border-b px-4 sm:px-6'>
 					<button
 						className='font-retro text-accent-pink no-scale text-xl leading-none'
 						onClick={() => (window.location.href = '/home')}
@@ -72,7 +72,7 @@ function App() {
 								</PublicOnlyRoute>
 							}
 						/>
-                                                <Route
+						<Route
 							path='/remote'
 							element={
 								<ProtectedRoute>
