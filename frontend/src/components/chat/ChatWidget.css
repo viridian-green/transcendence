@@ -12,6 +12,7 @@
 	flex-direction: column;
 	align-items: flex-end;
 	border: var(--color-accent-pink);
+	min-width: var(--container-sm);
 }
 
 .chat-labels {
@@ -165,4 +166,25 @@
 .chat-unread-badge {
 	color: var(--color-bg);
 	font-weight: bold;
+}
+
+@media (max-width: 768px) {
+	.chat-widget.expanded {
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		min-width: var(--container-sm);
+		width: 100vw;
+		height: 100vh;
+		background: var(--color-surface);
+	}
+
+	.chat-widget.expanded .chat-container {
+		width: 100%;
+		height: 100%;
+		border-radius: 0;
+		box-shadow: none;
+		max-height: none;
+	}
 }
