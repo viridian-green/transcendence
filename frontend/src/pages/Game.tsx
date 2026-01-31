@@ -9,13 +9,11 @@ const Game = () => {
 	const leftPlayer = state?.leftPlayer ?? 'Player 1';
 	const rightPlayer = state?.rightPlayer ?? 'Player 2';
 	const mode = state?.mode ?? 'local'; // Default to local if not provided
-    const side:  'left' | 'right' = state?.side ?? 'left';
+	const side: 'left' | 'right' = state?.side ?? 'left';
 	const { gameId } = useParams<{ gameId: string }>();
 
 	const [gameState, setGameState] = useState<GameState | null>(null);
 	const wsRef = useRef<WebSocket | null>(null);
-
-
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
@@ -28,10 +26,10 @@ const Game = () => {
 			return;
 		}
 
-        const wsUrl = `wss://${window.location.host}/api/game/${gameId}?mode=${mode}`;
+		const wsUrl = `wss://${window.location.host}/api/game/${gameId}?mode=${mode}`;
 
-        // console.log('[GAME SOCKET] connecting to', wsUrl);
-        const ws = new WebSocket(wsUrl);
+		// console.log('[GAME SOCKET] connecting to', wsUrl);
+		const ws = new WebSocket(wsUrl);
 
 		ws.onopen = () => {
 			console.log('Connected to game server');
@@ -48,8 +46,8 @@ const Game = () => {
 				alert('Opponent left the game.');
 				navigate('/remote');
 				return;
-			};
-  			}
+			}
+		};
 
 		ws.onerror = (error) => {
 			console.error('WebSocket error:', error);
@@ -58,8 +56,8 @@ const Game = () => {
 		ws.onclose = () => {
 			console.log('WebSocket closed');
 			if (wsRef.current === ws) {
-    				wsRef.current = null;
-  			}
+				wsRef.current = null;
+			}
 		};
 
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -95,7 +93,7 @@ const Game = () => {
 					break;
 
 				case 'ArrowUp':
-                    if (mode === 'remote' && side === 'left') {
+					if (mode === 'remote' && side === 'left') {
 						ws.send(
 							JSON.stringify({
 								type: 'MOVE_PADDLE',
@@ -113,7 +111,7 @@ const Game = () => {
 					break;
 
 				case 'ArrowDown':
-                    if (mode === 'remote' && side === 'left') {
+					if (mode === 'remote' && side === 'left') {
 						ws.send(
 							JSON.stringify({
 								type: 'MOVE_PADDLE',
@@ -159,7 +157,7 @@ const Game = () => {
 
 				case 'ArrowUp':
 				case 'ArrowDown':
-                    if (mode === 'remote' && side === 'left') {
+					if (mode === 'remote' && side === 'left') {
 						ws.send(
 							JSON.stringify({
 								type: 'STOP_PADDLE',
@@ -211,11 +209,11 @@ const Game = () => {
 	return (
 		<div className='flex flex-1 flex-col items-center justify-center gap-6 p-4'>
 			<h1 className='text-accent-pink font-retro text-4xl font-bold'>Game Room</h1>
-			<div className='flex w-full max-w-[800px] justify-between'>
+			<div className='flex w-full max-w-[800px] justify-between px-2'>
 				<p>{leftPlayer}</p>
 				<p>{rightPlayer}</p>
 			</div>
-			
+
 			<div className='flex w-full max-w-[800px] justify-center'>
 				<Canvas gameState={gameState} />
 			</div>
@@ -223,12 +221,12 @@ const Game = () => {
 			{/* Mobile Controls */}
 			<div className='flex w-full max-w-[800px] justify-between px-4 xl:hidden'>
 				{/* Left Player Controls - Only show if not AI mode */}
-				<div className='flex flex-col gap-4 touch-none'>
+				<div className='flex touch-none flex-col gap-4'>
 					{mode !== 'AI' && (
 						<>
 							<button
 								type='button'
-								className='bg-white/10 active:bg-white/20 flex h-16 w-16 items-center justify-center rounded-full border border-white/20 text-2xl text-white transition-colors touch-none select-none'
+								className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
 								onContextMenu={(e) => e.preventDefault()}
 								onPointerDown={(e) => {
 									e.preventDefault();
@@ -268,7 +266,7 @@ const Game = () => {
 							</button>
 							<button
 								type='button'
-								className='bg-white/10 active:bg-white/20 flex h-16 w-16 items-center justify-center rounded-full border border-white/20 text-2xl text-white transition-colors touch-none select-none'
+								className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
 								onContextMenu={(e) => e.preventDefault()}
 								onPointerDown={(e) => {
 									e.preventDefault();
@@ -311,10 +309,10 @@ const Game = () => {
 				</div>
 
 				{/* Right Player Controls */}
-				<div className='flex flex-col gap-4 touch-none'>
+				<div className='flex touch-none flex-col gap-4'>
 					<button
 						type='button'
-						className='bg-white/10 active:bg-white/20 flex h-16 w-16 items-center justify-center rounded-full border border-white/20 text-2xl text-white transition-colors touch-none select-none'
+						className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
 						onContextMenu={(e) => e.preventDefault()}
 						onPointerDown={(e) => {
 							e.preventDefault();
@@ -356,7 +354,7 @@ const Game = () => {
 					</button>
 					<button
 						type='button'
-						className='bg-white/10 active:bg-white/20 flex h-16 w-16 items-center justify-center rounded-full border border-white/20 text-2xl text-white transition-colors touch-none select-none'
+						className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
 						onContextMenu={(e) => e.preventDefault()}
 						onPointerDown={(e) => {
 							e.preventDefault();
