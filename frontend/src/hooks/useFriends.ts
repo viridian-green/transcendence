@@ -1,12 +1,28 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { User } from '@/shared.types';
+import { getAvatar } from './useAvatar';
 
 export function useFriends(userId?: string | number) {
 	const [friends, setFriends] = useState<User[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const cleanupFns = useRef<(() => void)[]>([]);
+
+	const fetchAvatars = async (user: User) => {
+		let objectURL: string | null = null;
+
+		// Use timestamp to force refresh and prevent caching
+		await getAvatar(user.avatar ?? 'default.png', Date.now().toString())
+			.then((url) => {
+				objectURL = url;
+				user.avatar = url;
+				cleanupFns.current.push(() => URL.revokeObjectURL(objectURL!));
+			})
+			.catch(() => {});
+	};
 
 	useEffect(() => {
+		const cleanupFnsArray: (() => void)[] = cleanupFns.current;
 		if (!userId) {
 			setFriends([]);
 			setLoading(false);
@@ -20,6 +36,7 @@ export function useFriends(userId?: string | number) {
 				const res = await fetch('/api/users/friends', { credentials: 'include' });
 				if (!res.ok) throw new Error('Failed to fetch friends');
 				const data = await res.json();
+				await Promise.all((Array.isArray(data) ? data : data.friends).map(fetchAvatars));
 				setFriends(Array.isArray(data) ? data : data.friends);
 			} catch (err) {
 				setError(err instanceof Error ? err.message : 'Unknown error');
@@ -29,6 +46,9 @@ export function useFriends(userId?: string | number) {
 			}
 		};
 		fetchFriends();
+		return () => {
+			cleanupFnsArray.forEach((fn) => fn());
+		};
 	}, [userId]);
 
 	async function deleteFriend(friendId: number) {
