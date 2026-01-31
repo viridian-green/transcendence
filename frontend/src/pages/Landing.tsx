@@ -42,12 +42,12 @@ const Landing = () => {
 				</div>
 			</div>
 			<div className='z-10 flex flex-col items-center justify-center'>
-				<h1 className='font-retro mb-2 text-center text-2xl sm:text-4xl md:text-6xl'>
+				<h1 className='font-retro mb-2 text-center text-2xl sm:text-4xl md:text-5xl lg:text-6xl'>
 					Retroscendence
 				</h1>
-				<p className='mb-8 text-base sm:text-xl font-medium'>A retro pong experience</p>
+				<p className='mb-8 text-base font-medium sm:text-xl'>A retro pong experience</p>
 
-				<div className='flex flex-col gap-4 text-base sm:text-xl font-medium'>
+				<div className='flex flex-col gap-4 text-base font-medium sm:text-xl'>
 					<PinkButton text='Login' onClick={() => navigate('/login')} />
 					<PinkButton text='Register' onClick={() => navigate('/register')} />
 				</div>
