@@ -17,8 +17,6 @@ const Game = () => {
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
-		// Prevent scrolling while in game -> hide overflow
-		// document.body.style.overflow = 'hidden';
 
 		if (!gameId) {
 			navigate('/game-start', { replace: true });
@@ -28,7 +26,6 @@ const Game = () => {
 
 		const wsUrl = `wss://${window.location.host}/api/game/${gameId}?mode=${mode}`;
 
-		// console.log('[GAME SOCKET] connecting to', wsUrl);
 		const ws = new WebSocket(wsUrl);
 		wsRef.current = ws;
 
@@ -127,12 +124,6 @@ const Game = () => {
 							payload: { playerIndex: 1, direction: 'down' },
 						}),
 					);
-					break;
-				case 'Escape':
-					// TODO check with Adele if this is the desired behavior
-					ws.close();
-					wsRef.current = null;
-					navigate('/home');
 					break;
 				default:
 					break;
@@ -317,7 +308,6 @@ const Game = () => {
 						onContextMenu={(e) => e.preventDefault()}
 						onPointerDown={(e) => {
 							e.preventDefault();
-							//console.log('Botton Pressed - State:', wsRef.current?.readyState);
 							if (wsRef.current?.readyState === WebSocket.OPEN) {
 								wsRef.current.send(
 									JSON.stringify({
@@ -329,7 +319,6 @@ const Game = () => {
 						}}
 						onPointerUp={(e) => {
 							e.preventDefault();
-							//console.log('Botton Released');
 							if (wsRef.current?.readyState === WebSocket.OPEN) {
 								wsRef.current.send(
 									JSON.stringify({
