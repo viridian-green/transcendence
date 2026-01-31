@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface ChatTabsProps {
 	activeTab: string | number;
 	setActiveTab: (tab: string | number) => void;
