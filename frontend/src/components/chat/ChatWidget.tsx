@@ -79,12 +79,13 @@ const TabContent = ({
 	const privateUser = privateTabs.find((t) => t.id === activeTab);
 	if (privateUser) {
 		const msgs = privateMessages[privateUser.id] || [];
+		const recipientOnline = onlinePeople.some((u) => u.id === privateUser.id);
 		return (
 			<div className='chat-tab-content'>
 				<ChatMessages messages={msgs} currentUsername={user?.username || ''} />
 				<MessageInput
 					onSend={(text) => sendPrivateMessage(privateUser.id, text)}
-					disabled={!connected}
+					disabled={!connected || !recipientOnline}
 				/>
 			</div>
 		);
