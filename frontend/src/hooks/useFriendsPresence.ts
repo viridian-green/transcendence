@@ -5,22 +5,23 @@ import type { Friend } from '@/shared.types';
 import { useAuth } from '@/hooks/useAuth';
 
 export function useFriendsWithStatus() {
-  const { user } = useAuth();
-  const { friends } = useFriends(user?.id);
-  const { users: onlineUsers } = useFetchOnlineUsers(user?.id);
+	const { user } = useAuth();
+	const { friends } = useFriends(user?.id);
+	const { users: onlineUsers } = useFetchOnlineUsers(user?.id);
 
-  console.log('[ONLINE USERS] friends:', JSON.stringify(friends, null, 2));
+	console.log('[ONLINE USERS] friends:', JSON.stringify(friends, null, 2));
 
-  const friendsWithStatus = friends.map(friend => ({
-    ...friend,
-    status: onlineUsers.some(u => String(u.id) === String(friend.id))
-      ? 'online'
-      : 'offline'  // Simple: online if in onlineUsers list
-  }));
+	const friendsWithStatus: Friend[] = friends.map((friend) => {
+		const friendWithStatus = {
+			...friend,
+			status: onlineUsers.some((u) => String(u.id) === String(friend.id))
+				? 'online'
+				: 'offline', // Simple: online if in onlineUsers list
+		};
+		return friendWithStatus;
+	});
 
+	console.log('[FETCHING FRIENDS] friends:', JSON.stringify(friends, null, 2));
 
-  console.log('[FETCHING FRIENDS] friends:', JSON.stringify(friends, null, 2));
-
-
-  return { friends: friendsWithStatus as Friend[], loading: false };
+	return { friends: friendsWithStatus, loading: false };
 }
