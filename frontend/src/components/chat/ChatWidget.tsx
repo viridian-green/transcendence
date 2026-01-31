@@ -13,22 +13,103 @@ import { MessageInput } from './MessageInput';
 import ChatHeader from './ChatHeader';
 import UsersList from './OnlineUsersList';
 import ChatTabs from './ChatTabs';
+import type { User } from '@/shared.types';
+import type { ChatRenderMessage } from '@/types/chat';
 
 const TABS = [
 	{ key: 'agora', label: 'Agora' },
 	{ key: 'people', label: 'People' },
 ];
 
+// Modular tab content renderer
+interface TabContentProps {
+	activeTab: 'agora' | 'people' | number;
+	ws: React.MutableRefObject<WebSocket | null>;
+	generalMessages: ChatRenderMessage[];
+	user: User | null;
+	sendGeneralMessage: (text: string) => void;
+	onlinePeople: User[];
+	loadingOnline: boolean;
+	errorOnline: string | null;
+	openPrivateTab: (person: { id: number; name: string }) => void;
+	currentUserId: string;
+	privateTabs: { id: number; name: string }[];
+	privateMessages: Record<number, ChatRenderMessage[]>;
+	sendPrivateMessage: (toId: number, text: string) => void;
+}
+
+const TabContent = ({
+	activeTab,
+	ws,
+	generalMessages,
+	user,
+	sendGeneralMessage,
+	onlinePeople,
+	loadingOnline,
+	errorOnline,
+	openPrivateTab,
+	currentUserId,
+	privateTabs,
+	privateMessages,
+	sendPrivateMessage,
+	friends,
+}: TabContentProps & { friends: User[] }) => {
+	const connected = ws.current?.readyState === WebSocket.OPEN;
+	if (activeTab === 'agora') {
+		return (
+			<div className='chat-tab-content'>
+				<ChatMessages messages={generalMessages} currentUsername={user?.username} />
+				<MessageInput onSend={sendGeneralMessage} disabled={!connected} />
+			</div>
+		);
+	}
+	if (activeTab === 'people') {
+		return (
+			<UsersList
+				users={onlinePeople}
+				friends={Array.isArray(friends) ? friends : []}
+				loading={loadingOnline}
+				error={errorOnline}
+				onUserClick={(user) => openPrivateTab({ id: Number(user.id), name: user.username })}
+				currentUserId={currentUserId}
+			/>
+		);
+	}
+	// Private tab
+	const privateUser = privateTabs.find((t) => t.id === activeTab);
+	if (privateUser) {
+		const msgs = privateMessages[privateUser.id] || [];
+		return (
+			<div className='chat-tab-content'>
+				<ChatMessages messages={msgs} currentUsername={user?.username || ''} />
+				<MessageInput
+					onSend={(text) => sendPrivateMessage(privateUser.id, text)}
+					disabled={!connected}
+				/>
+			</div>
+		);
+	}
+	return null;
+};
+
 const ChatWidget = () => {
 	const { user } = useAuth();
 	const currentUserId = user?.id ? String(user.id) : undefined;
 	const { isConnected: isPresenceConnected } = usePresenceSocket(Boolean(user));
-	const { friends, loading: loadingFriends, error: errorFriends } = useFriends(currentUserId);
+	const { friends } = useFriends(currentUserId);
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'agora' | 'people' | number>('agora');
-	const [privateTabs, setPrivateTabs] = useLocalStorageState('privateTabs', []);
-	const [privateMessages, setPrivateMessages] = useLocalStorageState('privateMessages', {});
-	const [generalMessages, setGeneralMessages] = useLocalStorageState('generalMessages', []);
+	const [privateTabs, setPrivateTabs] = useLocalStorageState<{ id: number; name: string }[]>(
+		'privateTabs',
+		[],
+	);
+	const [privateMessages, setPrivateMessages] = useLocalStorageState<
+		Record<number, ChatRenderMessage[]>
+	>('privateMessages', {});
+	const [generalMessages, setGeneralMessages] = useLocalStorageState<ChatRenderMessage[]>(
+		'generalMessages',
+		[],
+	);
 	const { unreadPrivate, totalUnread } = useUnreadPrivateMessages(
 		privateTabs,
 		privateMessages,
@@ -47,8 +128,8 @@ const ChatWidget = () => {
 		(from, text, kind = 'chat') => {
 			if (kind === 'chat') {
 				// Open conversation if not already open
-				setPrivateTabs((prev) => {
-					if (prev.some((u) => String(u.id) === String(from.id))) return prev;
+				setPrivateTabs((prev: { id: number; name: string }[]) => {
+					if (prev.some((u) => u.id === Number(from.id))) return prev;
 					return [...prev, { id: Number(from.id), name: from.username }];
 				});
 			}
@@ -72,21 +153,24 @@ const ChatWidget = () => {
 
 	// ...localStorage logic now handled by useLocalStorageState hook...
 	const {
-		users: onlinePeople,
+		users: rawOnlinePeople,
 		loading: loadingOnline,
 		error: errorOnline,
 	} = useFetchOnlineUsers(currentUserId, ws.current);
+	const onlinePeople: User[] = rawOnlinePeople.map((u: any) => ({
+		id: typeof u.id === 'string' ? parseInt(u.id, 10) : u.id,
+		username: u.username,
+		email: u.email || `${u.username}@example.com`,
+	}));
 
 	const sendGeneralMessage = (text: string) => {
 		if (!text) return;
 		sendMessage({ type: 'general_msg', text });
-		setGeneralMessages((prev) => {
-			const updated = [...prev, { kind: 'chat', username: user?.username, text }];
-			localStorage.setItem('generalMessages', JSON.stringify(updated));
-			return updated;
-		});
-		setGeneralMessages((prev) => {
-			const updated = [...prev, { kind: 'chat', username: user?.username, text }];
+		setGeneralMessages((prev: ChatRenderMessage[]) => {
+			const updated = [
+				...prev,
+				{ kind: 'chat', username: user?.username || '', text } as ChatRenderMessage,
+			];
 			localStorage.setItem('generalMessages', JSON.stringify(updated));
 			return updated;
 		});
@@ -94,18 +178,13 @@ const ChatWidget = () => {
 	const sendPrivateMessage = (toId: number, text: string) => {
 		if (!text) return;
 		sendMessage({ type: 'private_msg', text, to: String(toId) });
-		setPrivateMessages((prev) => {
+		setPrivateMessages((prev: Record<number, ChatRenderMessage[]>) => {
 			const updated = {
 				...prev,
-				[toId]: [...(prev[toId] || []), { kind: 'chat', username: user?.username, text }],
-			};
-			localStorage.setItem('privateMessages', JSON.stringify(updated));
-			return updated;
-		});
-		setPrivateMessages((prev) => {
-			const updated = {
-				...prev,
-				[toId]: [...(prev[toId] || []), { kind: 'chat', username: user?.username, text }],
+				[toId]: [
+					...(prev[toId] || []),
+					{ kind: 'chat', username: user?.username || '', text } as ChatRenderMessage,
+				],
 			};
 			localStorage.setItem('privateMessages', JSON.stringify(updated));
 			return updated;
@@ -128,48 +207,6 @@ const ChatWidget = () => {
 		});
 	};
 
-	// Modular tab content renderer
-	const TabContent = () => {
-		const connected = ws.current?.readyState === WebSocket.OPEN;
-		if (activeTab === 'agora') {
-			return (
-				<div className='chat-tab-content'>
-					<ChatMessages messages={generalMessages} currentUsername={user?.username} />
-					<MessageInput onSend={sendGeneralMessage} disabled={!connected} />
-				</div>
-			);
-		}
-		if (activeTab === 'people') {
-			return (
-				<UsersList
-					users={onlinePeople}
-					friends={friends}
-					loading={loadingOnline || loadingFriends}
-					error={errorOnline || errorFriends}
-					onUserClick={(user) =>
-						openPrivateTab({ id: Number(user.id), name: user.username })
-					}
-					currentUserId={currentUserId}
-				/>
-			);
-		}
-		// Private tab
-		const privateUser = privateTabs.find((t) => t.id === activeTab);
-		if (privateUser) {
-			const msgs = privateMessages[privateUser.id] || [];
-			return (
-				<div className='chat-tab-content'>
-					<ChatMessages messages={msgs} currentUsername={user?.username || ''} />
-					<MessageInput
-						onSend={(text) => sendPrivateMessage(privateUser.id, text)}
-						disabled={!connected}
-					/>
-				</div>
-			);
-		}
-		return null;
-	};
-
 	return (
 		<div className={`chat-widget ${expanded ? 'expanded' : ''}`}>
 			{expanded ? (
@@ -179,18 +216,32 @@ const ChatWidget = () => {
 						isConnected={ws.current?.readyState === WebSocket.OPEN}
 						isPresenceConnected={isPresenceConnected}
 						onClose={() => setExpanded(false)}
-						onClose={() => setExpanded(false)}
 					/>
 					<ChatTabs
 						activeTab={activeTab}
-						setActiveTab={setActiveTab}
+						setActiveTab={setActiveTab as (tab: string | number) => void}
 						tabs={TABS}
 						privateTabs={privateTabs}
 						unreadPrivate={unreadPrivate}
 						closePrivateTab={closePrivateTab}
 					/>
 					<div className='chat-content'>
-						<TabContent />
+						<TabContent
+							activeTab={activeTab}
+							ws={ws}
+							generalMessages={generalMessages}
+							user={user}
+							sendGeneralMessage={sendGeneralMessage}
+							onlinePeople={onlinePeople}
+							loadingOnline={loadingOnline}
+							errorOnline={errorOnline}
+							openPrivateTab={openPrivateTab}
+							currentUserId={currentUserId || ''}
+							privateTabs={privateTabs}
+							privateMessages={privateMessages}
+							sendPrivateMessage={sendPrivateMessage}
+							friends={Array.isArray(friends) ? friends : []}
+						/>
 					</div>
 				</div>
 			) : (
