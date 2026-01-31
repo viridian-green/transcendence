@@ -11,7 +11,7 @@ interface UsersListProps {
 	currentUserId: string;
 }
 
-function UsersList({ users, friends, loading, error, onUserClick }: UsersListProps) {
+function UsersList({ users, friends, loading, error, onUserClick, currentUserId }: UsersListProps) {
 	const [alert, setAlert] = React.useState<{
 		visible: boolean;
 		message: string;
@@ -22,10 +22,10 @@ function UsersList({ users, friends, loading, error, onUserClick }: UsersListPro
 	if (loading) return <div>Loading online users...</div>;
 	if (error) return <div>Error: {error}</div>;
 
-	// Get online friends and online others
+	const filteredUsers = users.filter((u) => String(u.id) !== String(currentUserId));
 	const friendIds = new Set(friends.map((f) => String(f.id)));
-	const onlineFriends = users.filter((u) => friendIds.has(String(u.id)));
-	const onlineOthers = users.filter((u) => !friendIds.has(String(u.id)));
+	const onlineFriends = filteredUsers.filter((u) => friendIds.has(String(u.id)));
+	const onlineOthers = filteredUsers.filter((u) => !friendIds.has(String(u.id)));
 
 	return (
 		<div className='flex flex-col gap-4 text-white'>
