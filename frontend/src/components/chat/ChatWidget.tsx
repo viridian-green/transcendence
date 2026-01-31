@@ -45,11 +45,13 @@ const ChatWidget = () => {
 		Boolean(user),
 		undefined,
 		(from, text, kind = 'chat') => {
-			// Open conversation if not already open
-			setPrivateTabs((prev) => {
-				if (prev.some((u) => String(u.id) === String(from.id))) return prev;
-				return [...prev, { id: Number(from.id), name: from.username }];
-			});
+			if (kind === 'chat') {
+				// Open conversation if not already open
+				setPrivateTabs((prev) => {
+					if (prev.some((u) => String(u.id) === String(from.id))) return prev;
+					return [...prev, { id: Number(from.id), name: from.username }];
+				});
+			}
 			// Add message to private messages
 			setPrivateMessages((prev) => {
 				const updated = {
