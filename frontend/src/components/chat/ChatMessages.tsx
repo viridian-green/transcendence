@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import type { ChatRenderMessage } from '@/types/chat';
+import type { ChatRenderMessage } from '@/components/chat/types/chat';
 
 export function ChatMessages({
 	messages,

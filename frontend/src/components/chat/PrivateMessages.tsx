@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChatMessages } from './ChatMessages';
-import type { ChatRenderMessage } from '@/types/chat';
+import type { ChatRenderMessage } from '@/components/chat/types/chat';
 
 interface PrivateMessagesProps {
 	recipient: { id: string; username: string };

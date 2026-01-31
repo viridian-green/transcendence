@@ -14,7 +14,7 @@ import ChatHeader from './ChatHeader';
 import UsersList from './OnlineUsersList';
 import ChatTabs from './ChatTabs';
 import type { User } from '@/shared.types';
-import type { ChatRenderMessage } from '@/types/chat';
+import type { ChatRenderMessage } from '@/components/chat/types/chat';
 
 const TABS = [
 	{ key: 'agora', label: 'Agora' },
