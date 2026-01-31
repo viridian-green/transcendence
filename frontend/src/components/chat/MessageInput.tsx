@@ -25,7 +25,7 @@ export function MessageInput({
 				placeholder='Type a message...'
 			/>
 			<button
-				className='cursor-pointer rounded bg-pink-500 px-4 py-2 font-bold text-white hover:bg-pink-600 disabled:opacity-50'
+				className='disabled:bg[(var(--color-text-muted))] cursor-pointer rounded bg-pink-500 px-4 py-2 font-bold text-white hover:bg-pink-600 disabled:opacity-50'
 				onClick={send}
 				disabled={disabled}
 			>
