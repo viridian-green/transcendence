@@ -30,6 +30,7 @@ const Game = () => {
 
 		// console.log('[GAME SOCKET] connecting to', wsUrl);
 		const ws = new WebSocket(wsUrl);
+		wsRef.current = ws;
 
 		ws.onopen = () => {
 			console.log('Connected to game server');
