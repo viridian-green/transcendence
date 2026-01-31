@@ -10,6 +10,8 @@ export const authErroMapper = (code: number) => {
 			return 'User not found. Please check your credentials.';
 		case 409:
 			return 'User already exists. Please use a different email or username.';
+		case 419:
+			return 'User is already online. Please log out from other devices.';
 		case 500:
 			return 'Server error. Please try again later.';
 		default:

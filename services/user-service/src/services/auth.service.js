@@ -110,7 +110,7 @@ export async function ensureUserIsNotOnline(app, userId) {
 
     if (userState.state === "online") {
         const err = new Error("User is already online");
-        err.statusCode = 409;
+        err.statusCode = 419;
         throw err;
     }
 }

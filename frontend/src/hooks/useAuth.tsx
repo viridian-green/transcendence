@@ -80,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			});
 
 			// NOT logged in → normal state
-			if (response.status === 401) {
+			if (response.status === 401 || response.status === 419) {
 				setUser(null);
 				setIsLoggedIn(false);
 				return;
