@@ -169,6 +169,7 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
+		min-width: var(--container-sm);
 		width: 100vw;
 		height: 100vh;
 		background: var(--color-surface);
@@ -182,4 +183,3 @@
 		max-height: none;
 	}
 }
-
