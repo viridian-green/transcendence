@@ -56,5 +56,5 @@ export function useFriends(userId?: string | number) {
 	// 	}
 	// }
 
-	return { friends, loading, error, deleteFriend, addFriend };
+	return { friends, loading, error, deleteFriend };
 }
