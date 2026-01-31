@@ -6,20 +6,8 @@ export type User = {
 	bio?: string;
 };
 
-// TODO remove if User is enough
-export type UserProfile = {
-	id: number;
-	username: string;
-	email: string;
-	avatar?: string;
-	bio?: string;
-};
-
-export type Friend = {
-	id: number;
-	username: string;
-	avatar?: string;
-	status: 'online' | 'offline';
+export type Friend = User & {
+	status: 'online' | 'offline' | 'busy';
 };
 
 // Game phase types
