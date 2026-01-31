@@ -55,13 +55,12 @@ function UsersList({ users, friends, loading, error, onUserClick }: UsersListPro
 							))}
 						</ul>
 					)}
+					<div className='chat-labels relative flex items-center'>
+						<h3 className='private-message text-color-muted m-0 text-xs uppercase'>Others</h3>
+						<hr className='ml-2 flex-1 border-t' />
+					</div>
 				</>
 			)}
-			{/* Online Others Section */}
-			<div className='chat-labels relative flex items-center'>
-				<h3 className='private-message text-color-muted m-0 text-xs uppercase'>Others</h3>
-				<hr className='ml-2 flex-1 border-t' />
-			</div>
 			{onlineOthers.length === 0 ? (
 				<div className='color[var(--color-text-muted)] text-sm'>No users online.</div>
 			) : (
@@ -75,7 +74,7 @@ function UsersList({ users, friends, loading, error, onUserClick }: UsersListPro
 								{user.username}
 							</span>
 							<button
-								className='ml-2 rounded bg-pink-600 px-2 py-1 text-xs text-white'
+								className='ml-2 rounded bg-[var(--color-accent-pink)] px-2 py-1 text-xs text-white'
 								onClick={async (e) => {
 									e.stopPropagation();
 									try {
