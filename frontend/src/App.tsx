@@ -31,7 +31,7 @@ function App() {
 	}
 
 	return (
-		<div className='flex min-h-screen min-w-[375px] flex-col'>
+		<div className='flex min-h-screen min-w-sm flex-col'>
 			{isLoggedIn && (
 				<nav className='bg-surface border-border sticky top-0 z-50 flex h-16 items-center justify-between border-b px-4 sm:px-6'>
 					<button
