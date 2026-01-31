@@ -7,7 +7,7 @@ export type User = {
 };
 
 export type Friend = User & {
-	status: 'online' | 'offline';
+	status: 'online' | 'offline' | 'busy';
 };
 
 // Game phase types

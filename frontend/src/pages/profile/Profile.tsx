@@ -1,57 +1,51 @@
 import { Toast, type ToastType } from '@components/index';
-import type { Friend } from '@/shared.types';
 import { useState } from 'react';
 import { ProfileCard } from './ProfileCard';
 import { useAuth } from '@/hooks/useAuth';
 import { FriendsCard } from './FriendsCard';
-
-const MOCK_FRIENDS: Friend[] = [
-	{
-		id: 1,
-		username: 'dai',
-		avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Dai',
-		status: 'online',
-	},
-	{
-		id: 2,
-		username: 'adele',
-		avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Adele',
-		status: 'offline',
-	},
-	{
-		id: 3,
-		username: 'vanessa',
-		avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Vanessa',
-		status: 'online',
-	},
-];
+import { useFriends } from '@/hooks/useFriends';
+import { useFriendsWithStatus } from '@/hooks/useFriendsPresence';
 
 const Profile = () => {
 	const { user, avatarUrl } = useAuth();
-	const [friends, setFriends] = useState<Friend[]>(MOCK_FRIENDS);
+	const { deleteFriend, loading: friendsLoading, error: friendsError } = useFriends(user?.id);
+	const { friends, loading: friendsWithStatusLoading } = useFriendsWithStatus();
 	const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType } | null>({
 		show: false,
 		message: '',
 		type: 'success',
 	});
 
-	const handleAddFriend = (username: string) => {
-		// TODO implement actual add friend logic
-		setFriends((prev) => [
-			...prev,
-			{
-				id: prev.length + 1,
-				username,
-				avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&size=128`,
-				status: 'offline',
-			},
-		]);
-		setToast({ show: true, message: `Friend request sent to ${username}`, type: 'success' });
-	};
+	// const handleAddFriend = (id: number) => {
+	// 	// TODO implement actual add friend logic
+	// 	setFriends((prev) => [
+	// 		...prev,
+	// 		{
+	// 			id: prev.length + 1,
+	// 			username,
+	// 			avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&size=128`,
+	// 			status: 'offline',
+	// 		},
+	// 	]);
+	// 	setToast({ show: true, message: `Friend request sent to ${username}`, type: 'success' });
+	// };
 
-	const handleRemoveFriend = (id: number) => {
+	// const handleAddFriend = async (id: number) => {
+	// 	addFriend(id);
+	// };
+
+	const handleRemoveFriend = async (id: number) => {
 		// TODO implement actual remove friend logic
-		setFriends((prev) => prev.filter((friend) => friend.id !== id));
+		try {
+			await deleteFriend(id);
+		} catch (error) {
+			setToast({
+				show: true,
+				message: error instanceof Error ? error.message : 'Failed to remove friend',
+				type: 'failure',
+			});
+			return;
+		}
 		setToast({ show: true, message: `Friend removed`, type: 'success' });
 	};
 
@@ -60,8 +54,11 @@ const Profile = () => {
 		alert(`Challenge sent to friend with ID: ${id}`);
 	};
 
-	if (!user) {
+	if (!user || friendsError) {
 		return null;
+	}
+	if (friendsLoading || friendsWithStatusLoading) {
+		return <div>Loading friends...</div>;
 	}
 
 	return (
@@ -78,7 +75,7 @@ const Profile = () => {
 					<ProfileCard profile={user} avatar={avatarUrl} />
 					<FriendsCard
 						friends={friends}
-						onAddFriend={handleAddFriend}
+						// onAddFriend={handleAddFriend}
 						onRemoveFriend={handleRemoveFriend}
 						onChallengeFriend={handleChallengeFriend}
 					/>

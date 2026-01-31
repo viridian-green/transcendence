@@ -4,14 +4,14 @@ import { useState } from 'react';
 
 interface FriendsCardProps {
 	friends: Friend[];
-	onAddFriend: (username: string) => void;
+	// onAddFriend: (username: string) => void;
 	onRemoveFriend: (id: number) => void;
 	onChallengeFriend: (id: number) => void;
 }
 
 export function FriendsCard({
 	friends,
-	onAddFriend,
+	// onAddFriend,
 	onRemoveFriend,
 	onChallengeFriend,
 }: FriendsCardProps) {
@@ -19,7 +19,7 @@ export function FriendsCard({
 
 	const handleAddFriend = () => {
 		if (searchQuery.trim()) {
-			onAddFriend(searchQuery.trim());
+			// onAddFriend(searchQuery.trim());
 			setSearchQuery('');
 		}
 	};
@@ -88,13 +88,15 @@ export function FriendsCard({
 								</p>
 							</div>
 							{/* Challenge Button */}
-							<button
-								type='button'
-								onClick={() => onChallengeFriend(friend.id)}
-								className='text-text-muted hover:bg-accent-pink/10 hover:text-accent-pink rounded-md border-0 p-1'
-							>
-								Challenge
-							</button>
+							{friend.status === 'online' && (
+								<button
+									type='button'
+									onClick={() => onChallengeFriend(friend.id)}
+									className='text-text-muted hover:bg-accent-pink/10 hover:text-accent-pink rounded-md border-0 p-1'
+								>
+									Challenge
+								</button>
+							)}
 
 							{/* Remove Button */}
 							<button

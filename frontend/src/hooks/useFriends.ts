@@ -31,5 +31,30 @@ export function useFriends(userId?: string | number) {
 		fetchFriends();
 	}, [userId]);
 
-	return { friends, loading, error };
+	async function deleteFriend(friendId: number) {
+		try {
+			const response = await fetch(`/api/users/friends/${friendId}`, {
+				method: 'DELETE',
+				credentials: 'include',
+			});
+			if (!response.ok) throw new Error('Failed to delete friend');
+		} catch {
+			throw new Error('Failed to delete friend, please try again later.');
+		}
+		setFriends((prevFriends) => prevFriends.filter((friend) => friend.id !== friendId));
+	}
+
+	// async function addFriend(friendId: number) {
+	// 	try {
+	// 		const response = await fetch(`/api/users/friends/${friendId}`, { method: 'POST', credentials: 'include' });
+	// 		if (!response.ok) throw new Error('Failed to add friend');
+	// 		const friendshipId = await response.json();
+	// 		console.log('Friend added with ID:', friendshipId);
+	// 		return friendshipId;
+	// 	} catch {
+	// 		throw new Error('Failed to add friend, please try again later.');
+	// 	}
+	// }
+
+	return { friends, loading, error, deleteFriend, addFriend };
 }
