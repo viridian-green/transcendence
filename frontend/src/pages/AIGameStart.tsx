@@ -20,11 +20,13 @@ const AIGameStart = () => {
 	};
 
 	return (
-		<div className='flex flex-1 flex-col items-center justify-center gap-6'>
+		<div className='flex flex-1 flex-col items-center justify-center gap-6 p-4'>
 			<section className='flex flex-col items-center justify-center gap-6'>
-				<p className='text-accent-pink font-retro text-4xl font-bold'>Game Start</p>
+				<p className='text-accent-pink font-retro text-center text-4xl font-bold'>
+					Game Start
+				</p>
 
-				<div className='flex items-stretch justify-center gap-10'>
+				<div className='flex flex-col items-stretch justify-center gap-6 md:flex-row md:gap-10'>
 					<div className='bg-surface border-border shadow-elevated flex min-w-54 flex-col items-center justify-start gap-2 rounded-lg border px-6 py-4 shadow'>
 						<p className='text-2xl'>{leftPlayer}</p>
 						<div className='flex w-full items-center justify-between'>
