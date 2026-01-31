@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSendFriendInvite } from './hooks/useSendFriendInvite';
 import type { User } from '@/shared.types';
 import GlobalAlert from '../GlobalAlert';
 
@@ -18,6 +19,8 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId 
 		type: string;
 		userId?: string;
 	}>({ visible: false, message: '', type: '' });
+
+	const sendFriendInvite = useSendFriendInvite({ setAlert });
 
 	if (loading) return <div>Loading online users...</div>;
 	if (error) return <div>Error: {error}</div>;
@@ -75,48 +78,7 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId 
 							</span>
 							<button
 								className='ml-2 rounded bg-[var(--color-accent-pink)] px-2 py-1 text-xs text-white'
-								onClick={async (e) => {
-									e.stopPropagation();
-									try {
-										// Check presence state from presence service
-										const stateRes = await fetch(
-											`/api/presence/state/${user.id}`,
-										);
-										if (!stateRes.ok)
-											throw new Error('Could not check user presence');
-										const { state } = await stateRes.json();
-										if (state !== 'online') {
-											setAlert({
-												visible: true,
-												message:
-													'You can only invite users who are online and not busy.',
-												type: 'error',
-											});
-											return;
-										}
-										const res = await fetch(`/api/users/friends/${user.id}`, {
-											method: 'POST',
-											credentials: 'include',
-										});
-										if (!res.ok)
-											throw new Error('Failed to send friend invite');
-										setAlert({
-											visible: true,
-											message: `Friend invite sent to ${user.username}`,
-											type: 'sent',
-											userId: String(user.id),
-										});
-									} catch (err) {
-										setAlert({
-											visible: true,
-											message:
-												err instanceof Error
-													? err.message
-													: 'Unknown error',
-											type: 'error',
-										});
-									}
-								}}
+								onClick={(e) => sendFriendInvite(user, e)}
 							>
 								Add Friend
 							</button>
