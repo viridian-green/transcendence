@@ -17,10 +17,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const getAvatar = async (fileName: string) => {
-	const res = await fetch(`/api/avatars/${fileName}`, {
+const getAvatar = async (fileName: string, cacheBust?: string) => {
+	// Add cache-busting parameter to prevent browser caching
+	const url = cacheBust
+		? `/api/avatars/${fileName}?t=${cacheBust}`
+		: `/api/avatars/${fileName}?t=${Date.now()}`;
+
+	const res = await fetch(url, {
 		method: 'GET',
 		credentials: 'include',
+		cache: 'no-store', // Prevent caching
 	});
 	if (!res.ok) {
 		const err = await res.json();
@@ -49,7 +55,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 		let active = true;
 
-		getAvatar(user.avatar)
+		// Use timestamp to force refresh and prevent caching
+		getAvatar(user.avatar, Date.now().toString())
 			.then((url) => {
 				objectURL = url;
 				if (active) setAvatarUrl(url);
