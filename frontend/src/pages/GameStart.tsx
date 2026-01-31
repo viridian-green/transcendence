@@ -34,8 +34,9 @@ const GameStart = () => {
 			return;
 		}
 		const gameId = nanoid();
-		navigate(`/game/${gameId}`, { state: { leftPlayer, rightPlayer, mode: 'classic',
-      side: loginUser.position   } });
+		navigate(`/game/${gameId}`, {
+			state: { leftPlayer, rightPlayer, mode: 'classic', side: loginUser.position },
+		});
 	};
 
 	const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,9 +57,11 @@ const GameStart = () => {
 	};
 
 	return (
-		<div className='flex flex-1 flex-col items-center justify-center gap-6'>
+		<div className='flex flex-1 flex-col items-center justify-center gap-6 p-4'>
 			<section className='flex flex-col items-center justify-center gap-6'>
-				<p className='text-accent-pink font-retro text-4xl font-bold'>Game Start</p>
+				<p className='text-accent-pink font-retro text-center text-4xl font-bold'>
+					Game Start
+				</p>
 				<label htmlFor='opponent' className='text-2xl'>
 					Who are you playing with?
 				</label>
@@ -70,7 +73,7 @@ const GameStart = () => {
 					value={opponent.alias}
 					onChange={(e) => handleValueChange(e)}
 				/>
-				<div className='flex items-center justify-center gap-10'>
+				<div className='flex flex-col items-center justify-center gap-6 md:flex-row md:gap-10'>
 					<div className='bg-surface border-border shadow-elevated flex min-w-54 flex-col items-center gap-2 rounded-lg border px-6 py-4 shadow'>
 						<p className='text-2xl'>{leftPlayer}</p>
 						<div className='flex w-full items-center justify-between'>
@@ -91,7 +94,7 @@ const GameStart = () => {
 					</div>
 					<button
 						type='button'
-						className='border-accent-pink text-accent-pink hover:bg-accent-pink hover:text-bg rounded-lg border px-2 text-2xl font-bold'
+						className='border-accent-pink text-accent-pink hover:bg-accent-pink hover:text-bg rotate-90 rounded-lg border px-2 text-2xl font-bold md:rotate-0'
 						onClick={handleSideChange}
 					>
 						&harr;

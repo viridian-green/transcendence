@@ -3,7 +3,6 @@ import type { Friend } from '@/shared.types';
 import { useState } from 'react';
 import { ProfileCard } from './ProfileCard';
 import { useAuth } from '@/hooks/useAuth';
-import { StatsCard } from './StatsCard';
 import { FriendsCard } from './FriendsCard';
 
 const MOCK_FRIENDS: Friend[] = [
@@ -83,7 +82,6 @@ const Profile = () => {
 						onRemoveFriend={handleRemoveFriend}
 						onChallengeFriend={handleChallengeFriend}
 					/>
-					<StatsCard />
 				</div>
 			</main>
 		</div>
