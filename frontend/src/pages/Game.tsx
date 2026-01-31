@@ -177,7 +177,7 @@ const Game = () => {
 			ws.close();
 			wsRef.current = null;
 		};
-	}, [navigate, gameId, mode]);
+	}, [navigate, gameId, mode, side]);
 
 	useEffect(() => {
 		if (gameState?.phase === 'ended') {

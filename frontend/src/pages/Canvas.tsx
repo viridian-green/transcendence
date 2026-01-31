@@ -90,7 +90,7 @@ const Canvas = ({ gameState }: CanvasProps) => {
 	return (
 		<canvas
 			ref={canvasRef}
-			className='border-border rounded-xl border-6 shadow-lg h-auto w-full max-w-full'
+			className='border-border h-auto w-full max-w-full rounded-xl border-6 shadow-lg'
 		/>
 	);
 };
