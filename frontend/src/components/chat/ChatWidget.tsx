@@ -1,8 +1,10 @@
 import './ChatWidget.css';
+import { useState, useEffect } from 'react';
 import { FaComments } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetchOnlineUsers } from '../../hooks/useFetchOnlineUsers';
+import { useFriends } from '../../hooks/useFriends';
 import { usePresenceSocket } from '@/hooks/usePresenceSocket';
 import { useChatSocket } from '@/hooks/useChatSocket';
 import { useUnreadPrivateMessages } from '../../hooks/useUnreadPrivateMessages';
@@ -20,7 +22,7 @@ const TABS = [
 
 const ChatWidget = () => {
 	const { user } = useAuth();
-	const currentUserId = String(user?.id);
+	const currentUserId = user?.id ? String(user.id) : undefined;
 	const { isConnected: isPresenceConnected } = usePresenceSocket(Boolean(user));
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'agora' | 'people' | number>('agora');
@@ -81,10 +83,23 @@ const ChatWidget = () => {
 			localStorage.setItem('generalMessages', JSON.stringify(updated));
 			return updated;
 		});
+		setGeneralMessages((prev) => {
+			const updated = [...prev, { kind: 'chat', username: user?.username, text }];
+			localStorage.setItem('generalMessages', JSON.stringify(updated));
+			return updated;
+		});
 	};
 	const sendPrivateMessage = (toId: number, text: string) => {
 		if (!text) return;
 		sendMessage({ type: 'private_msg', text, to: String(toId) });
+		setPrivateMessages((prev) => {
+			const updated = {
+				...prev,
+				[toId]: [...(prev[toId] || []), { kind: 'chat', username: user?.username, text }],
+			};
+			localStorage.setItem('privateMessages', JSON.stringify(updated));
+			return updated;
+		});
 		setPrivateMessages((prev) => {
 			const updated = {
 				...prev,
@@ -126,8 +141,9 @@ const ChatWidget = () => {
 			return (
 				<UsersList
 					users={onlinePeople}
-					loading={loadingOnline}
-					error={errorOnline}
+					friends={friends}
+					loading={loadingOnline || loadingFriends}
+					error={errorOnline || errorFriends}
 					onUserClick={(user) =>
 						openPrivateTab({ id: Number(user.id), name: user.username })
 					}
@@ -154,12 +170,14 @@ const ChatWidget = () => {
 
 	return (
 		<div className={`chat-widget ${expanded ? 'expanded' : ''}`}>
+		<div className={`chat-widget ${expanded ? 'expanded' : ''}`}>
 			{expanded ? (
 				<div className='chat-container'>
 					<ChatHeader
 						username={user?.username}
 						isConnected={ws.current?.readyState === WebSocket.OPEN}
 						isPresenceConnected={isPresenceConnected}
+						onClose={() => setExpanded(false)}
 						onClose={() => setExpanded(false)}
 					/>
 					<ChatTabs
