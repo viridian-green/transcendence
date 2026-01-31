@@ -1,6 +1,7 @@
 import { Search, UserPlus, X } from '@/icons';
 import type { Friend } from '@/shared.types';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 
 interface FriendsCardProps {
 	friends: Friend[];
@@ -16,6 +17,7 @@ export function FriendsCard({
 	onChallengeFriend,
 }: FriendsCardProps) {
 	const [searchQuery, setSearchQuery] = useState('');
+	const navigate = useNavigate();
 
 	const handleAddFriend = () => {
 		if (searchQuery.trim()) {
@@ -53,7 +55,7 @@ export function FriendsCard({
 			<div className='space-y-3'>
 				{friends.length === 0 ? (
 					<p className='text-text-muted py-8 text-center'>
-						No friends yet. Add some friends to get started!
+						No friends yet. Add some friends via the Chat to get started!
 					</p>
 				) : (
 					friends.map((friend) => (
@@ -63,13 +65,18 @@ export function FriendsCard({
 						>
 							{/* Avatar with Status */}
 							<div className='relative'>
-								<div className='border-border h-12 w-12 overflow-hidden rounded-full border-2 bg-(--color-bg)'>
+								<button
+									className='border-border h-12 w-12 overflow-hidden rounded-full border-2 bg-(--color-bg) hover:cursor-pointer'
+									onClick={() => {
+										navigate(`/profile/${friend.username}`);
+									}}
+								>
 									<img
 										src={friend.avatar}
 										alt={friend.username}
 										className='h-full w-full object-cover'
 									/>
-								</div>
+								</button>
 								{/* Status Indicator */}
 								{friend.status === 'online' && (
 									<div className='border-elevated bg-status-online absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2' />
