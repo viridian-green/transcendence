@@ -71,20 +71,24 @@ export function FriendsCard({
 									/>
 								</div>
 								{/* Status Indicator */}
-								<div
-									className={`border-elevated absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2 ${
-										friend.status === 'online'
-											? 'bg-status-online'
-											: 'bg-text-muted'
-									}`}
-								/>
+								{friend.status === 'online' && (
+									<div className='border-elevated bg-status-online absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2' />
+								)}
+								{friend.status === 'busy' && (
+									<div className='border-elevated bg-status-busy absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2' />
+								)}
+								{friend.status === 'offline' && (
+									<div className='border-elevated bg-text-muted absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2' />
+								)}
 							</div>
 
 							{/* Username */}
 							<div className='flex-1'>
 								<p className='text-(--color-text-primary)'>{friend.username}</p>
 								<p className='text-text-muted'>
-									{friend.status === 'online' ? 'Online' : 'Offline'}
+									{friend.status === 'online' && 'Online'}
+									{friend.status === 'busy' && 'Busy'}
+									{friend.status === 'offline' && 'Offline'}
 								</p>
 							</div>
 							{/* Challenge Button */}
