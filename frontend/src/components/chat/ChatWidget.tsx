@@ -147,10 +147,18 @@ const ChatWidget = () => {
 		generalMessages, // Pass messages from localStorage as initialMessages
 	);
 
-	// Sync general messages from socket to state and localStorage
+	// // Sync general messages from socket to state and localStorage
 	useEffect(() => {
 		setGeneralMessages(socketGeneralMessages);
 	}, [socketGeneralMessages]);
+
+	// Clear general messages when user logs out or goes offline
+	useEffect(() => {
+		if (!user || !isPresenceConnected) {
+			setGeneralMessages([]);
+			localStorage.removeItem('generalMessages');
+		}
+	}, [user, isPresenceConnected]);
 
 	// ...localStorage logic now handled by useLocalStorageState hook...
 	const {
