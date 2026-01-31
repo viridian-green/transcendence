@@ -37,3 +37,6 @@ Thumbs.db
 # Optional: build output
 dist/
 build/
+
+# uploaded avatars
+services/user-service/uploads/avatars/
