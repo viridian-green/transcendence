@@ -95,7 +95,7 @@ const TabContent = ({
 const ChatWidget = () => {
 	const { user } = useAuth();
 	const currentUserId = user?.id ? String(user.id) : undefined;
-	const { isConnected: isPresenceConnected } = usePresenceSocket(Boolean(user));
+	const { isConnected: isPresenceConnected, ws: presenceWs } = usePresenceSocket(Boolean(user));
 	const { friends } = useFriends(currentUserId);
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'agora' | 'people' | number>('agora');
@@ -156,7 +156,7 @@ const ChatWidget = () => {
 		users: rawOnlinePeople,
 		loading: loadingOnline,
 		error: errorOnline,
-	} = useFetchOnlineUsers(currentUserId, ws.current);
+	} = useFetchOnlineUsers(currentUserId, presenceWs.current);
 	const onlinePeople: User[] = rawOnlinePeople.map((u: any) => ({
 		id: typeof u.id === 'string' ? parseInt(u.id, 10) : u.id,
 		username: u.username,

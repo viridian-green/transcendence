@@ -61,12 +61,10 @@ export function useFetchOnlineUsers(currentUserId?: string, socket?: WebSocket |
 		if (socket) {
 			// Native WebSocket: listen for 'message' events
 			const handler = (event: MessageEvent) => {
-				try {
-					const data = JSON.parse(event.data);
-					if (data.type === 'onlineUsersUpdated') {
-						fetchOnlineUsers();
-					}
-				} catch {}
+				const data = JSON.parse(event.data);
+				if (data.type === 'onlineUsersUpdated') {
+					fetchOnlineUsers();
+				}
 			};
 			socket.addEventListener('message', handler);
 			return () => {
