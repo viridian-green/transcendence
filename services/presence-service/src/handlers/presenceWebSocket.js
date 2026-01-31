@@ -97,3 +97,13 @@ export function handlePresenceConnection(connection, request) {
 export function getActiveConnection(userId) {
   return activeConnections.get(userId);
 }
+
+// Broadcast presence update to all active WebSocket clients
+export function broadcastPresenceUpdate() {
+  const msg = JSON.stringify({ type: "onlineUsersUpdated" });
+  for (const conn of activeConnections.values()) {
+    if (conn.readyState === WebSocket.OPEN) {
+      conn.send(msg);
+    }
+  }
+}

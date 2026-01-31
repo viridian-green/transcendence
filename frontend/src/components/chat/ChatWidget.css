@@ -12,6 +12,7 @@
 	flex-direction: column;
 	align-items: flex-end;
 	border: var(--color-accent-pink);
+	min-width: var(--container-sm);
 }
 
 .chat-labels {
@@ -160,7 +161,11 @@
 	overflow-y: auto;
 	font-size: 0.97rem;
 	color: white;
-	/* height: 100%; */
+}
+
+.chat-unread-badge {
+	color: var(--color-bg);
+	font-weight: bold;
 }
 
 @media (max-width: 768px) {

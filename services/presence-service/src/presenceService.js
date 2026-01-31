@@ -1,4 +1,5 @@
 import { redisClient, redisPublisher } from "./redis.js";
+import { broadcastPresenceUpdate } from "./handlers/presenceWebSocket.js";
 
 const ALLOWED_STATES = ["online", "busy", "offline"];
 
@@ -13,6 +14,7 @@ export async function updateUserState(userId, state) {
         JSON.stringify({ userId, state, timestamp: Date.now() })
       );
       console.log(`User ${userId} state updated to ${state}`);
+      broadcastPresenceUpdate();
     } catch (err) {
       console.error(`Failed to update user state for ${userId}:`, err);
       throw new Error("Failed to update user state in Redis");
