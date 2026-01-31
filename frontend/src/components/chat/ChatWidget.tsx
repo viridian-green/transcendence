@@ -1,7 +1,6 @@
 import './ChatWidget.css';
 import { useState, useEffect } from 'react';
 import { FaComments } from 'react-icons/fa';
-import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetchOnlineUsers } from '../../hooks/useFetchOnlineUsers';
 import { useFriends } from '../../hooks/useFriends';
@@ -24,6 +23,7 @@ const ChatWidget = () => {
 	const { user } = useAuth();
 	const currentUserId = user?.id ? String(user.id) : undefined;
 	const { isConnected: isPresenceConnected } = usePresenceSocket(Boolean(user));
+	const { friends, loading: loadingFriends, error: errorFriends } = useFriends(currentUserId);
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'agora' | 'people' | number>('agora');
 	const [privateTabs, setPrivateTabs] = useLocalStorageState('privateTabs', []);
@@ -169,7 +169,6 @@ const ChatWidget = () => {
 	};
 
 	return (
-		<div className={`chat-widget ${expanded ? 'expanded' : ''}`}>
 		<div className={`chat-widget ${expanded ? 'expanded' : ''}`}>
 			{expanded ? (
 				<div className='chat-container'>
