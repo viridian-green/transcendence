@@ -70,7 +70,7 @@ const Profile = () => {
 					onClose={() => setToast({ show: false, message: '', type: 'success' })}
 				/>
 			)}
-			<main className='mx-auto max-w-6xl flex-1 overflow-y-auto px-6 py-8'>
+			<main className='mx-auto my-auto max-w-6xl flex-1 overflow-y-auto px-6 py-8'>
 				<div className='grid gap-6 md:grid-cols-2'>
 					<ProfileCard profile={user} avatar={avatarUrl} />
 					<FriendsCard
