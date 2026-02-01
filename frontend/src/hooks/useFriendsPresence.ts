@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 
 export function useFriendsWithStatus(userId?: number) {
 	const { friends, error: friendsError, loading: friendsLoading } = useFriends(userId);
-	const { ws } = usePresenceSocket(Boolean(userId));
+	const { ws, isConnected } = usePresenceSocket(Boolean(userId));
 	const {
 		users: onlineUsers,
 		error: onlineUsersError,
@@ -19,18 +19,21 @@ export function useFriendsWithStatus(userId?: number) {
 	const friendsWithStatus: Friend[] = useMemo(
 		() =>
 			friends.map((friend) => {
-				const status: Friend['status'] = onlineUsers.some(
-					(u) => String(u.id) === String(friend.id),
-				)
-					? 'online'
-					: 'offline';
+				let status: Friend['status'];
+				if (!isConnected) {
+					status = 'offline';
+				} else {
+					status = onlineUsers.some((u) => String(u.id) === String(friend.id))
+						? 'online'
+						: 'offline';
+				}
 				const friendWithStatus = {
 					...friend,
 					status: status,
 				};
 				return friendWithStatus;
 			}),
-		[friends, onlineUsers],
+		[friends, onlineUsers, isConnected],
 	);
 
 	console.log('[FETCHING FRIENDS] friends:', JSON.stringify(friends, null, 2));
