@@ -2,12 +2,10 @@
 import { useFriends } from './useFriends';
 import { useFetchOnlineUsers } from './useFetchOnlineUsers';
 import type { Friend } from '@/shared.types';
-import { useAuth } from '@/hooks/useAuth';
 
-export function useFriendsWithStatus() {
-	const { user } = useAuth();
-	const { friends, error: friendsError } = useFriends(user?.id);
-	const { users: onlineUsers, error: onlineUsersError } = useFetchOnlineUsers(String(user?.id));
+export function useFriendsWithStatus(userId?: number) {
+	const { friends, error: friendsError } = useFriends(userId);
+	const { users: onlineUsers, error: onlineUsersError } = useFetchOnlineUsers(String(userId));
 
 	console.log('[ONLINE USERS] friends:', JSON.stringify(friends, null, 2));
 

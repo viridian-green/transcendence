@@ -9,7 +9,7 @@ import { useFriendsWithStatus } from '@/hooks/useFriendsPresence';
 const Profile = () => {
 	const { user, avatarUrl } = useAuth();
 	const { deleteFriend, loading: friendsLoading, error: friendsError } = useFriends(user?.id);
-	const { friends, loading: friendsWithStatusLoading } = useFriendsWithStatus();
+	const { friends, loading: friendsWithStatusLoading } = useFriendsWithStatus(user?.id);
 	const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType } | null>({
 		show: false,
 		message: '',

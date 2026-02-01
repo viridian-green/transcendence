@@ -4,6 +4,7 @@ import { useNotificationSocket } from '@/hooks/useNotificationSocket';
 import { useNavigate } from 'react-router-dom';
 import type { Friend } from '@/shared.types';
 import { useFriendsWithStatus } from '@/hooks/useFriendsPresence';
+import { useAuth } from '@/hooks/useAuth';
 
 type InvitePopupState = {
 	fromUserId: string;
@@ -13,7 +14,8 @@ type InvitePopupState = {
 
 const Remote = () => {
 	const navigate = useNavigate();
-	const { friends } = useFriendsWithStatus();
+	const { user } = useAuth();
+	const { friends } = useFriendsWithStatus(user?.id);
 	const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
 	const { send, lastRawMessage, isConnected } = useNotificationSocket(true);
 
