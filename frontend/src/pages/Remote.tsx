@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PinkButton } from '@/components';
 import { useNotificationSocket } from '@/hooks/useNotificationSocket';
 import { useNavigate } from 'react-router-dom';
@@ -17,21 +17,24 @@ const Remote = () => {
 	const { user } = useAuth();
 	const { friends } = useFriendsWithStatus(user?.id);
 	const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
+	const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
 	const { send, lastRawMessage, isConnected } = useNotificationSocket(true);
-
-	const incomingInvite = useMemo(() => {
-		if (!lastRawMessage || lastRawMessage.type !== 'INVITE_RECEIVED') {
-			return null;
-		}
-		return {
-			fromUserId: lastRawMessage.fromUserId,
-			fromUsername: lastRawMessage.fromUsername,
-			gameMode: lastRawMessage.gameMode || 'pong',
-		} as InvitePopupState;
-	}, [lastRawMessage]);
 
 	useEffect(() => {
 		if (!lastRawMessage) return;
+
+		console.log('[REMOTE] raw WS message', lastRawMessage);
+
+		console.log('[REMOTE] friends:', JSON.stringify(friends, null, 2));
+
+		if (lastRawMessage.type === 'INVITE_RECEIVED') {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
+			setIncomingInvite({
+				fromUserId: lastRawMessage.fromUserId,
+				fromUsername: lastRawMessage.fromUsername,
+				gameMode: lastRawMessage.gameMode || 'pong',
+			});
+		}
 
 		if (lastRawMessage.type === 'GAME_START') {
 			const { gameId, leftPlayerId, rightPlayerId, yourSide, leftPlayer, rightPlayer } =
@@ -48,13 +51,20 @@ const Remote = () => {
 				},
 			});
 		}
-	}, [lastRawMessage, navigate]);
+	}, [lastRawMessage]);
 
 	const handleChallenge = (friend: Friend) => {
 		if (friend.status !== 'online') return;
 		if (!isConnected) {
+			console.warn('[REMOTE] cannot send INVITE, socket not connected');
 			return;
 		}
+
+		console.log('[REMOTE] sending INVITE', {
+			type: 'INVITE',
+			toUserId: friend.id,
+			gameMode: 'pong',
+		});
 
 		send({
 			type: 'INVITE',
@@ -65,6 +75,7 @@ const Remote = () => {
 
 	const handleInviteAccept = () => {
 		if (!incomingInvite || !isConnected) {
+			setIncomingInvite(null);
 			return;
 		}
 
@@ -72,12 +83,12 @@ const Remote = () => {
 			type: 'INVITE_ACCEPT',
 			fromUserId: incomingInvite.fromUserId,
 		});
+
+		setIncomingInvite(null);
 	};
 
 	const handleInviteDecline = () => {
-		if (!incomingInvite || !isConnected) {
-			return;
-		}
+		setIncomingInvite(null);
 	};
 
 	return (
