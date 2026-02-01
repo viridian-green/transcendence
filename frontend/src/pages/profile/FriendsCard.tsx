@@ -109,6 +109,18 @@ export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend }: Frie
 							>
 								<X className='h-4 w-4' />
 							</button>
+							<GlobalAlert
+								message={deleteFriendAlert.message}
+								visible={deleteFriendAlert.visible}
+								type={deleteFriendAlert.type}
+								acceptText='Yes'
+								declineText='No'
+								onClose={() =>
+									setDeleteFriendAlert({ ...deleteFriendAlert, visible: false })
+								}
+								onAccept={() => onAcceptRemoveFriend(deleteFriendAlert.userId)}
+								onDecline={onDeclineRemoveFriend}
+							/>
 						</div>
 					))}
 			</div>
