@@ -1,5 +1,5 @@
 import { Toast, type ToastType } from '@components/index';
-import type { UserProfile } from '@/shared.types';
+import type { User as UserProfile } from '@/shared.types';
 import { useState } from 'react';
 import { ProfileSettingsCard } from './ProfileSettingsCard';
 import { ChangePasswordCard } from './ChangePasswordCard';

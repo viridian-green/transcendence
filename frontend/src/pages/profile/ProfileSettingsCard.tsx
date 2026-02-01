@@ -1,6 +1,6 @@
 import { Avatar, Card, CardTitle, ErrorMessage } from '@/components';
 import { Camera, Save } from '@/icons';
-import type { UserProfile } from '@/shared.types';
+import type { User as UserProfile } from '@/shared.types';
 import React, { useState, useEffect } from 'react';
 import z, { ZodError } from 'zod';
 

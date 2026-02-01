@@ -1,4 +1,4 @@
-import type { UserProfile, User } from '@/shared.types';
+import type { User as UserProfile, User } from '@/shared.types';
 import { useAuth } from './useAuth';
 
 export function useUserProfile() {

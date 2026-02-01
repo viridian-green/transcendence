@@ -84,7 +84,7 @@ export async function deleteFriendship(app, userId, friendId) {
 export async function getFriendsList(app, userId) {
     const { rows } = await app.pg.query(
         `
-        SELECT u.id, u.username, u.avatar, u.bio FROM friends f
+        SELECT u.id, u.email, u.username, u.avatar, u.bio FROM friends f
         JOIN users u ON (u.id = f.user_two AND f.user_one = $1)
                      OR (u.id = f.user_one AND f.user_two = $1)
         WHERE (f.user_one = $1 OR f.user_two = $1)
