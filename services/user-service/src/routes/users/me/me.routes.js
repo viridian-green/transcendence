@@ -14,11 +14,15 @@ export default async function updateUserRoute(app) {
     });
 
     app.get('/',
-        { preHandler: app.authenticate },
+        { preHandler: app.optionalAuth },
         async (request, reply) => {
+            if (!request.user) {
+                return reply.send({ user: null });
+            }
+
             const userId = request.user.id;
             const user = await getUserById(app, userId);
-            return reply.send(user);
+            return reply.send({ user });
         }
     );
 
