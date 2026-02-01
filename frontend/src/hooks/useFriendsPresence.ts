@@ -11,8 +11,6 @@ export function useFriendsWithStatus(userId?: number) {
 		loading: onlineUsersLoading,
 	} = useFetchOnlineUsers(String(userId));
 
-	console.log('[ONLINE USERS] friends:', JSON.stringify(friends, null, 2));
-
 	const friendsWithStatus: Friend[] = friends.map((friend) => {
 		const status: Friend['status'] = onlineUsers.some((u) => String(u.id) === String(friend.id))
 			? 'online'
@@ -23,8 +21,6 @@ export function useFriendsWithStatus(userId?: number) {
 		};
 		return friendWithStatus;
 	});
-
-	console.log('[FETCHING FRIENDS] friends:', JSON.stringify(friends, null, 2));
 
 	return {
 		friends: friendsWithStatus,
