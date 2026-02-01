@@ -9,6 +9,7 @@ import { useChatSocket } from '@/hooks/useChatSocket';
 import { useUnreadPrivateMessages } from '../../hooks/useUnreadPrivateMessages';
 import { useLocalStorageState } from '../../hooks/useLocalStorageState';
 import type { ChatRenderMessage } from './types/chat';
+import type { User } from '@/shared.types';
 import ChatHeader from './ChatHeader';
 import ConversationTab from './ConversationTab';
 import UsersListTab from './UsersListTab';
@@ -63,7 +64,6 @@ const ChatWidget = () => {
 					...prev,
 					[from.id]: [...(prev[from.id] || []), { kind, username: from.username, text }],
 				};
-				localStorage.setItem('privateMessages', JSON.stringify(updated));
 				return updated;
 			});
 		},

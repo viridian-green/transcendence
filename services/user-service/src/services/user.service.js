@@ -83,6 +83,25 @@ export async function getUsernamesByIds(app, idsArray) {
     return rows;
 }
 
+export async function getUsernameById(app, id) {
+    const { rows } = await app.pg.query(
+        `
+        SELECT username
+        FROM users
+        WHERE id = $1
+        `,
+        [id]
+    );
+
+    if (rows.length === 0) {
+        const err = new Error('User not found');
+        err.statusCode = 404;
+        throw err;
+    }
+
+    return rows[0].username;
+}
+
 export async function updateUserAvatar(app, userId, filename) {
     const { rows } = await app.pg.query(
         'UPDATE users SET avatar = $1 WHERE id = $2 RETURNING avatar',

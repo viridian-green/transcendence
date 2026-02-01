@@ -22,6 +22,7 @@ import {
 } from '@pages/index';
 import DropdownMenuAvatar from './components/DropdownMenuAvatar';
 import ChatWidget from './components/chat/ChatWidget';
+import NotificationManager from './components/NotificationManager';
 import { useAuth } from './hooks/useAuth';
 import OthersProfile from './pages/profile/OthersProfile';
 
@@ -156,6 +157,7 @@ function App() {
 				</Suspense>
 			</main>
 			{!isPublicRoute(location.pathname) && <ChatWidget />}
+			{isLoggedIn && <NotificationManager />}
 			<footer className='border-border bg-surface text-text-muted flex h-16 items-center justify-center gap-2 border-t px-6 text-center text-sm'>
 				<Link to='/privacy-policy' className='hover:text-text-secondary'>
 					Privacy Policy
