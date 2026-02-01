@@ -9,7 +9,7 @@ export interface User {
 
 const clients: Map<WebSocket, User> = new Map();
 
-const socketsByUserId: Map<string, Set<WebSocket>> = new Map();
+export const socketsByUserId: Map<string, Set<WebSocket>> = new Map();
 
 // Main WebSocket handler function
 export default function notificationsHandler(connection: WebSocket, request: any) {
@@ -60,16 +60,17 @@ function extractUserFromJWT(request: any): User | null {
 function handleConnection(connection: WebSocket, user: User) {
   clients.set(connection, user);
 
-  // Index by userId for direct messaging
-  let set = socketsByUserId.get(user.id);
+  // Index by userId for direct messaging (ensure it's a string)
+  const userId = String(user.id);
+  let set = socketsByUserId.get(userId);
   if (!set) {
     set = new Set();
-    socketsByUserId.set(user.id, set);
+    socketsByUserId.set(userId, set);
   }
   set.add(connection);
 
   console.log(
-    `[NOTIFICATION WS] User ${user.username} connected. Total clients: ${clients.size}`
+    `[NOTIFICATION WS] User ${user.username} (id: ${userId}, type: ${typeof userId}) connected. Total clients: ${clients.size}`
   );
 
   // Send welcome message
