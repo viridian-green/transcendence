@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { User } from '@/shared.types';
 import { loginSessionStorageKey } from '@/const';
-import { authErroMapper } from '@/pages/auth/utils';
+import { authErrorMapper } from '@/pages/auth/utils';
 import { getAvatar } from './useAvatar';
 
 interface AuthContextType {
@@ -73,7 +73,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			}
 
 			const data = await response.json();
-			setUser(data);
+			if (!data || !data.user) {
+				setUser(null);
+				setIsLoggedIn(false);
+				return;
+			}
+			setUser(data.user);
 			setIsLoggedIn(true);
 		} catch (error) {
 			console.error('Auth check failed:', error);
@@ -96,12 +101,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		});
 
 		if (!response.ok) {
-			const message = authErroMapper(response.status);
+			const message = authErrorMapper(response.status);
 			throw new Error(message);
 		}
 
 		const data = await response.json();
-		setUser(data);
+		setUser(data.user);
 		setIsLoggedIn(true);
 
 		await checkAuth();
@@ -119,12 +124,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		});
 
 		if (!response.ok) {
-			const message = authErroMapper(response.status);
+			const message = authErrorMapper(response.status);
 			throw new Error(message);
 		}
 
 		const data = await response.json();
-		setUser(data);
+		setUser(data.user);
 		setIsLoggedIn(true);
 
 		await checkAuth();
