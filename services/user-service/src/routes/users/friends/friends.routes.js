@@ -8,6 +8,8 @@ import {
     acceptFriendRequest
 } from '../../../services/friends.service.js';
 
+import { emitFriendRequested } from '../../../events/emitFriendRequested.js';
+
 //import { notifyFriendInviteWS } from '../../../utils/notifyFriendInviteWS.js';
 
 export default async function friendsRoute(app) {
@@ -43,17 +45,17 @@ export default async function friendsRoute(app) {
     // Add friend
     // POST /friends/:id
     app.post('/:id', { preHandler: app.authenticate }, async (req, reply) => {
-        const userId = req.user.id;
+        const userId = Number(req.user.id);
         const friendId = Number(req.params.id);
+
+        console.log('[FRIENDS ROUTE] Sending friend request:', { userId, friendId, userIdType: typeof userId, friendIdType: typeof friendId });
 
         ensureNotSelf(userId, friendId);
         await ensureUserExists(app, friendId);
         await ensureNoExistingFriendship(app, userId, friendId);
+        await emitFriendRequested(app, userId, friendId);
 
         const friendshipId = await createFriendRequest(app, userId, friendId);
-
-        // Notify the invited user via WebSocket
-        notifyFriendInviteWS(friendId, userId, req.user.username);
 
         return reply.code(201).send(friendshipId);
     })
