@@ -22,6 +22,7 @@ import {
 } from '@pages/index';
 import DropdownMenuAvatar from './components/DropdownMenuAvatar';
 import ChatWidget from './components/chat/ChatWidget';
+import GlobalAlert from './components/GlobalAlert';
 import NotificationManager from './components/NotificationManager';
 import { useAuth } from './hooks/useAuth';
 import OthersProfile from './pages/profile/OthersProfile';
