@@ -93,6 +93,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
