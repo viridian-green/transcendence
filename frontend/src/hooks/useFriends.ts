@@ -33,7 +33,9 @@ export function useFriends(userId?: string | number) {
 			setLoading(true);
 			setError(null);
 			try {
-				const res = await fetch('/api/users/friends', { credentials: 'include' });
+				// If userId is provided, fetch that user's friends, otherwise fetch current user's friends
+				const url = userId ? `/api/users/friends/${userId}` : '/api/users/friends';
+				const res = await fetch(url, { credentials: 'include' });
 				if (!res.ok) throw new Error('Failed to fetch friends');
 				const data = await res.json();
 				await Promise.all((Array.isArray(data) ? data : data.friends).map(fetchAvatar));
