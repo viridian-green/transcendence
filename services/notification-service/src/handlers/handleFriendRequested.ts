@@ -1,7 +1,12 @@
 import { socketsByUserId } from "./notifications.js";
 import { WebSocket } from "ws";
 
-export async function handleFriendRequested(event) {
+export async function handleFriendRequested(event: {
+    type: string;
+    fromUserId: string | number;
+    toUserId: string | number;
+    fromUsername: string;
+}) {
     console.log(
         `🔔 Friend request from ${event.fromUserId} (${typeof event.fromUserId}) to ${event.toUserId} (${typeof event.toUserId})`
     );
@@ -29,3 +34,4 @@ export async function handleFriendRequested(event) {
         }
     }
 }
+
