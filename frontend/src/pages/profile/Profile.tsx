@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { FriendsCard } from './FriendsCard';
 import { useFriends } from '@/hooks/useFriends';
 import { useFriendsWithStatus } from '@/hooks/useFriendsPresence';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
 	const { user, avatarUrl } = useAuth();
@@ -15,6 +16,7 @@ const Profile = () => {
 		message: '',
 		type: 'success',
 	});
+	const navigate = useNavigate();
 
 	const handleRemoveFriend = async (id: number) => {
 		try {
@@ -30,9 +32,8 @@ const Profile = () => {
 		setToast({ show: true, message: `Friend removed`, type: 'success' });
 	};
 
-	const handleChallengeFriend = (id: number) => {
-		// TODO implement actual challenge friend logic
-		alert(`Challenge sent to friend with ID: ${id}`);
+	const handleChallengeFriend = () => {
+		navigate(`/remote`);
 	};
 
 	if (!user || friendsError) {
