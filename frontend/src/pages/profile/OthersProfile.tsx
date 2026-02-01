@@ -21,8 +21,6 @@ const OthersProfile = () => {
 		return null;
 	}
 
-	console.log('Rendering OthersProfile for friend:', friend);
-
 	return (
 		<div className='flex flex-1'>
 			<main className='mx-auto my-auto max-w-6xl flex-1 overflow-y-auto px-6 py-8'>

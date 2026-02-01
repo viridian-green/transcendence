@@ -1,3 +1,4 @@
+import { useAuth } from '@/hooks/useAuth';
 import type { Friend } from '@/shared.types';
 import { useNavigate } from 'react-router';
 
@@ -7,6 +8,7 @@ interface OthersFriendsCardProps {
 
 export function OthersFriendsCard({ friends }: OthersFriendsCardProps) {
 	const navigate = useNavigate();
+	const { user: me } = useAuth();
 
 	return (
 		<div className='border-border bg-surface max-h-[436px] overflow-y-auto rounded-2xl border p-8'>
@@ -24,15 +26,16 @@ export function OthersFriendsCard({ friends }: OthersFriendsCardProps) {
 					friends.map((friend) => (
 						<div
 							key={friend.id}
-							className='border-border bg-elevated flex items-center gap-3 rounded-lg border p-3 transition-colors hover:border-(--color-accent-pink)/50'
+							className={`border-border flex items-center gap-3 rounded-lg border p-3 transition-colors ${friend.id === me?.id ? 'bg-elevated/10' : 'bg-elevated hover:border-(--color-accent-pink)/50'}`}
 						>
 							{/* Avatar with Status */}
 							<div className='relative'>
 								<button
-									className='border-border h-12 w-12 overflow-hidden rounded-full border-2 bg-(--color-bg) hover:cursor-pointer'
+									className={`border-border bg-bg h-12 w-12 overflow-hidden rounded-full border-2 hover:cursor-pointer ${friend.id === me?.id ? 'no-scale' : ''}`}
 									onClick={() => {
 										navigate(`/profile/${friend.id}`);
 									}}
+									disabled={friend.id === me?.id}
 								>
 									<img
 										src={friend.avatar}
@@ -54,7 +57,11 @@ export function OthersFriendsCard({ friends }: OthersFriendsCardProps) {
 
 							{/* Username */}
 							<div className='flex-1'>
-								<p className='text-(--color-text-primary)'>{friend.username}</p>
+								<p className='text-(--color-text-primary)'>
+									{friend.id === me?.id
+										? `${friend.username} (you)`
+										: friend.username}
+								</p>
 								<p className='text-text-muted'>
 									{friend.status === 'online' && 'Online'}
 									{friend.status === 'busy' && 'Busy'}

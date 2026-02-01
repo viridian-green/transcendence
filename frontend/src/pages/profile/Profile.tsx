@@ -16,26 +16,7 @@ const Profile = () => {
 		type: 'success',
 	});
 
-	// const handleAddFriend = (id: number) => {
-	// 	// TODO implement actual add friend logic
-	// 	setFriends((prev) => [
-	// 		...prev,
-	// 		{
-	// 			id: prev.length + 1,
-	// 			username,
-	// 			avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&size=128`,
-	// 			status: 'offline',
-	// 		},
-	// 	]);
-	// 	setToast({ show: true, message: `Friend request sent to ${username}`, type: 'success' });
-	// };
-
-	// const handleAddFriend = async (id: number) => {
-	// 	addFriend(id);
-	// };
-
 	const handleRemoveFriend = async (id: number) => {
-		// TODO implement actual remove friend logic
 		try {
 			await deleteFriend(id);
 		} catch (error) {
