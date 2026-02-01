@@ -23,6 +23,7 @@ export function useFriendsWithStatus(userId?: number) {
 				if (!isConnected) {
 					status = 'offline';
 				} else {
+					// TODO implement busy logic here
 					status = onlineUsers.some((u) => String(u.id) === String(friend.id))
 						? 'online'
 						: 'offline';
