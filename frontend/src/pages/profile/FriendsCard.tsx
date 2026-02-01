@@ -1,54 +1,40 @@
+import GlobalAlert from '@/components/GlobalAlert';
 import { X } from '@/icons';
 import type { Friend } from '@/shared.types';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 interface FriendsCardProps {
 	friends: Friend[];
-	// onAddFriend: (username: string) => void;
 	onRemoveFriend: (id: number) => void;
 	onChallengeFriend: (id: number) => void;
 }
 
-export function FriendsCard({
-	friends,
-	// onAddFriend,
-	onRemoveFriend,
-	onChallengeFriend,
-}: FriendsCardProps) {
-	// const [searchQuery, setSearchQuery] = useState('');
+export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend }: FriendsCardProps) {
 	const navigate = useNavigate();
+	const [deleteFriendAlert, setDeleteFriendAlert] = useState<{
+		visible: boolean;
+		message: string;
+		type: string;
+		userId: number;
+	}>({ visible: false, message: '', type: '', userId: 0 });
 
-	// const handleAddFriend = () => {
-	// 	if (searchQuery.trim()) {
-	// 		// onAddFriend(searchQuery.trim());
-	// 		setSearchQuery('');
-	// 	}
-	// };
+	const onCloseAlert = () => {
+		setDeleteFriendAlert({ ...deleteFriendAlert, visible: false });
+	};
+
+	const onAcceptRemoveFriend = (userId: number) => {
+		onRemoveFriend(userId);
+		setDeleteFriendAlert({ ...deleteFriendAlert, visible: false });
+	};
+
+	const onDeclineRemoveFriend = () => {
+		onCloseAlert();
+	};
 
 	return (
 		<div className='border-border bg-surface max-h-[436px] overflow-y-auto rounded-2xl border p-8'>
 			<h2 className='mb-6 text-(--color-accent-pink)'>Friends</h2>
-
-			{/* Add Friend
-			<div className='mb-6 flex gap-2'>
-				<div className='relative flex-1'>
-					<Search className='text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
-					<input
-						value={searchQuery}
-						onChange={(e) => setSearchQuery(e.target.value)}
-						onKeyDown={(e) => e.key === 'Enter' && handleAddFriend()}
-						placeholder='Search username...'
-						className='border-border bg-elevated w-full rounded-md p-1 pl-10 text-(--color-text-primary) focus:border-(--color-accent-pink)'
-					/>
-				</div>
-				<button
-					type='button'
-					onClick={handleAddFriend}
-					className='bg-accent-blue hover:bg-accent-blue/90 rounded-md p-2 text-white'
-				>
-					<UserPlus className='h-4 w-4' />
-				</button>
-			</div> */}
 
 			<div className='mb-6 flex'>
 				{friends.length === 0 ? (
@@ -119,11 +105,30 @@ export function FriendsCard({
 							{/* Remove Button */}
 							<button
 								type='button'
-								onClick={() => onRemoveFriend(friend.id)}
+								onClick={() =>
+									setDeleteFriendAlert({
+										visible: true,
+										message: `Are you sure you want to remove ${friend.username} from your friends?`,
+										type: 'remove',
+										userId: friend.id,
+									})
+								}
 								className='text-text-muted hover:bg-accent-pink/10 hover:text-accent-pink rounded-md border-0 p-1'
 							>
 								<X className='h-4 w-4' />
 							</button>
+							<GlobalAlert
+								message={deleteFriendAlert.message}
+								visible={deleteFriendAlert.visible}
+								type={deleteFriendAlert.type}
+								acceptText='Yes'
+								declineText='No'
+								onClose={() =>
+									setDeleteFriendAlert({ ...deleteFriendAlert, visible: false })
+								}
+								onAccept={() => onAcceptRemoveFriend(deleteFriendAlert.userId)}
+								onDecline={onDeclineRemoveFriend}
+							/>
 						</div>
 					))}
 			</div>
