@@ -94,16 +94,7 @@ services:
       database:
         condition: service_healthy
     env_file:
-      - .env
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/user_db
-      JWT_SECRET: ${JWT_SECRET}
-      COOKIE_SECRET: ${COOKIE_SECRET}
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
+      - ./services/user-service/.env
     volumes:
       - ./services/user-service/uploads:/app/uploads
     healthcheck:
