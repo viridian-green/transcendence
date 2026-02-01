@@ -7,15 +7,22 @@ export function useFriends(userId?: string | number) {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const cleanupFns = useRef<(() => void)[]>([]);
+	const avatarUrls = useRef<Map<number, string>>(new Map());
 
 	const fetchAvatar = async (user: User) => {
 		let objectURL: string | null = null;
+		// Revoke previous avatar URL if it exists
+		if (avatarUrls.current.has(user.id)) {
+			URL.revokeObjectURL(avatarUrls.current.get(user.id)!);
+			avatarUrls.current.delete(user.id);
+		}
 
 		// Use timestamp to force refresh and prevent caching
 		await getAvatar(user.avatar ?? 'default.png', Date.now().toString())
 			.then((url) => {
 				objectURL = url;
 				user.avatar = url;
+				avatarUrls.current.set(user.id, url);
 				cleanupFns.current.push(() => URL.revokeObjectURL(objectURL!));
 			})
 			.catch(() => {});

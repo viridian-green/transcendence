@@ -6,23 +6,25 @@ export function useFriendProfile(userId?: string | number) {
 	const [friend, setFriend] = useState<User | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const cleanupFns = useRef<(() => void)[]>([]);
+	const avatarUrlRef = useRef<string | null>(null);
 
 	const fetchAvatar = async (user: User) => {
-		let objectURL: string | null = null;
+		// Revoke previous avatar URL if it exists
+		if (avatarUrlRef.current) {
+			URL.revokeObjectURL(avatarUrlRef.current);
+		}
 
 		// Use timestamp to force refresh and prevent caching
-		await getAvatar(user.avatar ?? 'default.png', Date.now().toString())
-			.then((url) => {
-				objectURL = url;
-				user.avatar = url;
-				cleanupFns.current.push(() => URL.revokeObjectURL(objectURL!));
-			})
-			.catch(() => {});
+		try {
+			const url = await getAvatar(user.avatar ?? 'default.png', Date.now().toString());
+			avatarUrlRef.current = url;
+			user.avatar = url;
+		} catch {
+			// silently ignore avatar fetch errors
+		}
 	};
 
 	useEffect(() => {
-		const cleanupFnsArray: (() => void)[] = cleanupFns.current;
 		if (!userId) {
 			setFriend(null);
 			setLoading(false);
@@ -56,7 +58,10 @@ export function useFriendProfile(userId?: string | number) {
 		fetchFriend();
 
 		return () => {
-			cleanupFnsArray.forEach((fn) => fn());
+			if (avatarUrlRef.current) {
+				URL.revokeObjectURL(avatarUrlRef.current);
+				avatarUrlRef.current = null;
+			}
 		};
 	}, [userId]);
 

@@ -100,7 +100,7 @@ button:active {
 }
 
 .color-busy {
-	color: var(--color-accent-amber);
+	color: var(--color-status-busy);
 }
 
 .color-muted {
