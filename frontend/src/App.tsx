@@ -151,7 +151,14 @@ function App() {
 						<Route path='/terms-of-service' element={<TermsOfService />} />
 						{/* Keep here the test routes without login, TODO: remove when releasing */}
 						{/* Keep catchall (*) at the bottom */}
-						<Route path='*' element={<NotFound />} />
+						<Route
+							path='*'
+							element={
+								<ProtectedRoute>
+									<NotFound />
+								</ProtectedRoute>
+							}
+						/>
 					</Routes>
 				</Suspense>
 			</main>
