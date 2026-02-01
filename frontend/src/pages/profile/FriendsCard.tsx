@@ -1,6 +1,5 @@
-import { Search, UserPlus, X } from '@/icons';
+import { X } from '@/icons';
 import type { Friend } from '@/shared.types';
-import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 interface FriendsCardProps {
@@ -16,21 +15,21 @@ export function FriendsCard({
 	onRemoveFriend,
 	onChallengeFriend,
 }: FriendsCardProps) {
-	const [searchQuery, setSearchQuery] = useState('');
+	// const [searchQuery, setSearchQuery] = useState('');
 	const navigate = useNavigate();
 
-	const handleAddFriend = () => {
-		if (searchQuery.trim()) {
-			// onAddFriend(searchQuery.trim());
-			setSearchQuery('');
-		}
-	};
+	// const handleAddFriend = () => {
+	// 	if (searchQuery.trim()) {
+	// 		// onAddFriend(searchQuery.trim());
+	// 		setSearchQuery('');
+	// 	}
+	// };
 
 	return (
 		<div className='border-border bg-surface max-h-[436px] overflow-y-auto rounded-2xl border p-8'>
 			<h2 className='mb-6 text-(--color-accent-pink)'>Friends</h2>
 
-			{/* Add Friend */}
+			{/* Add Friend
 			<div className='mb-6 flex gap-2'>
 				<div className='relative flex-1'>
 					<Search className='text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
@@ -49,15 +48,23 @@ export function FriendsCard({
 				>
 					<UserPlus className='h-4 w-4' />
 				</button>
+			</div> */}
+
+			<div className='mb-6 flex'>
+				{friends.length === 0 ? (
+					<p className='text-text-muted text-center'>
+						No friends yet. Add some friends via the Chat to get started!
+					</p>
+				) : (
+					<p className='text-text-muted text-center'>
+						Add more friends via the Chat to be able to challenge them!
+					</p>
+				)}
 			</div>
 
 			{/* Friends List */}
 			<div className='space-y-3'>
-				{friends.length === 0 ? (
-					<p className='text-text-muted py-8 text-center'>
-						No friends yet. Add some friends via the Chat to get started!
-					</p>
-				) : (
+				{friends.length !== 0 &&
 					friends.map((friend) => (
 						<div
 							key={friend.id}
@@ -118,8 +125,7 @@ export function FriendsCard({
 								<X className='h-4 w-4' />
 							</button>
 						</div>
-					))
-				)}
+					))}
 			</div>
 		</div>
 	);
