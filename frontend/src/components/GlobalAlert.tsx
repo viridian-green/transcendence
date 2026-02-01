@@ -35,7 +35,7 @@ const GlobalAlert = ({
 	}
 
 	return (
-		<div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50'>
+		<div className='fixed inset-0 z-50 z-1000 flex items-center justify-center bg-black/50'>
 			<div className='bg-surface max-w-[90vw] min-w-[320px] rounded-lg p-6 shadow-lg'>
 				<p className='mb-4 text-center text-lg font-semibold'>{message}</p>
 				<div className='mt-4 flex w-full justify-center gap-2'>
