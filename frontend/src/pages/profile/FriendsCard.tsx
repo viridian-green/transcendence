@@ -75,7 +75,7 @@ export function FriendsCard({
 								<button
 									className='border-border h-12 w-12 overflow-hidden rounded-full border-2 bg-(--color-bg) hover:cursor-pointer'
 									onClick={() => {
-										navigate(`/profile/${friend.id}/${friend.username}`);
+										navigate(`/profile/${friend.id}`);
 									}}
 								>
 									<img
