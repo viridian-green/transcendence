@@ -18,6 +18,9 @@ const UsersListTab = ({
 	onUserClick,
 	currentUserId,
 }: UsersListTabProps) => {
+	if (!currentUserId) {
+		return <div>Please log in to see online users.</div>;
+	}
 	return (
 		<UsersList
 			users={users}
