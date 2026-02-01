@@ -23,10 +23,6 @@ const Remote = () => {
 	useEffect(() => {
 		if (!lastRawMessage) return;
 
-		console.log('[REMOTE] raw WS message', lastRawMessage);
-
-		console.log('[REMOTE] friends:', JSON.stringify(friends, null, 2));
-
 		if (lastRawMessage.type === 'INVITE_RECEIVED') {
 			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setIncomingInvite({
@@ -51,20 +47,13 @@ const Remote = () => {
 				},
 			});
 		}
-	}, [lastRawMessage]);
+	}, [lastRawMessage, navigate]);
 
 	const handleChallenge = (friend: Friend) => {
 		if (friend.status !== 'online') return;
 		if (!isConnected) {
-			console.warn('[REMOTE] cannot send INVITE, socket not connected');
 			return;
 		}
-
-		console.log('[REMOTE] sending INVITE', {
-			type: 'INVITE',
-			toUserId: friend.id,
-			gameMode: 'pong',
-		});
 
 		send({
 			type: 'INVITE',
