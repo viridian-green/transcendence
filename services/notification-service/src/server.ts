@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import websocket from "@fastify/websocket";
 import NotificationsRoute from "./routes/notifications.js";
+import "./redis/index.js"; // Initialize Redis subscriber
 
 const fastify = Fastify({
   logger: true,
