@@ -5,6 +5,7 @@ export function useNotificationSocket(enabled: boolean) {
   const [messages, setMessages] = useState<ChatRenderMessage[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [lastRawMessage, setLastRawMessage] = useState<any | null>(null);
+  const [friendRequests, setFriendRequests] = useState<any[]>([]);
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
@@ -49,6 +50,16 @@ export function useNotificationSocket(enabled: boolean) {
         switch (data.type) {
           case 'welcome':
             console.log('[NOTIFICATION SOCKET]', data.message);
+            break;
+
+        case 'FRIEND_INVITE_RECEIVED':
+            console.log('[NOTIFICATION SOCKET] Friend invite received from', data.fromUsername);
+            setFriendRequests(prev => [...prev, {
+                fromUserId: data.fromUserId,
+                fromUsername: data.fromUsername,
+                timestamp: Date.now()
+            }]);
+            // You can also trigger a toast/notification UI here
             break;
 
         }
