@@ -23,6 +23,7 @@ import {
 import DropdownMenuAvatar from './components/DropdownMenuAvatar';
 import ChatWidget from './components/chat/ChatWidget';
 import { useAuth } from './hooks/useAuth';
+import OthersProfile from './pages/profile/OthersProfile';
 
 function App() {
 	const { isLoggedIn, isLoading } = useAuth();
@@ -127,6 +128,14 @@ function App() {
 							element={
 								<ProtectedRoute>
 									<Profile />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path='/profile/:userId'
+							element={
+								<ProtectedRoute>
+									<OthersProfile />
 								</ProtectedRoute>
 							}
 						/>

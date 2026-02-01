@@ -1,61 +1,56 @@
-import { Search, UserPlus, X } from '@/icons';
+import GlobalAlert from '@/components/GlobalAlert';
+import { X } from '@/icons';
 import type { Friend } from '@/shared.types';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 
 interface FriendsCardProps {
 	friends: Friend[];
-	onAddFriend: (username: string) => void;
 	onRemoveFriend: (id: number) => void;
 	onChallengeFriend: (id: number) => void;
 }
 
-export function FriendsCard({
-	friends,
-	onAddFriend,
-	onRemoveFriend,
-	onChallengeFriend,
-}: FriendsCardProps) {
-	const [searchQuery, setSearchQuery] = useState('');
+export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend }: FriendsCardProps) {
+	const navigate = useNavigate();
+	const [deleteFriendAlert, setDeleteFriendAlert] = useState<{
+		visible: boolean;
+		message: string;
+		type: string;
+		userId: number;
+	}>({ visible: false, message: '', type: '', userId: 0 });
 
-	const handleAddFriend = () => {
-		if (searchQuery.trim()) {
-			onAddFriend(searchQuery.trim());
-			setSearchQuery('');
-		}
+	const onCloseAlert = () => {
+		setDeleteFriendAlert({ ...deleteFriendAlert, visible: false });
+	};
+
+	const onAcceptRemoveFriend = (userId: number) => {
+		onRemoveFriend(userId);
+		setDeleteFriendAlert({ ...deleteFriendAlert, visible: false });
+	};
+
+	const onDeclineRemoveFriend = () => {
+		onCloseAlert();
 	};
 
 	return (
 		<div className='border-border bg-surface max-h-[436px] overflow-y-auto rounded-2xl border p-8'>
 			<h2 className='mb-6 text-(--color-accent-pink)'>Friends</h2>
 
-			{/* Add Friend */}
-			<div className='mb-6 flex gap-2'>
-				<div className='relative flex-1'>
-					<Search className='text-text-muted absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2' />
-					<input
-						value={searchQuery}
-						onChange={(e) => setSearchQuery(e.target.value)}
-						onKeyDown={(e) => e.key === 'Enter' && handleAddFriend()}
-						placeholder='Search username...'
-						className='border-border bg-elevated w-full rounded-md p-1 pl-10 text-(--color-text-primary) focus:border-(--color-accent-pink)'
-					/>
-				</div>
-				<button
-					type='button'
-					onClick={handleAddFriend}
-					className='bg-accent-blue hover:bg-accent-blue/90 rounded-md p-2 text-white'
-				>
-					<UserPlus className='h-4 w-4' />
-				</button>
+			<div className='mb-6 flex'>
+				{friends.length === 0 ? (
+					<p className='text-text-muted text-center'>
+						No friends yet. Add some friends via the Chat to get started!
+					</p>
+				) : (
+					<p className='text-text-muted text-center'>
+						Add more friends via the Chat to be able to challenge them!
+					</p>
+				)}
 			</div>
 
 			{/* Friends List */}
 			<div className='space-y-3'>
-				{friends.length === 0 ? (
-					<p className='text-text-muted py-8 text-center'>
-						No friends yet. Add some friends to get started!
-					</p>
-				) : (
+				{friends.length !== 0 &&
 					friends.map((friend) => (
 						<div
 							key={friend.id}
@@ -63,50 +58,79 @@ export function FriendsCard({
 						>
 							{/* Avatar with Status */}
 							<div className='relative'>
-								<div className='border-border h-12 w-12 overflow-hidden rounded-full border-2 bg-(--color-bg)'>
+								<button
+									className='border-border h-12 w-12 overflow-hidden rounded-full border-2 bg-(--color-bg) hover:cursor-pointer'
+									onClick={() => {
+										navigate(`/profile/${friend.id}`);
+									}}
+								>
 									<img
 										src={friend.avatar}
 										alt={friend.username}
 										className='h-full w-full object-cover'
 									/>
-								</div>
+								</button>
 								{/* Status Indicator */}
-								<div
-									className={`border-elevated absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2 ${
-										friend.status === 'online'
-											? 'bg-status-online'
-											: 'bg-text-muted'
-									}`}
-								/>
+								{friend.status === 'online' && (
+									<div className='border-elevated bg-status-online absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2' />
+								)}
+								{friend.status === 'busy' && (
+									<div className='border-elevated bg-status-busy absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2' />
+								)}
+								{friend.status === 'offline' && (
+									<div className='border-elevated bg-text-muted absolute right-0 bottom-0 h-3.5 w-3.5 rounded-full border-2' />
+								)}
 							</div>
 
 							{/* Username */}
 							<div className='flex-1'>
 								<p className='text-(--color-text-primary)'>{friend.username}</p>
 								<p className='text-text-muted'>
-									{friend.status === 'online' ? 'Online' : 'Offline'}
+									{friend.status === 'online' && 'Online'}
+									{friend.status === 'busy' && 'Busy'}
+									{friend.status === 'offline' && 'Offline'}
 								</p>
 							</div>
 							{/* Challenge Button */}
-							<button
-								type='button'
-								onClick={() => onChallengeFriend(friend.id)}
-								className='text-text-muted hover:bg-accent-pink/10 hover:text-accent-pink rounded-md border-0 p-1'
-							>
-								Challenge
-							</button>
+							{friend.status === 'online' && (
+								<button
+									type='button'
+									onClick={() => onChallengeFriend(friend.id)}
+									className='text-text-muted hover:bg-accent-pink/10 hover:text-accent-pink rounded-md border-0 p-1'
+								>
+									Challenge
+								</button>
+							)}
 
 							{/* Remove Button */}
 							<button
 								type='button'
-								onClick={() => onRemoveFriend(friend.id)}
+								onClick={() =>
+									setDeleteFriendAlert({
+										visible: true,
+										message: `Are you sure you want to remove ${friend.username} from your friends?`,
+										type: 'remove',
+										userId: friend.id,
+									})
+								}
 								className='text-text-muted hover:bg-accent-pink/10 hover:text-accent-pink rounded-md border-0 p-1'
 							>
 								<X className='h-4 w-4' />
 							</button>
+							<GlobalAlert
+								message={deleteFriendAlert.message}
+								visible={deleteFriendAlert.visible}
+								type={deleteFriendAlert.type}
+								acceptText='Yes'
+								declineText='No'
+								onClose={() =>
+									setDeleteFriendAlert({ ...deleteFriendAlert, visible: false })
+								}
+								onAccept={() => onAcceptRemoveFriend(deleteFriendAlert.userId)}
+								onDecline={onDeclineRemoveFriend}
+							/>
 						</div>
-					))
-				)}
+					))}
 			</div>
 		</div>
 	);
