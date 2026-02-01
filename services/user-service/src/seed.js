@@ -26,15 +26,18 @@ async function seed() {
       user.password = await bcrypt.hash(user.password, 10);
     }
 
-	await client.query(`
-  ALTER TABLE users
-  ADD CONSTRAINT IF NOT EXISTS unique_email UNIQUE (email)
-`);
+	try {
+  		await pool.query(`ALTER TABLE users ADD CONSTRAINT unique_email UNIQUE (email)`);
+	} catch (err) {
+	  // Constraint already exists, ignore
+	}
 
-await client.query(`
-  ALTER TABLE friends
-  ADD CONSTRAINT IF NOT EXISTS unique_friends_pair UNIQUE (user_one, user_two)
-`);
+	try {
+	  await pool.query(`ALTER TABLE friends ADD CONSTRAINT unique_friends_pair UNIQUE (user_one, user_two)`);
+	} catch (err) {
+	  // Constraint already exists, ignore
+	}
+
     // Insert users
     for (const user of users) {
       await pool.query(
