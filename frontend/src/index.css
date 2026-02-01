@@ -58,6 +58,7 @@
 
 	--color-status-online: #4ade80; /* #00FF85 */
 	--color-status-offline: #ef4444; /* red-500 */
+	--color-status-busy: #fbbf24; /* amber */
 }
 
 body {
@@ -96,6 +97,10 @@ button:active {
 
 .color-offline {
 	color: var(--color-status-offline);
+}
+
+.color-busy {
+	color: var(--color-status-busy);
 }
 
 .color-muted {

@@ -1,5 +1,5 @@
 import { Avatar, Card, CardTitle } from '@/components';
-import type { UserProfile } from '@/shared.types';
+import type { User as UserProfile } from '@/shared.types';
 
 interface ProfileCardProps {
 	profile: UserProfile;
@@ -26,7 +26,7 @@ export function ProfileCard({ profile, avatar }: ProfileCardProps) {
 				{/* Username */}
 				<div className='flex flex-col'>
 					<label className='text-text-muted'>Username</label>
-					<p className='text-text'>{profile.username}</p>
+					<p className='font-retro color-brand text-sm'>{profile.username}</p>
 				</div>
 
 				{/* Email */}

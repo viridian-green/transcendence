@@ -14,10 +14,8 @@ const redisSubscriber = new Redis({
 // Attach the  message handler ONCE
 export function setupSubscribers(io?: any) {
   redisSubscriber.on("message", (channel: string, message: string) => {
-    if (channel === "presence:updates" && io) {
-      io.emit("onlineUsersUpdated");
-    } else if (channel === "chat:general") {
-      wsByUserId.forEach((ws, userId) => {
+    if (channel === "chat:general") {
+        wsByUserId.forEach((ws, userId) => {
         if (ws.readyState === ws.OPEN)
           ws.send(message);
       });

@@ -35,7 +35,7 @@ const ProfileCard = () => {
 
 	return (
 		<div
-			className='text-text-secondary border-border bg-surface absolute top-14 right-0 flex min-w-36 flex-col gap-2 rounded-lg border p-4 whitespace-nowrap shadow-sm'
+			className='text-text-secondary bg-surface absolute top-14 right-0 flex min-w-36 flex-col gap-2 rounded-lg p-4 whitespace-nowrap shadow-lg'
 			id='profile-menu'
 			role='menu'
 			aria-label='User account menu'

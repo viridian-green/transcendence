@@ -8,7 +8,7 @@ import {
 	Game,
 	Landing,
 	Login,
-    Remote,
+	Remote,
 	Registration,
 	ProtectedRoute,
 	PublicOnlyRoute,
@@ -22,9 +22,9 @@ import {
 } from '@pages/index';
 import DropdownMenuAvatar from './components/DropdownMenuAvatar';
 import ChatWidget from './components/chat/ChatWidget';
-import GlobalAlert from './components/GlobalAlert';
 import NotificationManager from './components/NotificationManager';
 import { useAuth } from './hooks/useAuth';
+import OthersProfile from './pages/profile/OthersProfile';
 
 function App() {
 	const { isLoggedIn, isLoading } = useAuth();
@@ -35,9 +35,9 @@ function App() {
 	}
 
 	return (
-		<div className='flex min-h-screen flex-col'>
+		<div className='flex min-h-screen min-w-sm flex-col'>
 			{isLoggedIn && (
-				<nav className='bg-surface border-border sticky top-0 z-50 flex h-16 items-center justify-between border-b px-6'>
+				<nav className='bg-surface border-border sticky top-0 z-50 flex h-16 items-center justify-between border-b px-4 sm:px-6'>
 					<button
 						className='font-retro text-accent-pink no-scale text-xl leading-none'
 						onClick={() => (window.location.href = '/home')}
@@ -76,7 +76,7 @@ function App() {
 								</PublicOnlyRoute>
 							}
 						/>
-                                                <Route
+						<Route
 							path='/remote'
 							element={
 								<ProtectedRoute>
@@ -129,6 +129,14 @@ function App() {
 							element={
 								<ProtectedRoute>
 									<Profile />
+								</ProtectedRoute>
+							}
+						/>
+						<Route
+							path='/profile/:userId'
+							element={
+								<ProtectedRoute>
+									<OthersProfile />
 								</ProtectedRoute>
 							}
 						/>

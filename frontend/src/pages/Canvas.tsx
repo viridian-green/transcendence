@@ -87,7 +87,12 @@ const Canvas = ({ gameState }: CanvasProps) => {
 		draw();
 	}, [gameState]);
 
-	return <canvas ref={canvasRef} className='border-border rounded-xl border-6 shadow-lg' />;
+	return (
+		<canvas
+			ref={canvasRef}
+			className='border-border h-auto w-full max-w-full rounded-xl border-6 shadow-lg'
+		/>
+	);
 };
 
 export default Canvas;

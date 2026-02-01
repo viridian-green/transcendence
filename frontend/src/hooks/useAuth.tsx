@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import type { User } from '@/shared.types';
 import { loginSessionStorageKey } from '@/const';
 import { authErroMapper } from '@/pages/auth/utils';
+import { getAvatar } from './useAvatar';
 
 interface AuthContextType {
 	user: User | null;
@@ -16,19 +17,6 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const getAvatar = async (fileName: string) => {
-	const res = await fetch(`/api/avatars/${fileName}`, {
-		method: 'GET',
-		credentials: 'include',
-	});
-	if (!res.ok) {
-		const err = await res.json();
-		throw new Error(err.error || 'Failed to fetch avatar');
-	}
-	const avatar = await res.blob();
-	return URL.createObjectURL(avatar);
-};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const [user, setUser] = useState<User | null>(null);
@@ -49,7 +37,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 		let active = true;
 
-		getAvatar(user.avatar)
+		// Use timestamp to force refresh and prevent caching
+		getAvatar(user.avatar, Date.now().toString())
 			.then((url) => {
 				objectURL = url;
 				if (active) setAvatarUrl(url);
@@ -73,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			});
 
 			// NOT logged in → normal state
-			if (response.status === 401) {
+			if (response.status === 401 || response.status === 419) {
 				setUser(null);
 				setIsLoggedIn(false);
 				return;

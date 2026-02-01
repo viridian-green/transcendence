@@ -1,5 +1,5 @@
 import { Toast, type ToastType } from '@components/index';
-import type { UserProfile } from '@/shared.types';
+import type { User as UserProfile } from '@/shared.types';
 import { useState } from 'react';
 import { ProfileSettingsCard } from './ProfileSettingsCard';
 import { ChangePasswordCard } from './ChangePasswordCard';
@@ -32,9 +32,12 @@ const ProfileSettings = () => {
 				username: user.username,
 				email: user.email,
 				bio: user.bio || '',
+				avatar: user.avatar, // Update avatar in profile state
 			});
 			if (avatarFile) {
-				await updateAvatar(avatarFile);
+				const newAvatar = await updateAvatar(avatarFile);
+				// Update profile state with new avatar filename
+				setProfile((prev) => ({ ...prev, avatar: newAvatar }));
 			}
 			setToast({ show: true, message: 'Profile updated successfully!', type: 'success' });
 		} catch {

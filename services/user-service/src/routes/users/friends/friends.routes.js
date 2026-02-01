@@ -42,6 +42,16 @@ export default async function friendsRoute(app) {
         });
     })
 
+    // Get friends list for a specific user
+    // GET /friends/:id
+    app.get('/:id', { preHandler: app.authenticate }, async (req, reply) => {
+        const targetUserId = Number(req.params.id);
+        await ensureUserExists(app, targetUserId);
+        const friendsMap = await getFriendsList(app, targetUserId);
+        const friends = Array.from(friendsMap.values());
+        return reply.code(200).send(friends);
+    })
+
     // Add friend
     // POST /friends/:id
     app.post('/:id', { preHandler: app.authenticate }, async (req, reply) => {

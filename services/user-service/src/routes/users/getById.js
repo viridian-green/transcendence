@@ -1,9 +1,11 @@
 import { getUsernamesByIds } from "../../services/user.service.js";
+import { getUserById } from "../../services/user.service.js";
 
 export default async function getByIdRoute(app) {
-    app.get('/:id', async (req, reply) => {
+    app.get('/:id',{ preHandler: app.authenticate }, async (req, reply) => {
         const { id } = req.params;
-        reply.send({ message: `Get user ${id}` });
+		const user = await getUserById(app, id);
+		return reply.send({ user });
     });
 
     app.get('/', async (req, reply) => {
