@@ -8,7 +8,8 @@ import routes from './routes/index.js';
 dotenv.config();
 
 const app = Fastify({
-    logger: true
+    logger: true,
+    pluginTimeout: 30000 // 30 seconds - allows time for database connection retries
 });
 
 app.register(plugins);

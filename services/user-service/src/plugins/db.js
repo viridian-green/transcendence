@@ -4,9 +4,16 @@ import Postgrator from 'postgrator'
 import path from 'path'
 
 async function dbConnector(app, options) {
-  // REGISTER THE DATABASE
+    const connectionString = process.env.DATABASE_URL
+
+    if (!connectionString) {
+        throw new Error('DATABASE_URL environment variable is required')
+    }
+
+    // REGISTER THE DATABASE
     app.register(fastifyPostgres, {
-        connectionString: process.env.DATABASE_URL
+        connectionString: connectionString,
+
     })
 
     app.addHook('onReady', async () => {
