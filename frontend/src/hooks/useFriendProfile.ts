@@ -9,6 +9,7 @@ export function useFriendProfile(userId?: string | number) {
 	const avatarUrlRef = useRef<string | null>(null);
 
 	const fetchAvatar = async (user: User) => {
+		if (!user) return;
 		// Revoke previous avatar URL if it exists
 		if (avatarUrlRef.current) {
 			URL.revokeObjectURL(avatarUrlRef.current);
