@@ -4,8 +4,12 @@ import { useFetchOnlineUsers } from './useFetchOnlineUsers';
 import type { Friend } from '@/shared.types';
 
 export function useFriendsWithStatus(userId?: number) {
-	const { friends, error: friendsError } = useFriends(userId);
-	const { users: onlineUsers, error: onlineUsersError } = useFetchOnlineUsers(String(userId));
+	const { friends, error: friendsError, loading: friendsLoading } = useFriends(userId);
+	const {
+		users: onlineUsers,
+		error: onlineUsersError,
+		loading: onlineUsersLoading,
+	} = useFetchOnlineUsers(String(userId));
 
 	console.log('[ONLINE USERS] friends:', JSON.stringify(friends, null, 2));
 
@@ -22,5 +26,9 @@ export function useFriendsWithStatus(userId?: number) {
 
 	console.log('[FETCHING FRIENDS] friends:', JSON.stringify(friends, null, 2));
 
-	return { friends: friendsWithStatus, loading: false, error: friendsError || onlineUsersError };
+	return {
+		friends: friendsWithStatus,
+		loading: friendsLoading || onlineUsersLoading,
+		error: friendsError || onlineUsersError,
+	};
 }

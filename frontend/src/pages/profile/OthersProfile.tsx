@@ -5,9 +5,12 @@ import { useParams } from 'react-router-dom';
 import NotFound from '../NotFound';
 import Loading from '../Loading';
 import { OthersFriendsCard } from './OthersFriendsCard';
+import { useAuth } from '@/hooks/useAuth';
+import Profile from './Profile';
 
 const OthersProfile = () => {
 	const friendId = useParams().userId;
+	const { user } = useAuth();
 	const { friend, loading: friendLoading, error: friendError } = useFriendProfile(friendId);
 	const { friends, loading: friendsWithStatusLoading } = useFriendsWithStatus(Number(friendId));
 
@@ -19,6 +22,9 @@ const OthersProfile = () => {
 	}
 	if (!friend) {
 		return null;
+	}
+	if (String(friend.id) === String(user?.id)) {
+		return <Profile />;
 	}
 
 	return (

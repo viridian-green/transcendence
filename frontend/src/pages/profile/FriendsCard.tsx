@@ -19,17 +19,9 @@ export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend }: Frie
 		userId: number;
 	}>({ visible: false, message: '', type: '', userId: 0 });
 
-	const onCloseAlert = () => {
-		setDeleteFriendAlert({ ...deleteFriendAlert, visible: false });
-	};
-
 	const onAcceptRemoveFriend = (userId: number) => {
 		onRemoveFriend(userId);
 		setDeleteFriendAlert({ ...deleteFriendAlert, visible: false });
-	};
-
-	const onDeclineRemoveFriend = () => {
-		onCloseAlert();
 	};
 
 	return (
@@ -117,21 +109,19 @@ export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend }: Frie
 							>
 								<X className='h-4 w-4' />
 							</button>
-							<GlobalAlert
-								message={deleteFriendAlert.message}
-								visible={deleteFriendAlert.visible}
-								type={deleteFriendAlert.type}
-								acceptText='Yes'
-								declineText='No'
-								onClose={() =>
-									setDeleteFriendAlert({ ...deleteFriendAlert, visible: false })
-								}
-								onAccept={() => onAcceptRemoveFriend(deleteFriendAlert.userId)}
-								onDecline={onDeclineRemoveFriend}
-							/>
 						</div>
 					))}
 			</div>
+			<GlobalAlert
+				message={deleteFriendAlert.message}
+				visible={deleteFriendAlert.visible}
+				type={deleteFriendAlert.type}
+				acceptText='Yes'
+				declineText='No'
+				onClose={() => setDeleteFriendAlert({ ...deleteFriendAlert, visible: false })}
+				onDecline={() => setDeleteFriendAlert({ ...deleteFriendAlert, visible: false })}
+				onAccept={() => onAcceptRemoveFriend(deleteFriendAlert.userId)}
+			/>
 		</div>
 	);
 }

@@ -15,7 +15,7 @@ type InvitePopupState = {
 const Remote = () => {
 	const navigate = useNavigate();
 	const { user } = useAuth();
-	const { friends } = useFriendsWithStatus(user?.id);
+	const { friends, loading: friendsLoading } = useFriendsWithStatus(user?.id);
 	const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
 	const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
 	const { send, lastRawMessage, isConnected } = useNotificationSocket(true);
@@ -84,7 +84,9 @@ const Remote = () => {
 		<div className='flex flex-1 flex-col items-center justify-center gap-6 p-4'>
 			<h1 className='text-accent-pink font-retro text-4xl font-bold'>Remote</h1>
 
-			{friends.length === 0 ? (
+			{friendsLoading ? (
+				<p className='text-text-muted py-8 text-center'>Loading friends...</p>
+			) : friends.length === 0 ? (
 				<p className='text-text-muted py-8 text-center'>
 					No friends yet. Add some friends via the Chat to get started!
 				</p>
@@ -115,17 +117,18 @@ const Remote = () => {
 								<span
 									className={`ml-4 h-3 w-3 rounded-full ${
 										friend.status === 'online'
-											? '#4ade80'
+											? 'bg-status-online'
 											: friend.status === 'busy'
-												? '#fbbf24'
-												: '#ef4444'
+												? 'bg-status-busy'
+												: 'bg-text-muted'
 									}`}
 								/>
 							</button>
 
 							<PinkButton
 								text='Challenge'
-								className={`text-accent-pink ml-4 ${friend.status !== 'online' || !isConnected ? 'opacity-50' : ''}`}
+								className={`text-accent-pink ml-4 ${friend.status !== 'online' || !isConnected ? 'no-scale opacity-50' : ''}`}
+								disabled={friend.status !== 'online' || !isConnected}
 								onClick={() => handleChallenge(friend)}
 							/>
 						</div>

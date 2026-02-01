@@ -25,7 +25,7 @@ export function ProfileCard({ profile, avatar }: ProfileCardProps) {
 
 				{/* Username */}
 				<div className='flex flex-col'>
-					{/* <label className='text-text-muted'>Username</label> */}
+					<label className='text-text-muted'>Username</label>
 					<p className='font-retro color-brand text-sm'>{profile.username}</p>
 				</div>
 

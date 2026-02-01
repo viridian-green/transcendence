@@ -57,7 +57,6 @@ const Profile = () => {
 					<ProfileCard profile={user} avatar={avatarUrl} />
 					<FriendsCard
 						friends={friends}
-						// onAddFriend={handleAddFriend}
 						onRemoveFriend={handleRemoveFriend}
 						onChallengeFriend={handleChallengeFriend}
 					/>
