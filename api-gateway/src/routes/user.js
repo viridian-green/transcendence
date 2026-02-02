@@ -18,7 +18,7 @@ async function userRoutes(fastify) {
   });
 
   fastify.register(httpProxy, {
-    upstream: `${protocol}://user:3003`,
+    upstream: `https://user:3003`,
     prefix: "/api/users",
     rewritePrefix: "/users",
     replyOptions: {
@@ -38,7 +38,7 @@ async function userRoutes(fastify) {
   });
 
     fastify.register(httpProxy, {
-        upstream: `${protocol}://user:3003`,
+        upstream: `https://user:3003`,
         prefix: "/api/avatars",
         rewritePrefix: "/avatars",
         replyOptions: {
