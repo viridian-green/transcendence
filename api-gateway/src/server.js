@@ -7,8 +7,6 @@ import fastifyStatic from '@fastify/static';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'node:url';
-import https from 'https';
-import http from 'http';
 
 import gameRoutes from "./routes/game.js";
 import authPlugin from "./plugins/auth.js";
@@ -21,28 +19,28 @@ import healthRoute from "./health.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// SSL configuration
-const sslEnabled = process.env.SSL_ENABLED !== 'false'; // Default to true
-let httpsOptions = null;
+// SSL configuration - HTTPS is mandatory
+const certPath = path.join(__dirname, '../ssl/api-gateway.crt');
+const keyPath = path.join(__dirname, '../ssl/api-gateway.key');
 
-if (sslEnabled) {
-    const certPath = path.join(__dirname, '../ssl/api-gateway.crt');
-    const keyPath = path.join(__dirname, '../ssl/api-gateway.key');
-
-    if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
-        httpsOptions = {
-            cert: fs.readFileSync(certPath),
-            key: fs.readFileSync(keyPath),
-        };
-        console.log('SSL enabled for API Gateway');
-    } else {
-        console.warn('SSL certificates not found, falling back to HTTP');
-    }
+if (!fs.existsSync(certPath) || !fs.existsSync(keyPath)) {
+    console.error('ERROR: SSL certificates are required but not found!');
+    console.error(`Certificate path: ${certPath}`);
+    console.error(`Key path: ${keyPath}`);
+    console.error('Please generate SSL certificates using: ./scripts/generate-ssl-certs.sh');
+    process.exit(1);
 }
+
+const httpsOptions = {
+    cert: fs.readFileSync(certPath),
+    key: fs.readFileSync(keyPath),
+};
+
+console.log('SSL enabled for API Gateway - HTTPS is mandatory');
 
 const fastify = Fastify({
     logger: true,
-    ...(httpsOptions ? { https: httpsOptions } : {})
+    https: httpsOptions
 });
 
 const start = async () => {
@@ -61,12 +59,11 @@ const start = async () => {
         await fastify.ready();
         console.log(fastify.printRoutes());
 
-        const protocol = httpsOptions ? 'https' : 'http';
         await fastify.listen({
             port: 3000,
             host: "0.0.0.0"
         });
-        console.log(`API Gateway running on ${protocol}://0.0.0.0:3000`);
+        console.log(`API Gateway running on https://0.0.0.0:3000`);
     } catch (error) {
         fastify.log.error(error);
         process.exit(1);

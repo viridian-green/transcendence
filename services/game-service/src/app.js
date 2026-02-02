@@ -11,28 +11,28 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// SSL configuration
-const sslEnabled = process.env.SSL_ENABLED !== 'false'; // Default to true
-let httpsOptions = null;
+// SSL configuration - HTTPS is mandatory
+const certPath = path.join(__dirname, '../ssl/game-service.crt');
+const keyPath = path.join(__dirname, '../ssl/game-service.key');
 
-if (sslEnabled) {
-    const certPath = path.join(__dirname, '../ssl/game-service.crt');
-    const keyPath = path.join(__dirname, '../ssl/game-service.key');
-
-    if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
-        httpsOptions = {
-            cert: fs.readFileSync(certPath),
-            key: fs.readFileSync(keyPath),
-        };
-        console.log('SSL enabled for Game Service');
-    } else {
-        console.warn('SSL certificates not found, falling back to HTTP');
-    }
+if (!fs.existsSync(certPath) || !fs.existsSync(keyPath)) {
+    console.error('ERROR: SSL certificates are required but not found!');
+    console.error(`Certificate path: ${certPath}`);
+    console.error(`Key path: ${keyPath}`);
+    console.error('Please generate SSL certificates using: ./scripts/generate-ssl-certs.sh');
+    process.exit(1);
 }
+
+const httpsOptions = {
+    cert: fs.readFileSync(certPath),
+    key: fs.readFileSync(keyPath),
+};
+
+console.log('SSL enabled for Game Service - HTTPS is mandatory');
 
 const app = Fastify({
     logger: true,
-    https: httpsOptions || undefined,
+    https: httpsOptions,
 });
 
 // const fastifyPostgres = require("@fastify/postgres");

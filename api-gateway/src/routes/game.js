@@ -3,12 +3,8 @@ import httpProxy from "@fastify/http-proxy";
 import Fastify from "fastify";
 
 async function gameRoutes(fastify, options) {
-  const sslEnabled = process.env.SSL_ENABLED !== 'false';
-  const protocol = sslEnabled ? 'https' : 'http';
-  const wsProtocol = sslEnabled ? 'wss' : 'ws';
-
   fastify.register(httpProxy, {
-    upstream: `${protocol}://game:3002`,
+    upstream: `https://game:3002`,
     prefix: "api/game",
     websocket: true,
     rewritePrefix: "",

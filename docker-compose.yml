@@ -71,7 +71,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/game_db
-      SSL_ENABLED: ${SSL_ENABLED:-true}
     volumes:
       - ./services/game-service/ssl:/app/ssl:ro
     ports:
@@ -90,7 +89,6 @@ services:
     env_file:
       - ./services/user-service/.env
     environment:
-      SSL_ENABLED: ${SSL_ENABLED:-true}
     volumes:
       - ./services/user-service/uploads:/app/uploads
       - ./services/user-service/ssl:/app/ssl:ro
@@ -115,7 +113,6 @@ services:
         condition: service_healthy
     env_file: ./services/chat-service/.env
     environment:
-      SSL_ENABLED: ${SSL_ENABLED:-true}
     volumes:
       - ./services/chat-service/ssl:/app/ssl:ro
     ports:
@@ -132,7 +129,6 @@ services:
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
       JWT_SECRET: ${JWT_SECRET}
-      SSL_ENABLED: ${SSL_ENABLED:-true}
     volumes:
       - ./services/presence-service/ssl:/app/ssl:ro
     depends_on:
@@ -150,7 +146,6 @@ services:
       dockerfile: Dockerfile
     environment:
       JWT_SECRET: ${JWT_SECRET}
-      SSL_ENABLED: ${SSL_ENABLED:-true}
     depends_on:
       database:
         condition: service_healthy
@@ -174,7 +169,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET}
-      SSL_ENABLED: ${SSL_ENABLED:-true}
       NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED:-0}
     ports:
       - "3000:3000"
