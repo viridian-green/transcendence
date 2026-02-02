@@ -1,5 +1,5 @@
 import { updateUserSchema } from "../schemas/auth.schema.js";
-import { ensureNotExistingUsername, ensureNotExistingEmail, hashPassword } from "./auth.service.js";
+import {hashPassword } from "./auth.service.js";
 
 export function parseUpdateUserBody(req) {
     const result = updateUserSchema.safeParse(req.body);
@@ -12,13 +12,38 @@ export function parseUpdateUserBody(req) {
     return result.data;
 }
 
+export async function ensureNotExistingUsername(app, username, userId) {
+    const { rows } = await app.pg.query(
+        "SELECT * FROM users WHERE username = $1 AND id != $2",
+        [username, userId]
+    );
+
+    if (rows.length > 0) {
+        const err = new Error('Username taken');
+        err.statusCode = 409;
+        throw err;
+    }
+}
+
+export async function ensureNotExistingEmail(app, email, userId) {
+    const { rows } = await app.pg.query(
+        "SELECT * FROM users WHERE email = $1 AND id != $2",
+        [email, userId]
+    );
+    if (rows.length > 0) {
+        const err = new Error('Email already registered');
+        err.statusCode = 409;
+        throw err;
+    }
+}
+
 export async function updateUser(app, userId, updateData) {
     if (updateData.username) {
-        await ensureNotExistingUsername(app, updateData.username);
+        await ensureNotExistingUsername(app, updateData.username, userId);
     }
 
     if (updateData.email) {
-        await ensureNotExistingEmail(app, updateData.email);
+        await ensureNotExistingEmail(app, updateData.email, userId);
     }
     if (updateData.password) {
         updateData.password = await hashPassword(updateData.password);
