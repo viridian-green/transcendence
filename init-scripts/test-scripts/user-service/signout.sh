@@ -32,7 +32,7 @@ assert_status() {
 
 UNIQ=$(printf "%04x" $RANDOM)
 
-curl -s -c "$COOKIE_JAR" \
+curl -k -s -c "$COOKIE_JAR" \
   -X POST "$API_URL/register" \
   -H "Content-Type: application/json" \
   -d "{
@@ -45,7 +45,7 @@ curl -s -c "$COOKIE_JAR" \
 # 2️⃣ Login (sets cookie)
 # -------------------------
 
-curl -s -b "$COOKIE_JAR" -c "$COOKIE_JAR" \
+curl -k -s -b "$COOKIE_JAR" -c "$COOKIE_JAR" \
   -X POST "$API_URL/login" \
   -H "Content-Type: application/json" \
   -d "{

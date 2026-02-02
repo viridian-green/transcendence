@@ -59,7 +59,7 @@ curl -k -s -X POST "$API_BASE/register" \
 
 #echo "▶ Logging in (saving cookie)"
 
-curl -k -s -c -b "$COOKIE_JAR" \
+curl -k -s -b "$COOKIE_JAR" -c "$COOKIE_JAR" \
   -X POST "$API_BASE/login" \
   -H "Content-Type: application/json" \
   -d "{
