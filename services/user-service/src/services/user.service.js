@@ -1,5 +1,5 @@
 import { updateUserSchema } from "../schemas/auth.schema.js";
-import { hashPassword } from "./auth.service.js";
+import { ensureNotExistingUsername, ensureNotExistingEmail, hashPassword } from "./auth.service.js";
 
 export function parseUpdateUserBody(req) {
     const result = updateUserSchema.safeParse(req.body);
@@ -13,6 +13,13 @@ export function parseUpdateUserBody(req) {
 }
 
 export async function updateUser(app, userId, updateData) {
+    if (updateData.username) {
+        await ensureNotExistingUsername(app, updateData.username);
+    }
+
+    if (updateData.email) {
+        await ensureNotExistingEmail(app, updateData.email);
+    }
     if (updateData.password) {
         updateData.password = await hashPassword(updateData.password);
     }
