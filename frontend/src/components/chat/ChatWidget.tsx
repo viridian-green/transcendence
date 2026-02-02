@@ -19,7 +19,7 @@ const ChatWidget = () => {
 	const { user } = useAuth();
 	const currentUserId = user?.id ? String(user.id) : undefined;
 	const { isConnected: isPresenceConnected, ws: presenceWs } = usePresenceSocket(Boolean(user));
-	const { friends } = useFriends(currentUserId);
+	const { friends, refetch } = useFriends(currentUserId);
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'conversation_all' | 'users_list' | number>(
 		'conversation_all',
@@ -176,7 +176,7 @@ const ChatWidget = () => {
                                     openPrivateTab({ id: user.id, name: user.username })
                                 }
                                 currentUserId={currentUserId}
-                              //  onRefreshFriends={refreshFriends}
+                                onRefreshFriends={refetch}
                             />
 						)}
 						{typeof activeTab === 'number' &&

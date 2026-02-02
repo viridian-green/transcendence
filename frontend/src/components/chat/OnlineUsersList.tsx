@@ -11,10 +11,11 @@ interface UsersListProps {
 	error: string | null;
 	onUserClick: (user: User) => void;
 	currentUserId: string;
+	onRefreshFriends?: () => void;
 }
 
-function UsersList({ users, friends, loading, error, onUserClick, currentUserId }: UsersListProps) {
-	const { friendRequests, setFriendRequests } = useNotificationSocket(true);
+function UsersList({ users, friends, loading, error, onUserClick, currentUserId, onRefreshFriends }: UsersListProps) {
+	const { friendRequests, setFriendRequests, lastRawMessage } = useNotificationSocket(true);
 	const { sendInvite, alert, setAlert } = useSendFriendInvite((user) => {
 		setFriendRequests((prev) => ({
 			...prev,
@@ -25,6 +26,14 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId 
 			},
 		}));
 	});
+
+	useEffect(() => {
+        if (
+            lastRawMessage?.type === 'FRIEND_INVITE_ACCEPTED'
+        ) {
+            onRefreshFriends?.();
+        }
+    }, [lastRawMessage, onRefreshFriends]);
 
 	if (loading) return <div>Loading online users...</div>;
 	if (error) return <div>Error: {error}</div>;
