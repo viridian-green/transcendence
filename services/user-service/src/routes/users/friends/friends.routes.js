@@ -8,7 +8,7 @@ import {
     acceptFriendRequest
 } from '../../../services/friends.service.js';
 
-import { emitFriendRequested } from '../../../events/emitFriendRequested.js';
+import { emitFriendRequested, emitFriendAccepted } from '../../../events/emitFriendRequested.js';
 
 //import { notifyFriendInviteWS } from '../../../utils/notifyFriendInviteWS.js';
 
@@ -23,6 +23,7 @@ export default async function friendsRoute(app) {
         await ensureUserExists(app, friendId);
         //await ensureNoExistingFriendship(app, userId, friendId);
         const friendshipId = await acceptFriendRequest(app, userId, friendId);
+        await emitFriendAccepted(app, userId, friendId);
         return reply.code(200).send(friendshipId);
     })
 
