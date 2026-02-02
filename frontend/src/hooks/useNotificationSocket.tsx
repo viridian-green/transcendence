@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import type { ChatServerMessage, ChatRenderMessage, FriendRequest } from '@/components/chat/types/chat';
+import type { ChatRenderMessage, NotificationServerMessage, FriendRequest } from '@/components/chat/types/chat';
 
 export function useNotificationSocket(enabled: boolean) {
   const [messages, setMessages] = useState<ChatRenderMessage[]>([]);
@@ -43,12 +43,12 @@ export function useNotificationSocket(enabled: boolean) {
     socket.onmessage = (event) => {
       console.log('[NOTIFICATION SOCKET] raw message', event.data);
       try {
-        const data: ChatServerMessage = JSON.parse(event.data);
+        const data: NotificationServerMessage = JSON.parse(event.data);
         setLastRawMessage(data);
         switch (data.type) {
-          case 'welcome':
-            console.log('[NOTIFICATION SOCKET]', data.message);
-            break;
+          // case 'welcome':
+          //   console.log('[NOTIFICATION SOCKET]', data.message);
+          //   break;
           case 'FRIEND_INVITE_RECEIVED':
             console.log('[NOTIFICATION SOCKET] Friend invite received from', data.fromUsername);
             setFriendRequests(prev => ({
@@ -71,7 +71,7 @@ export function useNotificationSocket(enabled: boolean) {
               },
             }));
             break;
-          case 'FRIEND_INVITE_DECLINED':
+          case 'FRIEND_INVITE_REJECTED':
             if (data.fromUserId) setFriendRequests(prev => ({
               ...prev,
               [String(data.fromUserId)]: {
