@@ -40,7 +40,8 @@ services:
         condition: service_healthy
       database:
         condition: service_healthy
-      #frontend add a healthcheck
+      frontend:
+        condition: service_started
     networks:
       - transcendence-network
 
@@ -52,7 +53,6 @@ services:
     working_dir: /app
     volumes:
       - frontend_dist:/app/dist
-      - ./frontend/ssl:/etc/nginx/ssl:ro
     networks:
       - transcendence-network
     environment:
