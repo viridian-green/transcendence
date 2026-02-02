@@ -7,10 +7,6 @@ export async function handleFriendRequested(event: {
     toUserId: string | number;
     fromUsername: string;
 }) {
-    console.log(
-        `🔔 Friend request from ${event.fromUserId} (${typeof event.fromUserId}) to ${event.toUserId} (${typeof event.toUserId})`
-    );
-    console.log(`Available user IDs in socketsByUserId:`, Array.from(socketsByUserId.keys()));
 
     const recipientSockets = socketsByUserId.get(String(event.toUserId));
 
@@ -43,9 +39,10 @@ export async function handleFriendAccepted(event: {
     fromUsername: string;
 }) {
     // Notify the original inviter (toUserId) that their invite was accepted by fromUserId
-    const inviterId = String(event.toUserId);
-    const targets = socketsByUserId.get(inviterId);
-    if (!targets) return;
+    const senderId = String(event.toUserId);
+    const targets = socketsByUserId.get(senderId);
+    if (!targets)
+        return;
     for (const socket of targets) {
         if (socket.readyState === WebSocket.OPEN) {
             socket.send(
@@ -58,6 +55,22 @@ export async function handleFriendAccepted(event: {
             console.log(`Sent friend accepted notification to user ${event.toUserId}`);
         }
     }
+
+    const receiverId = String(event.fromUserId);
+    const receiverTargets = socketsByUserId.get(receiverId);
+    if (!receiverTargets)
+        return;
+    for (const socket of receiverTargets) {
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(
+                JSON.stringify({
+                    type: "FRIEND_INVITE_CONFIRMED",
+                    toUserId: event.toUserId,
+                    toUsername: event.fromUsername,
+                })
+            );
+        }
+    }
 }
 
 export async function handleFriendRejected(event: {
@@ -67,8 +80,8 @@ export async function handleFriendRejected(event: {
     fromUsername: string;
 }) {
     // Notify the original inviter (toUserId) that their invite was rejected by fromUserId
-    const inviterId = String(event.toUserId);
-    const targets = socketsByUserId.get(inviterId);
+    const senderId = String(event.toUserId);
+    const targets = socketsByUserId.get(senderId);
     if (!targets) return;
     for (const socket of targets) {
         if (socket.readyState === WebSocket.OPEN) {
