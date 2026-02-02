@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
-import type { FriendRequest } from '../types/chat';
 
-
-export function useSendFriendInvite() {
+export function useSendFriendInvite(
+    onSent?: (user: { id: number | string; username: string }) => void,
+) {
     const [alert, setAlert] = useState<{
         visible: boolean;
         message: string;
@@ -10,7 +10,6 @@ export function useSendFriendInvite() {
         userId?: string;
     }>({ visible: false, message: '', type: 'info' });
 
-    const [friendRequests, setFriendRequests] = useState<Record<string, FriendRequest>>({});
     const sendInvite = useCallback(
         async (user: { id: number | string; username: string }, e?: React.MouseEvent) => {
             if (e) e.stopPropagation();
@@ -39,14 +38,7 @@ export function useSendFriendInvite() {
                     userId: String(user.id),
                 });
 
-                setFriendRequests(prev => ({
-                    ...prev,
-                    [String(user.id)]: {
-                        fromUserId: String(user.id),
-                        fromUsername: user.username,
-                        status: 'pending',
-                    },
-                }));
+                onSent?.(user);
             } catch (err) {
                 setAlert({
                     visible: true,
@@ -55,8 +47,8 @@ export function useSendFriendInvite() {
                 });
             }
         },
-        [],
+        [onSent],
     );
 
-    return { sendInvite, alert, friendRequests, setAlert, setFriendRequests };
+    return { sendInvite, alert, setAlert };
 }

@@ -3,6 +3,7 @@ import { useSendFriendInvite } from './hooks/useSendFriendInvite';
 import type { User } from '@/shared.types';
 import GlobalAlert from '../GlobalAlert';
 import { useNotificationSocket } from '@/hooks/useNotificationSocket';
+
 interface UsersListProps {
 	users: User[]; // all online users
 	friends: User[]; // all friends (not necessarily online)
@@ -13,14 +14,17 @@ interface UsersListProps {
 }
 
 function UsersList({ users, friends, loading, error, onUserClick, currentUserId }: UsersListProps) {
-	const [alert, setAlert] = useState<{
-		visible: boolean;
-		message: string;
-		type: string;
-		userId?: string;
-	}>({ visible: false, message: '', type: '' });
-	const { friendRequests, lastRawMessage} = useNotificationSocket(true);
-	const sendFriendInvite = useSendFriendInvite();
+	const { friendRequests, setFriendRequests } = useNotificationSocket(true);
+	const { sendInvite, alert, setAlert } = useSendFriendInvite((user) => {
+		setFriendRequests((prev) => ({
+			...prev,
+			[String(user.id)]: {
+				fromUserId: String(user.id),
+				fromUsername: user.username,
+				status: 'pending',
+			},
+		}));
+	});
 
 	if (loading) return <div>Loading online users...</div>;
 	if (error) return <div>Error: {error}</div>;
@@ -50,7 +54,7 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId 
 							{onlineFriends.map((user) => (
 								<li
 									key={user.id}
-									onClick={() => onUserClick(user)}
+									onClick={(e) => onUserClick(user)}
 									className='cursor-pointer px-4 py-2 hover:bg-[var(--color-border)]'
 								>
 									{user.username}
@@ -69,7 +73,7 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId 
 			) : (
 				<ul>
 					{onlineOthers.map((user) => {
-						const status = friendRequests[String(user.id)] ?? null;
+						const status = friendRequests[String(user.id)]?.status ?? null;
 						console.log('User:', user.username, 'Request Status:', status);
 						return (
 							<li
@@ -86,7 +90,7 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId 
 											? 'chat-btn-disabled'
 											: 'bg-[var(--color-accent-pink)]')
 									}
-									onClick={(e) => sendFriendInvite(user, e)}
+									onClick={(e) => sendInvite(user, e)}
 									disabled={status === 'pending'}
 								>
 									{status === 'pending' ? 'Invite Pending' : 'Add Friend'}
