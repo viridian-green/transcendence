@@ -14,7 +14,6 @@ import ChatHeader from './ChatHeader';
 import ConversationTab from './ConversationTab';
 import UsersListTab from './UsersListTab';
 import ChatTabs from './ChatTabs';
-import type { User } from '@/shared.types';
 
 const ChatWidget = () => {
 	const { user } = useAuth();

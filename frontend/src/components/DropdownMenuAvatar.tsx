@@ -1,4 +1,5 @@
 import { Avatar } from '@/components';
+import { loginSessionStorageKey } from '@/const';
 import { useAuth } from '@/hooks/useAuth';
 import { ProfileCircle, Exit, SettingsIcon, HomeIcon } from '@/icons';
 import { useEffect, useRef, useState } from 'react';
@@ -25,12 +26,19 @@ const MenuButton = ({ onClick, icon, description }: MenuButtonProps) => {
 };
 
 const ProfileCard = () => {
-	const { user, signout } = useAuth();
+	const { user, setUser, setIsLoggedIn } = useAuth();
 	const navigate = useNavigate();
 
-	const handleSignout = () => {
-		signout();
-		navigate('/');
+	const handleSignout = async () => {
+		// signout();
+		navigate('/', { replace: true });
+		await fetch('/api/auth/signout', {
+			method: 'POST',
+			credentials: 'include',
+		});
+		setUser(null);
+		sessionStorage.removeItem(loginSessionStorageKey);
+		setIsLoggedIn(false);
 	};
 
 	return (

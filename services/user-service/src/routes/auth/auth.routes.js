@@ -34,7 +34,7 @@ export default async function authRoutes(app) {
                 path: "/",
             })
             .code(201)
-            .send(user);
+            .send({ user });
     });
 
     // Login user

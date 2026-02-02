@@ -1,7 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { User } from '@/shared.types';
-import { loginSessionStorageKey } from '@/const';
 import { authErrorMapper } from '@/pages/auth/utils';
 import { getAvatar } from './useAvatar';
 
@@ -10,10 +9,10 @@ interface AuthContextType {
 	setUser: React.Dispatch<React.SetStateAction<User | null>>;
 	login: (username: string, password: string) => Promise<void>;
 	register: (email: string, username: string, password: string) => Promise<void>;
-	signout: () => Promise<void>;
 	isLoading: boolean;
 	isLoggedIn: boolean;
 	avatarUrl: string | null;
+	setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -135,20 +134,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		await checkAuth();
 	};
 
-	// Used to sign out a user and clear the user data from the context
-	const signout = async () => {
-		await fetch('/api/auth/signout', {
-			method: 'POST',
-			credentials: 'include',
-		});
-		setUser(null);
-		sessionStorage.removeItem(loginSessionStorageKey);
-		setIsLoggedIn(false);
-	};
-
 	return (
 		<AuthContext.Provider
-			value={{ user, setUser, login, register, signout, isLoading, isLoggedIn, avatarUrl }}
+			value={{
+				user,
+				setUser,
+				login,
+				register,
+				isLoading,
+				isLoggedIn,
+				avatarUrl,
+				setIsLoggedIn,
+			}}
 		>
 			{children}
 		</AuthContext.Provider>
