@@ -33,5 +33,54 @@ export async function handleFriendRequested(event: {
             console.log(`Sent friend request notification to user ${event.toUserId}`);
         }
     }
+
+}
+
+export async function handleFriendAccepted(event: {
+    type: string;
+    fromUserId: string | number;
+    toUserId: string | number;
+    fromUsername: string;
+}) {
+    // Notify the original inviter (toUserId) that their invite was accepted by fromUserId
+    const inviterId = String(event.toUserId);
+    const targets = socketsByUserId.get(inviterId);
+    if (!targets) return;
+    for (const socket of targets) {
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(
+                JSON.stringify({
+                    type: "FRIEND_INVITE_ACCEPTED",
+                    fromUserId: event.fromUserId,
+                    fromUsername: event.fromUsername,
+                })
+            );
+            console.log(`Sent friend accepted notification to user ${event.toUserId}`);
+        }
+    }
+}
+
+export async function handleFriendRejected(event: {
+    type: string;
+    fromUserId: string | number;
+    toUserId: string | number;
+    fromUsername: string;
+}) {
+    // Notify the original inviter (toUserId) that their invite was rejected by fromUserId
+    const inviterId = String(event.toUserId);
+    const targets = socketsByUserId.get(inviterId);
+    if (!targets) return;
+    for (const socket of targets) {
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(
+                JSON.stringify({
+                    type: "FRIEND_INVITE_DECLINED",
+                    fromUserId: event.fromUserId,
+                    fromUsername: event.fromUsername,
+                })
+            );
+            console.log(`Sent friend rejected notification to user ${event.toUserId}`);
+        }
+    }
 }
 
