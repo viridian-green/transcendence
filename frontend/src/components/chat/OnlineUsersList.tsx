@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSendFriendInvite } from './hooks/useSendFriendInvite';
 import type { User } from '@/shared.types';
 import GlobalAlert from '../GlobalAlert';
@@ -19,13 +19,12 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId 
 		type: string;
 		userId?: string;
 	}>({ visible: false, message: '', type: '' });
-	const { friendRequests, setFriendRequests } = useNotificationSocket(true);
-	const sendFriendInvite = useSendFriendInvite({ setAlert, setFriendRequests });
+	const { friendRequests, lastRawMessage} = useNotificationSocket(true);
+	const sendFriendInvite = useSendFriendInvite();
 
-	
 	if (loading) return <div>Loading online users...</div>;
 	if (error) return <div>Error: {error}</div>;
-	
+
 	const filteredUsers = users.filter((u) => String(u.id) !== String(currentUserId));
 	const friendIds = new Set(friends.map((f) => String(f.id)));
 	const onlineFriends = filteredUsers.filter((u) => friendIds.has(String(u.id)));

@@ -12,7 +12,7 @@ import type { ChatRenderMessage } from './types/chat';
 import type { User } from '@/shared.types';
 import ChatHeader from './ChatHeader';
 import ConversationTab from './ConversationTab';
-import UsersListTab from './UsersListTab';
+import UsersList from './OnlineUsersList';
 import ChatTabs from './ChatTabs';
 
 const ChatWidget = () => {
@@ -167,16 +167,17 @@ const ChatWidget = () => {
 							/>
 						)}
 						{activeTab === 'users_list' && (
-							<UsersListTab
-								users={onlinePeople}
-								friends={friends}
-								loading={loadingOnline}
-								error={errorOnline}
-								onUserClick={(user) =>
-									openPrivateTab({ id: user.id, name: user.username })
-								}
-								currentUserId={currentUserId}
-							/>
+							<UsersList
+                                users={onlinePeople}
+                                friends={friends}
+                                loading={loadingOnline}
+                                error={errorOnline}
+                                onUserClick={(user) =>
+                                    openPrivateTab({ id: user.id, name: user.username })
+                                }
+                                currentUserId={currentUserId}
+                              //  onRefreshFriends={refreshFriends}
+                            />
 						)}
 						{typeof activeTab === 'number' &&
 							privateTabs.some((t) => t.id === activeTab) &&
