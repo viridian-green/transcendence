@@ -60,5 +60,4 @@ mv "${PROJECT_ROOT}/nginx/ssl/nginx.crt.tmp" "${PROJECT_ROOT}/nginx/ssl/nginx.cr
 mv "${PROJECT_ROOT}/nginx/ssl/nginx.key.tmp" "${PROJECT_ROOT}/nginx/ssl/nginx.key"
 
 echo -e "${GREEN}All SSL certificates generated successfully!${NC}"
-echo -e "${YELLOW}Note: These are self-signed certificates for development use only.${NC}"
 
