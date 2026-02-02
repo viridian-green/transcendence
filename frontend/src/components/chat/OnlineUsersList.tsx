@@ -1,8 +1,8 @@
-import React from 'react';
+import { useState } from 'react';
 import { useSendFriendInvite } from './hooks/useSendFriendInvite';
 import type { User } from '@/shared.types';
 import GlobalAlert from '../GlobalAlert';
-
+import { useNotificationSocket } from '@/hooks/useNotificationSocket';
 interface UsersListProps {
 	users: User[]; // all online users
 	friends: User[]; // all friends (not necessarily online)
@@ -13,18 +13,19 @@ interface UsersListProps {
 }
 
 function UsersList({ users, friends, loading, error, onUserClick, currentUserId }: UsersListProps) {
-	const [alert, setAlert] = React.useState<{
+	const [alert, setAlert] = useState<{
 		visible: boolean;
 		message: string;
 		type: string;
 		userId?: string;
 	}>({ visible: false, message: '', type: '' });
+	const { friendRequests, setFriendRequests } = useNotificationSocket(true);
+	const sendFriendInvite = useSendFriendInvite({ setAlert, setFriendRequests });
 
-	const sendFriendInvite = useSendFriendInvite({ setAlert });
-
+	
 	if (loading) return <div>Loading online users...</div>;
 	if (error) return <div>Error: {error}</div>;
-
+	
 	const filteredUsers = users.filter((u) => String(u.id) !== String(currentUserId));
 	const friendIds = new Set(friends.map((f) => String(f.id)));
 	const onlineFriends = filteredUsers.filter((u) => friendIds.has(String(u.id)));
@@ -68,22 +69,32 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId 
 				<div className='color[var(--color-text-muted)] text-sm'>No users online.</div>
 			) : (
 				<ul>
-					{onlineOthers.map((user) => (
-						<li
-							key={user.id}
-							className='flex items-center justify-between px-4 py-2 hover:bg-[var(--color-border)]'
-						>
-							<span className='cursor-pointer' onClick={() => onUserClick(user)}>
-								{user.username}
-							</span>
-							<button
-								className='ml-2 rounded bg-[var(--color-accent-pink)] px-2 py-1 text-xs text-white'
-								onClick={(e) => sendFriendInvite(user, e)}
+					{onlineOthers.map((user) => {
+						const status = friendRequests[String(user.id)] ?? null;
+						console.log('User:', user.username, 'Request Status:', status);
+						return (
+							<li
+								key={user.id}
+								className='flex items-center justify-between px-4 py-2 hover:bg-[var(--color-border)]'
 							>
-								Add Friend
-							</button>
-						</li>
-					))}
+								<span className='cursor-pointer' onClick={() => onUserClick(user)}>
+									{user.username}
+								</span>
+								<button
+									className={
+										`ml-2 rounded px-2 py-1 text-xs text-white ` +
+										(status === 'pending'
+											? 'chat-btn-disabled'
+											: 'bg-[var(--color-accent-pink)]')
+									}
+									onClick={(e) => sendFriendInvite(user, e)}
+									disabled={status === 'pending'}
+								>
+									{status === 'pending' ? 'Invite Pending' : 'Add Friend'}
+								</button>
+							</li>
+						);
+					})}
 				</ul>
 			)}
 			<GlobalAlert

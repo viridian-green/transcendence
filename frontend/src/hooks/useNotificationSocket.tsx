@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import type { ChatServerMessage, ChatRenderMessage } from '@/components/chat/types/chat';
+import type { ChatServerMessage, ChatRenderMessage, FriendRequest } from '@/components/chat/types/chat';
 
 export function useNotificationSocket(enabled: boolean) {
   const [messages, setMessages] = useState<ChatRenderMessage[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [lastRawMessage, setLastRawMessage] = useState<any | null>(null);
-  const [friendRequests, setFriendRequests] = useState<any[]>([]);
+  const [friendRequests, setFriendRequests] = useState<Record<string, FriendRequest>>({});
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
@@ -15,8 +15,7 @@ export function useNotificationSocket(enabled: boolean) {
     }
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-     const wsUrl = `${protocol}//${window.location.host}/api/notifications/websocket`;
-    console.log('[NOTIFICATION SOCKET] connecting to', wsUrl);
+    const wsUrl = `${protocol}//${window.location.host}/api/notifications/websocket`;
 
     const socket = new WebSocket(wsUrl);
     ws.current = socket;
@@ -45,23 +44,44 @@ export function useNotificationSocket(enabled: boolean) {
       console.log('[NOTIFICATION SOCKET] raw message', event.data);
       try {
         const data: ChatServerMessage = JSON.parse(event.data);
-
         setLastRawMessage(data);
         switch (data.type) {
           case 'welcome':
             console.log('[NOTIFICATION SOCKET]', data.message);
             break;
-
-        case 'FRIEND_INVITE_RECEIVED':
+          case 'FRIEND_INVITE_RECEIVED':
             console.log('[NOTIFICATION SOCKET] Friend invite received from', data.fromUsername);
-            setFriendRequests(prev => [...prev, {
-                fromUserId: data.fromUserId,
+            setFriendRequests(prev => ({
+              ...prev,
+              [String(data.fromUserId)]: {
+                fromUserId: String(data.fromUserId),
                 fromUsername: data.fromUsername,
-                timestamp: Date.now()
-            }]);
-            // You can also trigger a toast/notification UI here
+                status: 'pending',
+              },
+            }));
             break;
-
+          case 'FRIEND_INVITE_ACCEPTED':
+            if (data.fromUserId) setFriendRequests(prev => ({
+              ...prev,
+              [String(data.fromUserId)]: {
+                ...(prev[String(data.fromUserId)] || {}),
+                fromUserId: String(data.fromUserId),
+                fromUsername: data.fromUsername,
+                status: 'accepted',
+              },
+            }));
+            break;
+          case 'FRIEND_INVITE_DECLINED':
+            if (data.fromUserId) setFriendRequests(prev => ({
+              ...prev,
+              [String(data.fromUserId)]: {
+                ...(prev[String(data.fromUserId)] || {}),
+                fromUserId: String(data.fromUserId),
+                fromUsername: data.fromUsername,
+                status: 'rejected',
+              },
+            }));
+            break;
         }
       } catch (parseError) {
         console.error('[NOTIFICATION SOCKET] parse error:', parseError);
@@ -91,14 +111,13 @@ export function useNotificationSocket(enabled: boolean) {
     );
   }, []);
 
-
-
   return {
-  messages,
+    messages,
+    friendRequests,
+    setFriendRequests,
     isConnected,
     send,
     lastRawMessage
-};
+  };
 
 }
-

@@ -2,9 +2,10 @@ import { useCallback } from 'react';
 
 interface UseSendFriendInviteOptions {
 	setAlert: (alert: { visible: boolean; message: string; type: string; userId?: string }) => void;
+	setFriendRequests?: (updater: (prev: Record<string, 'pending' | 'accepted' | 'rejected'>) => Record<string, 'pending' | 'accepted' | 'rejected'>) => void;
 }
 
-export function useSendFriendInvite({ setAlert }: UseSendFriendInviteOptions) {
+export function useSendFriendInvite({ setAlert, setFriendRequests }: UseSendFriendInviteOptions) {
 	return useCallback(
 		async (user: { id: number | string; username: string }, e?: React.MouseEvent) => {
 			if (e) e.stopPropagation();
@@ -32,6 +33,9 @@ export function useSendFriendInvite({ setAlert }: UseSendFriendInviteOptions) {
 					type: 'sent',
 					userId: String(user.id),
 				});
+				if (setFriendRequests) {
+					setFriendRequests(prev => ({ ...prev, [String(user.id)]: 'pending' }));
+				}
 			} catch (err) {
 				setAlert({
 					visible: true,
@@ -40,6 +44,6 @@ export function useSendFriendInvite({ setAlert }: UseSendFriendInviteOptions) {
 				});
 			}
 		},
-		[setAlert],
+		[setAlert, setFriendRequests],
 	);
 }
