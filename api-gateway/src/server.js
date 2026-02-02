@@ -3,7 +3,6 @@ dotenv.config();
 
 import Fastify from "fastify";
 import cookie from "@fastify/cookie";
-import fastifyStatic from '@fastify/static';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'node:url';
@@ -19,7 +18,6 @@ import healthRoute from "./health.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// SSL configuration - HTTPS is mandatory
 const certPath = path.join(__dirname, '../ssl/api-gateway.crt');
 const keyPath = path.join(__dirname, '../ssl/api-gateway.key');
 
@@ -35,8 +33,6 @@ const httpsOptions = {
     cert: fs.readFileSync(certPath),
     key: fs.readFileSync(keyPath),
 };
-
-console.log('SSL enabled for API Gateway - HTTPS is mandatory');
 
 const fastify = Fastify({
     logger: true,
@@ -57,7 +53,6 @@ const start = async () => {
 
         //DEBUGGING - This is needed to print the routes
         await fastify.ready();
-        console.log(fastify.printRoutes());
 
         await fastify.listen({
             port: 3000,
