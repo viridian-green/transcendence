@@ -96,7 +96,6 @@ services:
         condition: service_healthy
     env_file:
       - ./services/user-service/.env
-    environment:
     volumes:
       - ./services/user-service/uploads:/app/uploads
       - ./services/user-service/ssl:/app/ssl:ro
@@ -119,7 +118,6 @@ services:
       database:
         condition: service_healthy
     env_file: ./services/chat-service/.env
-    environment:
     volumes:
       - ./services/chat-service:/app
       - /app/node_modules
@@ -158,7 +156,6 @@ services:
       database:
         condition: service_healthy
     env_file: ./services/notification-service/.env
-    environment:
     volumes:
       - ./services/notification-service:/app
       - /app/node_modules

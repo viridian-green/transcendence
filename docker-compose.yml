@@ -88,7 +88,6 @@ services:
         condition: service_healthy
     env_file:
       - ./services/user-service/.env
-    environment:
     volumes:
       - ./services/user-service/uploads:/app/uploads
       - ./services/user-service/ssl:/app/ssl:ro
@@ -112,7 +111,6 @@ services:
       database:
         condition: service_healthy
     env_file: ./services/chat-service/.env
-    environment:
     volumes:
       - ./services/chat-service/ssl:/app/ssl:ro
     ports:
