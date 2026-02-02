@@ -16,7 +16,7 @@ assert_status() {
   local url=$2
   local expected=$3
 
-  status=$(curl -s -o /dev/null -w "%{http_code}" \
+  status=$(curl -k -s -o /dev/null -w "%{http_code}" \
     -X "$method" \
     -b "$COOKIE_JAR" \
     "$url")

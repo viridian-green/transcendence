@@ -19,7 +19,7 @@ assert_status() {
 #   echo "$payload"
 #   echo "▶ Response:"
 
-  response=$(curl -i \
+  response=$(curl -k -i \
     -H "Content-Type: application/json" \
     -d "$payload" \
     "$API_URL")
@@ -29,7 +29,7 @@ assert_status() {
 #   echo "$response"
 
   if [ "$status" != "$expected" ]; then
-    fail "Expected HTTP $expected, got $status"
+    fail "Expected HTTPS $expected, got $status"
   fi
 }
 

@@ -19,14 +19,14 @@ assert_status() {
   local use_cookie=${5:-false}
 
   if [ "$use_cookie" = true ]; then
-    status=$(curl -s -o /dev/null -w "%{http_code}" \
+    status=$(curl -k -s -o /dev/null -w "%{http_code}" \
       -X "$method" \
       -H "Content-Type: application/json" \
       -b "$COOKIE_JAR" \
       -d "$payload" \
       "$url")
   else
-    status=$(curl -s -o /dev/null -w "%{http_code}" \
+    status=$(curl -k -s -o /dev/null -w "%{http_code}" \
       -X "$method" \
       -H "Content-Type: application/json" \
       -d "$payload" \
@@ -34,7 +34,7 @@ assert_status() {
   fi
 
   if [ "$status" != "$expected" ]; then
-    fail "Expected HTTP $expected, got $status for payload: $payload"
+    fail "Expected HTTPS $expected, got $status for payload: $payload"
   fi
 }
 
@@ -49,7 +49,7 @@ EMAIL="updt_$UNIQ@test.com"
 
 #echo "▶ Registering test user"
 
-curl -s -X POST "$API_BASE/register" \
+curl -k -s -X POST "$API_BASE/register" \
   -H "Content-Type: application/json" \
   -d "{
     \"username\":\"$USERNAME\",
@@ -59,7 +59,7 @@ curl -s -X POST "$API_BASE/register" \
 
 #echo "▶ Logging in (saving cookie)"
 
-curl -s -c -b "$COOKIE_JAR" \
+curl -k -s -c -b "$COOKIE_JAR" \
   -X POST "$API_BASE/login" \
   -H "Content-Type: application/json" \
   -d "{
