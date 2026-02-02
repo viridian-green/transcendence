@@ -3,6 +3,7 @@
 # SSL certificates (regenerate locally)
 *.key
 *.crt
+*.bak
 
 # Keep the directory structure
 !nginx/ssl/.gitkeep# Node.js
