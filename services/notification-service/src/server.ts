@@ -1,7 +1,7 @@
 import Fastify from "fastify";
 import websocket from "@fastify/websocket";
 import NotificationsRoute from "./routes/notifications.js";
-import "./redis/index.js"; // Initialize Redis subscriber
+import { setupNotificationSubscriber } from "./redis/subscriber.js";
 
 const fastify = Fastify({
   logger: true,
@@ -12,6 +12,7 @@ await fastify.register(websocket);
 
 // Register Notifications WebSocket routes
 await fastify.register(NotificationsRoute);
+await setupNotificationSubscriber();
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3006;
 
