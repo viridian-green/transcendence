@@ -2,8 +2,11 @@ import fp from "fastify-plugin";
 import httpProxy from "@fastify/http-proxy";
 
 async function userRoutes(fastify) {
+  const sslEnabled = process.env.SSL_ENABLED !== 'false';
+  const protocol = sslEnabled ? 'https' : 'http';
+
   fastify.register(httpProxy, {
-    upstream: "http://user:3003",
+    upstream: `${protocol}://user:3003`,
     prefix: "/api/auth",
     rewritePrefix: "/auth",
     replyOptions: {
@@ -18,7 +21,7 @@ async function userRoutes(fastify) {
   });
 
   fastify.register(httpProxy, {
-    upstream: "http://user:3003",
+    upstream: `${protocol}://user:3003`,
     prefix: "/api/users",
     rewritePrefix: "/users",
     replyOptions: {
@@ -38,7 +41,7 @@ async function userRoutes(fastify) {
   });
 
     fastify.register(httpProxy, {
-        upstream: "http://user:3003",
+        upstream: `${protocol}://user:3003`,
         prefix: "/api/avatars",
         rewritePrefix: "/avatars",
         replyOptions: {

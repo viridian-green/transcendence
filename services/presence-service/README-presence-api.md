@@ -19,7 +19,7 @@ PATCH /state
 
 **Example (Node.js/fetch):**
 ```js
-await fetch('http://presence:3005/state', {
+await fetch('https://presence:3005/state', {
   method: 'PATCH',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ id: userId, state: 'busy' }),
