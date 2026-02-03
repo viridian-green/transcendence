@@ -16,7 +16,7 @@ const Remote = () => {
 	const navigate = useNavigate();
 	const { user } = useAuth();
 	const { friends, loading: friendsLoading } = useFriendsWithStatus(user?.id);
-	     console.log('🟢 FRIENDS WITH STATUS:', JSON.stringify(friends, null, 2));
+	    //  console.log('🟢 FRIENDS WITH STATUS:', friends);
     const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
 	const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
 	const { send, lastRawMessage, isConnected } = useNotificationSocket(true);
