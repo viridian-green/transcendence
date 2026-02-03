@@ -22,6 +22,13 @@ export function usePresenceSocket(enabled: boolean) {
 			console.log('[PRESENCE SOCKET] Raw message:', event.data);
 			try {
 				const data = JSON.parse(event.data);
+				
+				// Handle connection confirmation with initial statuses
+				if (data.type === 'connected' && data.statuses) {
+					console.log('[PRESENCE SOCKET] Initial statuses received:', data.statuses);
+					setStatuses(data.statuses);
+				}
+				
 				// Handle single user state change
 				if (data.type === 'userStateChanged' && data.userId && data.state) {
 					setStatuses((prev) => ({

@@ -93,7 +93,19 @@ export async function getFriendsList(app, userId) {
     );
 
     const map = new Map();
+    
+    // Import Redis dynamically to fetch statuses
+    const redis = (await import('../redis/index.js')).default;
+    
+    // Fetch statuses for all friends from Redis
     for (const row of rows) {
+        try {
+            const status = await redis.get(`user:state:${row.id}`);
+            row.status = status || 'offline';
+        } catch (err) {
+            console.error(`Failed to get status for user ${row.id}:`, err);
+            row.status = 'offline';
+        }
         map.set(row.id, row);
     }
 

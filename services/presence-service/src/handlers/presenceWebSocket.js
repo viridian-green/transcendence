@@ -1,12 +1,12 @@
 import WebSocket from "ws";
-import { updateUserState } from "../presenceService.js";
+import { updateUserState, getAllUserStates } from "../presenceService.js";
 import { extractUserFromJWT } from "../utils/extractUserFromJWT.js";
 
 // Track active connections
 export const activeConnections = new Map();
 const heartbeatIntervals = new Map();
 
-export function handlePresenceConnection(connection, request) {
+export async function handlePresenceConnection(connection, request) {
   const user = extractUserFromJWT(request);
   if (!user) {
     console.log('Extracted user from JWT: null');
@@ -23,12 +23,14 @@ export function handlePresenceConnection(connection, request) {
   // Store connection
   activeConnections.set(user.id, connection);
 
-  // Send welcome message
+  // Send welcome message with initial statuses
+  const allStatuses = await getAllUserStates();
   connection.send(
     JSON.stringify({
       type: "connected",
       message: "Presence tracking started",
       state: "online",
+      statuses: allStatuses, // Send all user statuses
     })
   );
 

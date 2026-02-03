@@ -50,3 +50,23 @@ export async function isUserOnline(userId) {
     const state = await this.getUserState(userId);
     return state === "online";
   }
+
+export async function getAllUserStates() {
+    try {
+      const keys = await redisClient.keys("user:state:*");
+      if (!keys.length) return {};
+      
+      const states = await redisClient.mget(...keys);
+      const userStates = {};
+      
+      keys.forEach((key, i) => {
+        const userId = key.replace("user:state:", "");
+        userStates[userId] = states[i] || "offline";
+      });
+      
+      return userStates;
+    } catch (err) {
+      console.error("Failed to get all user states:", err);
+      return {};
+    }
+  }

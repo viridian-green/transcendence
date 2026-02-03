@@ -15,10 +15,11 @@ export function useFriendsWithStatus(userId?: number) {
 		if (!friends || friendsLoading) return [];
 		return friends.map((friend) => {
 			const wsStatus = statuses[String(friend.id)];
-			const status = wsStatus as Friend['status'];
+			// Default to 'offline' if no WebSocket status is available
+			const status = (wsStatus || 'offline') as Friend['status'];
 
 			console.log(
-				`🧑 ${friend.username}(${friend.id}): WS="${wsStatus || 'none'}", HTTP="${status}", FINAL="${status}"`,
+				`🧑 ${friend.username}(${friend.id}): WS="${wsStatus || 'none'}", FINAL="${status}"`,
 			);
 
 			return { ...friend, status };
