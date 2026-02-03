@@ -94,19 +94,30 @@ export async function getFriendsList(app, userId) {
 
     const map = new Map();
     
+    if (rows.length === 0) {
+        return map;
+    }
+    
     // Import Redis dynamically to fetch statuses
     const redis = (await import('../redis/index.js')).default;
     
-    // Fetch statuses for all friends from Redis
-    for (const row of rows) {
-        try {
-            const status = await redis.get(`user:state:${row.id}`);
-            row.status = status || 'offline';
-        } catch (err) {
-            console.error(`Failed to get status for user ${row.id}:`, err);
+    try {
+        // Fetch all statuses in a single Redis call using mget
+        const keys = rows.map(row => `user:state:${row.id}`);
+        const statuses = await redis.mget(...keys);
+        
+        // Map statuses back to rows
+        rows.forEach((row, index) => {
+            row.status = statuses[index] || 'offline';
+            map.set(row.id, row);
+        });
+    } catch (err) {
+        console.error('Failed to fetch friend statuses from Redis:', err);
+        // Fallback: set all to offline
+        rows.forEach(row => {
             row.status = 'offline';
-        }
-        map.set(row.id, row);
+            map.set(row.id, row);
+        });
     }
 
     return map;
