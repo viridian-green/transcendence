@@ -3,7 +3,7 @@ import httpProxy from "@fastify/http-proxy";
 
 async function userRoutes(fastify) {
   fastify.register(httpProxy, {
-    upstream: "http://user:3003",
+    upstream: `https://user:3003`,
     prefix: "/api/auth",
     rewritePrefix: "/auth",
     replyOptions: {
@@ -18,7 +18,7 @@ async function userRoutes(fastify) {
   });
 
   fastify.register(httpProxy, {
-    upstream: "http://user:3003",
+    upstream: `https://user:3003`,
     prefix: "/api/users",
     rewritePrefix: "/users",
     replyOptions: {
@@ -38,7 +38,7 @@ async function userRoutes(fastify) {
   });
 
     fastify.register(httpProxy, {
-        upstream: "http://user:3003",
+        upstream: `https://user:3003`,
         prefix: "/api/avatars",
         rewritePrefix: "/avatars",
         replyOptions: {

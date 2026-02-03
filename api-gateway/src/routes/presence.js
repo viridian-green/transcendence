@@ -3,7 +3,7 @@ import httpProxy from "@fastify/http-proxy";
 
 async function presenceRoutes(fastify) {
   fastify.register(httpProxy, {
-    upstream: "http://presence:3005",
+    upstream: `https://presence:3005`,
     prefix: "/api/presence",
     rewritePrefix: "",
     rewriteRequestHeaders: (originalReq, headers) => {

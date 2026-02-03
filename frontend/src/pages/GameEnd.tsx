@@ -24,6 +24,8 @@ const GameEnd = () => {
 					mode: 'AI',
 				},
 			});
+		} else if (state.mode === 'remote') {
+			navigate(`/remote`);
 		} else {
 			navigate(`/game/${gameId}`, { state: { leftPlayer, rightPlayer } });
 		}
