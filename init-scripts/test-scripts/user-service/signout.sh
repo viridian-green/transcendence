@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-API_URL="http://localhost:3000/api/auth"
+API_URL="https://localhost:3000/api/auth"
 COOKIE_JAR="cookies.txt"
 
 #echo "▶ Running user-service signout route tests"
@@ -16,7 +16,7 @@ assert_status() {
   local url=$2
   local expected=$3
 
-  status=$(curl -s -o /dev/null -w "%{http_code}" \
+  status=$(curl -k -s -o /dev/null -w "%{http_code}" \
     -X "$method" \
     -b "$COOKIE_JAR" \
     "$url")
@@ -32,7 +32,7 @@ assert_status() {
 
 UNIQ=$(printf "%04x" $RANDOM)
 
-curl -s -c "$COOKIE_JAR" \
+curl -k -s -c "$COOKIE_JAR" \
   -X POST "$API_URL/register" \
   -H "Content-Type: application/json" \
   -d "{
@@ -45,7 +45,7 @@ curl -s -c "$COOKIE_JAR" \
 # 2️⃣ Login (sets cookie)
 # -------------------------
 
-curl -s -b "$COOKIE_JAR" -c "$COOKIE_JAR" \
+curl -k -s -b "$COOKIE_JAR" -c "$COOKIE_JAR" \
   -X POST "$API_URL/login" \
   -H "Content-Type: application/json" \
   -d "{

@@ -5,17 +5,7 @@
 
 # Generate SSL certificates if they don't exist
 setup:
-	@echo "Setting up SSL certificates..."
-	@mkdir -p nginx/ssl
-	@if [ ! -f nginx/ssl/nginx.crt ]; then \
-        openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-            -keyout nginx/ssl/nginx.key \
-            -out nginx/ssl/nginx.crt \
-            -subj "/C=US/ST=State/L=City/O=Transcendence/CN=localhost" && \
-        echo "✓ SSL certificates generated"; \
-	else \
-        echo "✓ SSL certificates already exist"; \
-	fi
+	./scripts/generate-ssl-certs.sh
 
 
 ## === Lifecycle: start/stop/restart ===
@@ -52,12 +42,6 @@ restartdev: setup
 
 ## === Targeted rebuilds ===
 
-# No cache rebuild. Used on user service development.
-nocache:
-	docker compose down
-	docker compose build --no-cache user
-	docker compose up
-
 # Clean everything including volumes
 clean:
 	docker compose down --remove-orphans
@@ -89,8 +73,8 @@ reset:
 	@echo "Removing SSL certs to force regeneration..."
 	rm -rf nginx/ssl/*.crt nginx/ssl/*.key || true
 	$(MAKE) setup
-	docker compose build --no-cache --pull
-	docker compose up --build -d
+# 	docker compose build --no-cache --pull
+# 	docker compose up --build -d
 
 # Rebuild from scratch
 rebuild: clean setup
