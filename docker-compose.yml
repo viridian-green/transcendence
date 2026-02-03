@@ -64,15 +64,6 @@ services:
     build:
       context: ./services/game-service
       dockerfile: Dockerfile
-    depends_on:
-      database:
-        condition: service_healthy
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/game_db
-      #remove postgres password from environment and add secrets, adele im not going to change it and will ask you to check how i did it in user service
     volumes:
       - ./services/game-service/ssl:/app/ssl:ro
     ports:
