@@ -76,6 +76,7 @@ services:
 
     secrets:
     - postgres_password
+    - jwt_secret
 
     depends_on:
       user-db:
@@ -86,6 +87,7 @@ services:
       - ./services/user-service/ssl:/app/ssl:ro
 
     environment:
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
       NODE_EXTRA_CA_CERTS: /app/ssl/user-service.crt
 
     healthcheck:
@@ -123,7 +125,9 @@ services:
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+    secrets:
+    - jwt_secret
     volumes:
       - ./services/presence-service/ssl:/app/ssl:ro
     depends_on:
@@ -140,10 +144,9 @@ services:
       context: ./services/notification-service
       dockerfile: Dockerfile
     environment:
-      JWT_SECRET: ${JWT_SECRET}
-    # depends_on:
-    #   database:
-    #     condition: service_healthy
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+    secrets:
+    - jwt_secret
     env_file: ./services/notification-service/.env
     volumes:
       - ./services/notification-service/ssl:/app/ssl:ro
@@ -160,8 +163,10 @@ services:
     env_file:
       - .env
     environment:
-      JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
       NODE_EXTRA_CA_CERTS: /app/ssl/api-gateway.crt
+    secrets:
+    - jwt_secret
     ports:
       - "3000:3000"
     volumes:
@@ -197,3 +202,5 @@ volumes:
 secrets:
   postgres_password:
     file: ./secrets/postgres_password
+  jwt_secret:
+    file: ./secrets/jwt_secret

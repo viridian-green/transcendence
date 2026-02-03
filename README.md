@@ -77,7 +77,6 @@ Before running the project, ensure you have the following installed:
 
 
    # JWT and Security
-   JWT_SECRET=your_jwt_secret_key_here
    COOKIE_SECRET=your_cookie_secret_key_here
 
    # Redis Configuration

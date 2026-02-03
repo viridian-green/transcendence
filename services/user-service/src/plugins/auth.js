@@ -1,7 +1,23 @@
 import cookie from '@fastify/cookie';
 import jwt from '@fastify/jwt';
 import fp from 'fastify-plugin';
+import fs from 'fs';
 import { authenticate } from '../services/auth.service.js';
+
+function resolveJwtSecret() {
+    if (process.env.JWT_SECRET) {
+        return process.env.JWT_SECRET;
+    }
+    const jwtSecretFile = process.env.JWT_SECRET_FILE;
+    if (jwtSecretFile) {
+        try {
+            return fs.readFileSync(jwtSecretFile, 'utf8').trim();
+        } catch (err) {
+            throw new Error(`Failed to read JWT secret file at ${jwtSecretFile}: ${err.message}`);
+        }
+    }
+    throw new Error('JWT secret is not configured. Set JWT_SECRET or JWT_SECRET_FILE.');
+}
 
 /**
  * Authentication plugin for User Service
@@ -18,8 +34,9 @@ async function authPlugin(app) {
     });
 
     // Register JWT plugin for signing tokens (used in login/register)
+    const jwtSecret = resolveJwtSecret();
     app.register(jwt, {
-        secret: process.env.JWT_SECRET,
+        secret: jwtSecret,
         cookie: {
             cookieName: 'access_token',
             signed: false

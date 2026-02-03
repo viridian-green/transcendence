@@ -113,7 +113,10 @@ services:
     env_file:
       - ./services/user-service/.env
     environment:
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
       NODE_EXTRA_CA_CERTS: /app/ssl/server.crt
+    secrets:
+      - jwt_secret
     volumes:
       - ./services/user-service/uploads:/app/uploads
       - ./services/user-service/ssl:/app/ssl:ro
@@ -135,6 +138,10 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    environment:
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+    secrets:
+      - jwt_secret
     env_file: ./services/chat-service/.env
     volumes:
       - ./services/chat-service:/app
@@ -154,7 +161,9 @@ services:
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+    secrets:
+      - jwt_secret
     volumes:
       - ./services/presence-service/ssl:/app/ssl:ro
     depends_on:
@@ -173,6 +182,10 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    environment:
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+    secrets:
+      - jwt_secret
     env_file: ./services/notification-service/.env
     volumes:
       - ./services/notification-service:/app
@@ -192,8 +205,10 @@ services:
     env_file:
       - .env
     environment:
-      JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
       NODE_EXTRA_CA_CERTS: /app/ssl/api-gateway.crt
+    secrets:
+      - jwt_secret
     volumes:
       - ./api-gateway/ssl:/app/ssl:ro
     ports:
@@ -225,3 +240,7 @@ volumes:
   postgres_data:
   frontend_dist:
   user_db_data:
+
+secrets:
+  jwt_secret:
+    file: ./secrets/jwt_secret

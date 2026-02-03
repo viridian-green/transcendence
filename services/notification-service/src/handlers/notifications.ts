@@ -1,5 +1,6 @@
 import { WebSocket } from "ws";
 import jwt from "jsonwebtoken";
+import fs from "fs";
 
 export interface User {
   id: string;
@@ -10,6 +11,29 @@ export interface User {
 const clients: Map<WebSocket, User> = new Map();
 
 export const socketsByUserId: Map<string, Set<WebSocket>> = new Map();
+
+function resolveJwtSecret(): string | undefined {
+  if (process.env.JWT_SECRET) {
+    return process.env.JWT_SECRET;
+  }
+
+  const jwtSecretFile = process.env.JWT_SECRET_FILE;
+  if (jwtSecretFile) {
+    try {
+      return fs.readFileSync(jwtSecretFile, "utf8").trim();
+    } catch (err) {
+      console.error(
+        `Failed to read JWT secret file at ${jwtSecretFile}:`,
+        err
+      );
+      return undefined;
+    }
+  }
+
+  return undefined;
+}
+
+const jwtSecret = resolveJwtSecret();
 
 // Main WebSocket handler function
 export default function notificationsHandler(connection: WebSocket, request: any) {
@@ -42,7 +66,6 @@ function extractUserFromJWT(request: any): User | null {
     });
   }
   const accessToken = cookies["access_token"];
-  const jwtSecret = process.env.JWT_SECRET;
   if (accessToken && jwtSecret) {
     try {
       const decoded = jwt.verify(accessToken, jwtSecret) as any;
