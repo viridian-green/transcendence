@@ -1,30 +1,4 @@
 services:
-  database:
-    image: postgres:16-alpine
-    container_name: postgres_db
-    restart: always
-    env_file:
-      - .env
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
-    secrets:
-    - postgres_password
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
-    networks:
-      - transcendence-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d game_db"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-
   nginx:
     image: nginx:alpine
     container_name: nginx
@@ -39,8 +13,8 @@ services:
     depends_on:
       api-gateway:
         condition: service_healthy
-      database:
-        condition: service_healthy
+      # database:
+      #   condition: service_healthy
       frontend:
         condition: service_started
     networks:
@@ -71,6 +45,31 @@ services:
     networks:
       - transcendence-network
 
+  user-db:
+    image: postgres:16-alpine
+    container_name: user_db
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: user_db
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+    - postgres_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - user_db_data:/var/lib/postgresql/data
+    networks:
+      - transcendence-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d user_db"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
   user:
     container_name: user
     build:
@@ -83,7 +82,7 @@ services:
     - postgres_password
 
     depends_on:
-      database:
+      user-db:
         condition: service_healthy
 
     volumes:
@@ -111,9 +110,9 @@ services:
     build:
       context: ./services/chat-service
       dockerfile: Dockerfile
-    depends_on:
-      database:
-        condition: service_healthy
+    # depends_on:
+    #   database:
+    #     condition: service_healthy
     env_file: ./services/chat-service/.env
     volumes:
       - ./services/chat-service/ssl:/app/ssl:ro
@@ -148,9 +147,9 @@ services:
       dockerfile: Dockerfile
     environment:
       JWT_SECRET: ${JWT_SECRET}
-    depends_on:
-      database:
-        condition: service_healthy
+    # depends_on:
+    #   database:
+    #     condition: service_healthy
     env_file: ./services/notification-service/.env
     volumes:
       - ./services/notification-service/ssl:/app/ssl:ro
@@ -198,7 +197,7 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
+  user_db_data:
   frontend_dist:
 
 secrets:

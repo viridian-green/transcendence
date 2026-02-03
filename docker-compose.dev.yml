@@ -80,13 +80,35 @@ services:
     networks:
       - transcendence-network
 
+  user-db:
+    image: postgres:16-alpine
+    container_name: user_db_dev
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: user_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - user_db_data:/var/lib/postgresql/data
+    networks:
+      - transcendence-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d user_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   user:
     container_name: user_dev
     build:
       context: ./services/user-service
       dockerfile: Dockerfile.dev
     depends_on:
-      database:
+      user-db:
         condition: service_healthy
     env_file:
       - ./services/user-service/.env
@@ -202,3 +224,4 @@ networks:
 volumes:
   postgres_data:
   frontend_dist:
+  user_db_data:
