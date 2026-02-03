@@ -62,8 +62,8 @@ export function useFriends(userId?: string | number) {
 	}, [userId, refreshTrigger]);
 
 	const refetch = useCallback(() => {
-        setRefreshTrigger((prev) => prev + 1);
-    }, []);
+		setRefreshTrigger((prev) => prev + 1);
+	}, []);
 
 	async function deleteFriend(friendId: number) {
 		try {

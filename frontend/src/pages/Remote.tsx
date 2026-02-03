@@ -16,8 +16,8 @@ const Remote = () => {
 	const navigate = useNavigate();
 	const { user } = useAuth();
 	const { friends, loading: friendsLoading } = useFriendsWithStatus(user?.id);
-	    //  console.log('🟢 FRIENDS WITH STATUS:', friends);
-    const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
+	//  console.log('🟢 FRIENDS WITH STATUS:', friends);
+	const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
 	const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
 	const { send, lastRawMessage, isConnected } = useNotificationSocket(true);
 
@@ -51,10 +51,7 @@ const Remote = () => {
 	}, [lastRawMessage, navigate]);
 
 	const handleChallenge = (friend: Friend) => {
-		if (friend.status !== 'online') return;
-		if (!isConnected) {
-			return;
-		}
+		if (friend.status !== 'online' || !isConnected) return;
 
 		send({
 			type: 'INVITE',
@@ -93,7 +90,6 @@ const Remote = () => {
 				</p>
 			) : (
 				<div className='w-full max-w-xl space-y-4'>
-
 					{friends.map((friend) => (
 						<div
 							key={friend.id}
