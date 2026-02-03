@@ -1,5 +1,6 @@
 import { updateUserSchema } from "../schemas/auth.schema.js";
 import {hashPassword } from "./auth.service.js";
+import sanitizeHtml from 'sanitize-html';
 
 export function parseUpdateUserBody(req) {
     const result = updateUserSchema.safeParse(req.body);
@@ -50,6 +51,10 @@ export async function updateUser(app, userId, updateData) {
     }
 
     if (updateData.bio) {
+        updateData.bio = sanitizeHtml(updateData.bio, {
+            allowedTags: [],
+            allowedAttributes: {}
+        });
         updateData.bio = updateData.bio.slice(0, 150);
     }
 
