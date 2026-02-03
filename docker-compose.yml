@@ -40,7 +40,8 @@ services:
         condition: service_healthy
       database:
         condition: service_healthy
-      #frontend add a healthcheck
+      frontend:
+        condition: service_started
     networks:
       - transcendence-network
 
@@ -82,10 +83,13 @@ services:
         condition: service_healthy
     env_file:
       - ./services/user-service/.env
+    environment:
+      NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED:-0}
     volumes:
       - ./services/user-service/uploads:/app/uploads
+      - ./services/user-service/ssl:/app/ssl:ro
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://user:3003/health"]
+      test: ["CMD", "curl", "-f", "-k", "https://user:3003/health"]
       interval: 30s      # Changed from 5s
       timeout: 5s        # Changed from 3s
       retries: 3         # Changed from 10
@@ -104,6 +108,8 @@ services:
       database:
         condition: service_healthy
     env_file: ./services/chat-service/.env
+    volumes:
+      - ./services/chat-service/ssl:/app/ssl:ro
     ports:
       - "3004:3004"
     networks:
@@ -118,6 +124,8 @@ services:
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
       JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - ./services/presence-service/ssl:/app/ssl:ro
     depends_on:
       redis:
         condition: service_started
@@ -137,6 +145,8 @@ services:
       database:
         condition: service_healthy
     env_file: ./services/notification-service/.env
+    volumes:
+      - ./services/notification-service/ssl:/app/ssl:ro
     ports:
       - "3006:3006"
     networks:
@@ -154,15 +164,18 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET}
+      NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED:-0}
     ports:
       - "3000:3000"
+    volumes:
+      - ./api-gateway/ssl:/app/ssl:ro
     networks:
       - transcendence-network
     depends_on:
       user:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://api-gateway:3000/health"]
+      test: ["CMD", "curl", "-f", "-k", "https://localhost:3000/health"]
       interval: 30s      # Changed from 5s
       timeout: 5s        # Changed from 3s
       retries: 3         # Changed from 10

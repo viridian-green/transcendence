@@ -79,7 +79,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/game_db
-
+    volumes:
+      - ./services/game-service/ssl:/app/ssl:ro
     ports:
       - "3002:3002"
     networks:
@@ -95,10 +96,13 @@ services:
         condition: service_healthy
     env_file:
       - ./services/user-service/.env
+    environment:
+      NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED:-0}
     volumes:
       - ./services/user-service/uploads:/app/uploads
+      - ./services/user-service/ssl:/app/ssl:ro
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://user:3003/health"]
+      test: ["CMD", "curl", "-f", "-k", "https://user:3003/health"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -116,13 +120,14 @@ services:
       database:
         condition: service_healthy
     env_file: ./services/chat-service/.env
+    volumes:
+      - ./services/chat-service:/app
+      - /app/node_modules
+      - ./services/chat-service/ssl:/app/ssl:ro
     ports:
       - "3004:3004"
     networks:
       - transcendence-network
-    volumes:
-      - ./services/chat-service:/app
-      - /app/node_modules
     command: ["npm", "run", "dev"]
 
   presence:
@@ -134,6 +139,8 @@ services:
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
       JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - ./services/presence-service/ssl:/app/ssl:ro
     depends_on:
       redis:
         condition: service_started
@@ -151,13 +158,14 @@ services:
       database:
         condition: service_healthy
     env_file: ./services/notification-service/.env
+    volumes:
+      - ./services/notification-service:/app
+      - /app/node_modules
+      - ./services/notification-service/ssl:/app/ssl:ro
     ports:
       - "3006:3006"
     networks:
       - transcendence-network
-    volumes:
-      - ./services/notification-service:/app
-      - /app/node_modules
     command: ["npm", "run", "dev"]
 
   api-gateway:
@@ -172,6 +180,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET}
+      NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED:-0}
+    volumes:
+      - ./api-gateway/ssl:/app/ssl:ro
     ports:
       - "3000:3000"
     networks:
@@ -180,7 +191,7 @@ services:
       user:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://api-gateway:3000/health"]
+      test: ["CMD", "curl", "-f", "-k", "https://localhost:3000/health"]
       interval: 5s
       timeout: 3s
       retries: 10

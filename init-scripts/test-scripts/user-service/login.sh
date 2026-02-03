@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
-API="http://localhost:3000/api/auth/login"
+API="https://localhost:3000/api/auth/login"
 
 assert_status () {
   payload=$1
   expected=$2
 
-  status=$(curl -s -o /dev/null -w "%{http_code}" \
+  status=$(curl -k -s -o /dev/null -w "%{http_code}" \
     -H "Content-Type: application/json" \
     -d "$payload" \
     $API)
