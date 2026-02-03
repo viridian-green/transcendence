@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export function usePresenceSocket(enabled: boolean) {
 	const [isConnected, setIsConnected] = useState(false);
-	const [friendStatuses, setFriendStatuses] = useState<{ [userId: string]: string }>({});
+	const [statuses, setStatuses] = useState<{ [userId: string]: string }>({});
     const ws = useRef<WebSocket | null>(null);
 
 	useEffect(() => {
@@ -16,8 +16,23 @@ export function usePresenceSocket(enabled: boolean) {
 		ws.current.onclose = () => setIsConnected(false);
 		ws.current.onerror = () => setIsConnected(false);
 
+        ws.current.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                 if (data.type === "userStateChanged" && data.userId && data.state) {
+                    setStatuses((prev) => ({
+                        ...prev,
+                        [String(data.userId)]: data.state, // 'online' | 'busy' | 'offline'
+                    }));
+                }
+            } catch (e) {
+                console.error("[PRESENCE SOCKET] Failed to parse message", event.data, e);
+            }
+        };
 		return () => ws.current?.close();
 	}, [enabled]);
 
-	return { isConnected, ws };
+    console.log('[USE PRESENCE] statuses:', statuses);
+
+	return { isConnected, ws, statuses };
 }
