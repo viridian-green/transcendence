@@ -43,8 +43,6 @@ await fastify.register(websocket);
 await fastify.register(NotificationsRoute);
 await setupNotificationSubscriber();
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3006;
-
 const start = async () => {
   try {
     await fastify.listen({
