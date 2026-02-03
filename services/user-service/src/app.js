@@ -41,6 +41,5 @@ app.register(plugins);
 app.register(routes);
 
 await app.ready();
-console.log(app.printRoutes());
 
 export default app;
