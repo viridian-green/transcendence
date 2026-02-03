@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-API_URL="http://127.0.0.1:3000/api/auth/register"
+API_URL="https://127.0.0.1:3000/api/auth/register"
 
 #echo "▶ Running user-service register route tests"
 
@@ -19,7 +19,7 @@ assert_status() {
 #   echo "$payload"
 #   echo "▶ Response:"
 
-  response=$(curl -i \
+  response=$(curl -k -i \
     -H "Content-Type: application/json" \
     -d "$payload" \
     "$API_URL")
@@ -29,7 +29,7 @@ assert_status() {
 #   echo "$response"
 
   if [ "$status" != "$expected" ]; then
-    fail "Expected HTTP $expected, got $status"
+    fail "Expected HTTPS $expected, got $status"
   fi
 }
 
