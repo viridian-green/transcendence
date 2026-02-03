@@ -18,9 +18,9 @@ services:
       - transcendence-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d game_db"]
-      interval: 30s      # Changed from 5s - default Docker interval
+      interval: 30s
       timeout: 5s
-      retries: 3         # Changed from 5 - fewer retries needed with longer interval
+      retries: 3
       start_period: 10s
 
   nginx:
@@ -94,10 +94,10 @@ services:
       - ./services/user-service/ssl:/app/ssl:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "-k", "https://user:3003/health"]
-      interval: 30s      # Changed from 5s
-      timeout: 5s        # Changed from 3s
-      retries: 3         # Changed from 10
-      start_period: 30s  # Grace period for service startup
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     ports:
       - "3003:3003"
     networks:
@@ -180,10 +180,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "-k", "https://localhost:3000/health"]
-      interval: 30s      # Changed from 5s
-      timeout: 5s        # Changed from 3s
-      retries: 3         # Changed from 10
-      start_period: 30s  # Grace period for service startup
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   redis:
     image: redis:7-alpine
