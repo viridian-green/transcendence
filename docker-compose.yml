@@ -87,6 +87,7 @@ services:
     environment:
       JWT_SECRET_FILE: /run/secrets/jwt_secret
       NODE_EXTRA_CA_CERTS: /app/ssl/user-service.crt
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
 
     healthcheck:
       test: ["CMD", "curl", "-f", "-k", "https://user:3003/health"]
