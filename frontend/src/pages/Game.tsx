@@ -214,7 +214,7 @@ const Game = () => {
 			<div className='flex w-full max-w-[800px] justify-between px-4 xl:hidden'>
 				{/* Left Player Controls - Only show if not AI mode */}
 				<div className='flex touch-none flex-col gap-4'>
-					{mode !== 'AI' && (
+					{(mode !== 'AI') && (mode !== 'remote' || side === 'left') && (
 						<>
 							<button
 								type='button'
@@ -302,7 +302,9 @@ const Game = () => {
 
 				{/* Right Player Controls */}
 				<div className='flex touch-none flex-col gap-4'>
-					<button
+					{(mode !== 'remote' || side === 'right') && (
+						<>
+							<button
 						type='button'
 						className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
 						onContextMenu={(e) => e.preventDefault()}
@@ -342,7 +344,7 @@ const Game = () => {
 					>
 						↑
 					</button>
-					<button
+						<button
 						type='button'
 						className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
 						onContextMenu={(e) => e.preventDefault()}
@@ -382,6 +384,8 @@ const Game = () => {
 					>
 						↓
 					</button>
+						</>
+					)}
 				</div>
 			</div>
 		</div>
