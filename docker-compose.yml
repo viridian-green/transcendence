@@ -121,8 +121,8 @@ services:
       context: ./services/presence-service
       dockerfile: Dockerfile
     environment:
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
       JWT_SECRET: ${JWT_SECRET}
     volumes:
       - ./services/presence-service/ssl:/app/ssl:ro
