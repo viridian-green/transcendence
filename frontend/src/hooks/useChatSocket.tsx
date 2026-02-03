@@ -3,7 +3,7 @@ import type { ChatServerMessage, ChatRenderMessage } from '../components/chat/ty
 
 export function useChatSocket(
 	enabled: boolean,
-	recipientUserId?: string,
+	// recipientUserId?: string,
 	onPrivateMessage?: (
 		from: { id: string; username: string },
 		text: string,
@@ -78,7 +78,12 @@ export function useChatSocket(
 			}
 		};
 
-		return () => ws.current?.close();
+		return () => {
+			if (ws.current?.readyState === WebSocket.OPEN) {
+				ws.current?.close();
+				ws.current = null;
+			}
+		};
 	}, [enabled]);
 
 	const sendMessage = (payload: { type: string; text: string; to?: string }) => {

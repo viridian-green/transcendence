@@ -166,33 +166,6 @@ if (data.type === 'INVITE') {
   return;
 }
 
-// Friend invite notification
-if (data.type === 'FRIEND_INVITE') {
-  const toUserId = String(data.toUserId);
-  console.log('Handling FRIEND INVITE from', user.id, 'to', toUserId);
-
-  const targets = socketsByUserId.get(toUserId);
-  console.log('Targets for', toUserId, ':', targets?.size ?? 0);
-  if (!targets) {
-    console.log('No sockets for target', toUserId);
-    return;
-  }
-
-  for (const sock of targets) {
-    if (sock.readyState === WebSocket.OPEN) {
-      sock.send(
-        JSON.stringify({
-          type: 'FRIEND_INVITE_RECEIVED',
-          fromUserId: user.id,
-          fromUsername: user.username,
-        }),
-      );
-    }
-  }
-
-  return;
-}
-
 if (data.type === 'INVITE_ACCEPT') {
   // user = the one who clicked Accept
   const invitedId = user.id;

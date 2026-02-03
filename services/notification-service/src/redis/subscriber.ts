@@ -1,5 +1,5 @@
 import Redis from "ioredis";
-import { handleFriendRequested } from "../handlers/handleFriendRequested.js";
+import { handleFriendRequested, handleFriendAccepted, handleFriendRejected } from "../handlers/handleFriendRequested.js";
 
 const redisSubscriber = new Redis({
     host: "redis",
@@ -16,7 +16,6 @@ export function setupNotificationSubscriber() {
     });
 
     redisSubscriber.on("message", (channel, message) => {
-        console.log(`[REDIS SUBSCRIBER] Received message on channel: ${channel}`);
         if (channel !== "notifications.events") return;
 
         let event;
@@ -24,15 +23,15 @@ export function setupNotificationSubscriber() {
             event = JSON.parse(message);
             console.log(`[REDIS SUBSCRIBER] Parsed event:`, event);
         } catch (err) {
-            console.error("[REDIS SUBSCRIBER] Invalid JSON:", message, err);
             return;
         }
 
         if (event.type === "friend.requested") {
-            console.log(`[REDIS SUBSCRIBER] Handling friend.requested event`);
             handleFriendRequested(event);
-        } else {
-            console.log(`[REDIS SUBSCRIBER] Unknown event type: ${event.type}`);
+        } else if (event.type === "friend.accepted") {
+            handleFriendAccepted(event);
+        } else if (event.type === "friend.rejected") {
+            handleFriendRejected(event);
         }
     });
 

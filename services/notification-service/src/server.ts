@@ -1,7 +1,7 @@
 import Fastify from "fastify";
 import websocket from "@fastify/websocket";
 import NotificationsRoute from "./routes/notifications.js";
-import "./redis/index.js"; // Initialize Redis subscriber
+import { setupNotificationSubscriber } from "./redis/subscriber.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -40,6 +40,7 @@ await fastify.register(websocket);
 
 // Register Notifications WebSocket routes
 await fastify.register(NotificationsRoute);
+await setupNotificationSubscriber();
 
 const start = async () => {
   try {

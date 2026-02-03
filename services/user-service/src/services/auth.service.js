@@ -134,3 +134,16 @@ export async function authenticate(request, reply) {
         username: username
     };
 }
+
+
+export async function optionalAuth(request, reply) {
+    const userId = request.headers['x-user-id'];
+    const username = request.headers['x-username'];
+
+    if (userId) {
+        request.user = {
+            id: parseInt(userId, 10),
+            username: username
+        };
+    }
+}

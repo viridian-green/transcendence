@@ -7,3 +7,14 @@ export type ChatServerMessage =
 	| { type: 'general_msg'; user?: { id: string; username: string }; text: string }
 	| { type: 'welcome'; message: string }
 	| { type: 'user_joined' | 'user_left'; user: { id: string; username: string } };
+
+export type	NotificationServerMessage =
+	| { type: 'FRIEND_INVITE_RECEIVED'; fromUserId: string; fromUsername: string }
+	| { type: 'FRIEND_INVITE_ACCEPTED'; fromUserId: string; fromUsername: string }
+	| { type: 'FRIEND_INVITE_REJECTED'; fromUserId: string; fromUsername: string }
+
+export type FriendRequest = {
+	fromUserId: string;
+	fromUsername: string;
+	status: 'pending' | 'accepted' | 'rejected';
+};

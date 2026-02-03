@@ -2,7 +2,7 @@ import './ChatWidget.css';
 import { useState, useEffect } from 'react';
 import { FaComments } from 'react-icons/fa';
 import { useAuth } from '../../hooks/useAuth';
-import { useFetchOnlineUsers } from '../../hooks/useFetchOnlineUsers';
+import { useFetchOnlineUsers, type OnlineUser } from '../../hooks/useFetchOnlineUsers';
 import { useFriends } from '../../hooks/useFriends';
 import { usePresenceSocket } from '@/hooks/usePresenceSocket';
 import { useChatSocket } from '@/hooks/useChatSocket';
@@ -12,14 +12,14 @@ import type { ChatRenderMessage } from './types/chat';
 import type { User } from '@/shared.types';
 import ChatHeader from './ChatHeader';
 import ConversationTab from './ConversationTab';
-import UsersListTab from './UsersListTab';
+import UsersList from './OnlineUsersList';
 import ChatTabs from './ChatTabs';
 
 const ChatWidget = () => {
 	const { user } = useAuth();
 	const currentUserId = user?.id ? String(user.id) : undefined;
 	const { isConnected: isPresenceConnected, ws: presenceWs } = usePresenceSocket(Boolean(user));
-	const { friends } = useFriends(currentUserId);
+	const { friends, refetch } = useFriends(currentUserId);
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'conversation_all' | 'users_list' | number>(
 		'conversation_all',
@@ -49,7 +49,6 @@ const ChatWidget = () => {
 		sendMessage,
 	} = useChatSocket(
 		Boolean(user),
-		undefined,
 		(from, text, kind = 'chat') => {
 			if (kind === 'chat') {
 				// Open conversation if not already open
@@ -62,7 +61,10 @@ const ChatWidget = () => {
 			setPrivateMessages((prev) => {
 				const updated = {
 					...prev,
-					[from.id]: [...(prev[from.id] || []), { kind, username: from.username, text }],
+					[from.id]: [
+						...(prev[Number(from.id)] || []),
+						{ kind, username: from.username, text },
+					],
 				};
 				return updated;
 			});
@@ -88,9 +90,10 @@ const ChatWidget = () => {
 		loading: loadingOnline,
 		error: errorOnline,
 	} = useFetchOnlineUsers(currentUserId, presenceWs.current);
-	const onlinePeople: User[] = rawOnlinePeople.map((u: any) => ({
+	const onlinePeople: User[] = rawOnlinePeople.map((u: OnlineUser) => ({
 		id: typeof u.id === 'string' ? parseInt(u.id, 10) : u.id,
 		username: u.username,
+		email: '',
 	}));
 
 	const sendGeneralMessage = (text: string) => {
@@ -167,16 +170,17 @@ const ChatWidget = () => {
 							/>
 						)}
 						{activeTab === 'users_list' && (
-							<UsersListTab
-								users={onlinePeople}
-								friends={friends}
-								loading={loadingOnline}
-								error={errorOnline}
-								onUserClick={(user) =>
-									openPrivateTab({ id: user.id, name: user.username })
-								}
-								currentUserId={currentUserId}
-							/>
+							<UsersList
+                                users={onlinePeople}
+                                friends={friends}
+                                loading={loadingOnline}
+                                error={errorOnline}
+                                onUserClick={(user) =>
+                                    openPrivateTab({ id: user.id, name: user.username })
+                                }
+                                currentUserId={currentUserId}
+                                onRefreshFriends={refetch}
+                            />
 						)}
 						{typeof activeTab === 'number' &&
 							privateTabs.some((t) => t.id === activeTab) &&

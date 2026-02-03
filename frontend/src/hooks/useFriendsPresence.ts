@@ -14,7 +14,6 @@ export function useFriendsWithStatus(userId?: number) {
 		loading: onlineUsersLoading,
 	} = useFetchOnlineUsers(String(userId), ws.current);
 
-	console.log('[ONLINE USERS] friends:', JSON.stringify(friends, null, 2));
 
 	const friendsWithStatus: Friend[] = useMemo(
 		() =>
@@ -36,8 +35,6 @@ export function useFriendsWithStatus(userId?: number) {
 			}),
 		[friends, onlineUsers, isConnected],
 	);
-
-	console.log('[FETCHING FRIENDS] friends:', JSON.stringify(friends, null, 2));
 
 	return {
 		friends: friendsWithStatus,
