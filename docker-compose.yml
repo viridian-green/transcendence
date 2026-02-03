@@ -13,8 +13,6 @@ services:
     depends_on:
       api-gateway:
         condition: service_healthy
-      # database:
-      #   condition: service_healthy
       frontend:
         condition: service_started
     networks:
@@ -57,8 +55,6 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
     secrets:
     - postgres_password
-    ports:
-      - "5432:5432"
     volumes:
       - user_db_data:/var/lib/postgresql/data
     networks:
@@ -110,9 +106,7 @@ services:
     build:
       context: ./services/chat-service
       dockerfile: Dockerfile
-    # depends_on:
-    #   database:
-    #     condition: service_healthy
+
     env_file: ./services/chat-service/.env
     volumes:
       - ./services/chat-service/ssl:/app/ssl:ro
