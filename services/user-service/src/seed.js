@@ -4,9 +4,26 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL, // <- important
+  connectionString: buildDatabaseUrl(),
 });
 
+function buildDatabaseUrl() {
+  const {
+    DB_USER,
+    DB_HOST,
+    DB_PORT,
+    DB_NAME,
+    DB_PASSWORD_FILE,
+  } = process.env;
+
+  if (!DB_PASSWORD_FILE) {
+    throw new Error('DB_PASSWORD_FILE is not set');
+  }
+
+  const password = fs.readFileSync(DB_PASSWORD_FILE, 'utf8').trim();
+
+  return `postgres://${DB_USER}:${password}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
+}
 /**
  * Seeds the database with initial data
  */
