@@ -37,7 +37,7 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId 
 				<>
 					<div className='chat-labels relative flex items-center'>
 						<h3 className='private-message text-color-muted m-0 text-xs uppercase'>
-							Friends
+							Online Friends
 						</h3>
 						<hr className='ml-2 flex-1 border-t' />
 					</div>
@@ -59,7 +59,7 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId 
 						</ul>
 					)}
 					<div className='chat-labels relative flex items-center'>
-						<h3 className='private-message text-color-muted m-0 text-xs uppercase'>Others</h3>
+						<h3 className='private-message text-color-muted m-0 text-xs uppercase'>Online Others</h3>
 						<hr className='ml-2 flex-1 border-t' />
 					</div>
 				</>

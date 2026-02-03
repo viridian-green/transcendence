@@ -16,7 +16,8 @@ const Remote = () => {
 	const navigate = useNavigate();
 	const { user } = useAuth();
 	const { friends, loading: friendsLoading } = useFriendsWithStatus(user?.id);
-	const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
+	     console.log('🟢 FRIENDS WITH STATUS:', JSON.stringify(friends, null, 2));
+    const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
 	const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
 	const { send, lastRawMessage, isConnected } = useNotificationSocket(true);
 
@@ -92,6 +93,7 @@ const Remote = () => {
 				</p>
 			) : (
 				<div className='w-full max-w-xl space-y-4'>
+
 					{friends.map((friend) => (
 						<div
 							key={friend.id}

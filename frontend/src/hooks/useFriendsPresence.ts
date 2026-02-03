@@ -9,21 +9,20 @@ export function useFriendsWithStatus(userId?: number) {
 	const { friends, error: friendsError, loading: friendsLoading } = useFriends(userId);
 	const { ws, isConnected, statuses } = usePresenceSocket(Boolean(userId));
 	const {
-		// users: onlineUsers,
+        users: onlineUsers,
 		error: onlineUsersError,
 		loading: onlineUsersLoading,
 	} = useFetchOnlineUsers(String(userId), ws.current);
 
-
+	console.log('[DEBUG] isConnected:', isConnected);
+    console.log('[DEBUG] statuses:', statuses);
 
 	const friendsWithStatus: Friend[] = useMemo(
 		() =>
 			friends.map((friend) => {
-				let status: Friend['status'] = 'offline';
-                if (statuses[String(friend.id)])
-                status = statuses[String(friend.id)] as Friend['status'];
-                console.log('[FRIENDS STATUSES] friends:', status);
-				const friendWithStatus = {
+				let status: Friend['status'];
+				status = statuses[String(friend.id)] as Friend['status'];
+                const friendWithStatus = {
 					...friend,
 					status: status,
 				};
@@ -31,6 +30,7 @@ export function useFriendsWithStatus(userId?: number) {
 			}),
 		[friends, isConnected],
 	);
+
 
 	return {
 		friends: friendsWithStatus,
