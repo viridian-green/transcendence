@@ -12,14 +12,14 @@ import type { ChatRenderMessage } from './types/chat';
 import type { User } from '@/shared.types';
 import ChatHeader from './ChatHeader';
 import ConversationTab from './ConversationTab';
-import UsersListTab from './UsersListTab';
+import UsersList from './OnlineUsersList';
 import ChatTabs from './ChatTabs';
 
 const ChatWidget = () => {
 	const { user } = useAuth();
 	const currentUserId = user?.id ? String(user.id) : undefined;
 	const { isConnected: isPresenceConnected, ws: presenceWs } = usePresenceSocket(Boolean(user));
-	const { friends } = useFriends(currentUserId);
+	const { friends, refetch } = useFriends(currentUserId);
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'conversation_all' | 'users_list' | number>(
 		'conversation_all',
@@ -170,16 +170,17 @@ const ChatWidget = () => {
 							/>
 						)}
 						{activeTab === 'users_list' && (
-							<UsersListTab
-								users={onlinePeople}
-								friends={friends}
-								loading={loadingOnline}
-								error={errorOnline}
-								onUserClick={(user) =>
-									openPrivateTab({ id: user.id, name: user.username })
-								}
-								currentUserId={currentUserId}
-							/>
+							<UsersList
+                                users={onlinePeople}
+                                friends={friends}
+                                loading={loadingOnline}
+                                error={errorOnline}
+                                onUserClick={(user) =>
+                                    openPrivateTab({ id: user.id, name: user.username })
+                                }
+                                currentUserId={currentUserId}
+                                onRefreshFriends={refetch}
+                            />
 						)}
 						{typeof activeTab === 'number' &&
 							privateTabs.some((t) => t.id === activeTab) &&

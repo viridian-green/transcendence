@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { User } from '@/shared.types';
 import { getAvatar } from './useAvatar';
 import { useAuth } from './useAuth';
@@ -7,6 +7,7 @@ export function useFriends(userId?: string | number) {
 	const [friends, setFriends] = useState<User[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [refreshTrigger, setRefreshTrigger] = useState(0);
 	const cleanupFns = useRef<(() => void)[]>([]);
 	const avatarUrls = useRef<Map<number, string>>(new Map());
 	const { user, isLoading, isLoggedIn } = useAuth();
@@ -61,7 +62,11 @@ export function useFriends(userId?: string | number) {
 		return () => {
 			cleanupFnsArray.forEach((fn) => fn());
 		};
-	}, [userId, user, isLoggedIn, isLoading]);
+	}, [userId, user, isLoggedIn, isLoading, refreshTrigger]);
+
+	const refetch = useCallback(() => {
+        setRefreshTrigger((prev) => prev + 1);
+    }, []);
 
 	async function deleteFriend(friendId: number) {
 		try {
@@ -76,5 +81,5 @@ export function useFriends(userId?: string | number) {
 		setFriends((prevFriends) => prevFriends.filter((friend) => friend.id !== friendId));
 	}
 
-	return { friends, loading, error, deleteFriend };
+	return { friends, loading, error, deleteFriend, refetch };
 }

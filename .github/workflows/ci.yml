@@ -36,6 +36,11 @@ jobs:
         cp services/chat-service/.env.example services/chat-service/.env
         cp services/notification-service/.env.example services/notification-service/.env
 
+    - name: Generate SSL certificates
+      run: |
+        chmod +x scripts/generate-ssl-certs.sh
+        ./scripts/generate-ssl-certs.sh
+
     - name: Build and run containers
       run: |
         docker compose down -v || true

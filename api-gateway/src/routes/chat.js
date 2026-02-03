@@ -3,7 +3,7 @@ import httpProxy from "@fastify/http-proxy";
 
 async function chatRoutes(fastify) {
   fastify.register(httpProxy, {
-    upstream: "http://chat:3004",
+    upstream: `https://chat:3004`,
     prefix: "/api/chat",
     rewritePrefix: "", // strip /api/chat so upstream sees /websocket
     rewriteRequestHeaders: (originalReq, headers) => {

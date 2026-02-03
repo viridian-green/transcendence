@@ -95,7 +95,7 @@ export async function ensureValidPassword(password, user) {
 }
 
 export async function ensureUserIsNotOnline(app, userId) {
-    const response = await fetch(`http://presence:3005/state/${userId}`, {
+    const response = await fetch(`https://presence:3005/state/${userId}`, {
         method: "GET",
         credentials: "include",
     });

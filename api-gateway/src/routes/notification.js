@@ -3,7 +3,7 @@ import httpProxy from "@fastify/http-proxy";
 
 async function notificationRoutes(fastify) {
   fastify.register(httpProxy, {
-    upstream: "http://notification:3006",
+    upstream: `https://notification:3006`,
     prefix: "/api/notifications",
     rewritePrefix: "", // strip /api/notifications so upstream sees /websocket
     rewriteRequestHeaders: (originalReq, headers) => {
