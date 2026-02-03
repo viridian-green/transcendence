@@ -2,7 +2,7 @@ import './ChatWidget.css';
 import { useState, useEffect } from 'react';
 import { FaComments } from 'react-icons/fa';
 import { useAuth } from '../../hooks/useAuth';
-import { useFetchOnlineUsers } from '../../hooks/useFetchOnlineUsers';
+import { useFetchOnlineUsers, type OnlineUser } from '../../hooks/useFetchOnlineUsers';
 import { useFriends } from '../../hooks/useFriends';
 import { usePresenceSocket } from '@/hooks/usePresenceSocket';
 import { useChatSocket } from '@/hooks/useChatSocket';
@@ -49,7 +49,6 @@ const ChatWidget = () => {
 		sendMessage,
 	} = useChatSocket(
 		Boolean(user),
-		undefined,
 		(from, text, kind = 'chat') => {
 			if (kind === 'chat') {
 				// Open conversation if not already open
@@ -62,7 +61,10 @@ const ChatWidget = () => {
 			setPrivateMessages((prev) => {
 				const updated = {
 					...prev,
-					[from.id]: [...(prev[from.id] || []), { kind, username: from.username, text }],
+					[from.id]: [
+						...(prev[Number(from.id)] || []),
+						{ kind, username: from.username, text },
+					],
 				};
 				return updated;
 			});
@@ -88,9 +90,10 @@ const ChatWidget = () => {
 		loading: loadingOnline,
 		error: errorOnline,
 	} = useFetchOnlineUsers(currentUserId, presenceWs.current);
-	const onlinePeople: User[] = rawOnlinePeople.map((u: any) => ({
+	const onlinePeople: User[] = rawOnlinePeople.map((u: OnlineUser) => ({
 		id: typeof u.id === 'string' ? parseInt(u.id, 10) : u.id,
 		username: u.username,
+		email: '',
 	}));
 
 	const sendGeneralMessage = (text: string) => {

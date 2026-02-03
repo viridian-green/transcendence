@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { User } from '@/shared.types';
 import { getAvatar } from './useAvatar';
+import { useAuth } from './useAuth';
 
 export function useFriends(userId?: string | number) {
 	const [friends, setFriends] = useState<User[]>([]);
@@ -9,8 +10,10 @@ export function useFriends(userId?: string | number) {
 	const [refreshTrigger, setRefreshTrigger] = useState(0);
 	const cleanupFns = useRef<(() => void)[]>([]);
 	const avatarUrls = useRef<Map<number, string>>(new Map());
+	const { user, isLoading, isLoggedIn } = useAuth();
 
 	const fetchAvatar = async (user: User) => {
+		if (!user) return;
 		let objectURL: string | null = null;
 		// Revoke previous avatar URL if it exists
 		if (avatarUrls.current.has(user.id)) {
@@ -31,7 +34,7 @@ export function useFriends(userId?: string | number) {
 
 	useEffect(() => {
 		const cleanupFnsArray: (() => void)[] = cleanupFns.current;
-		if (!userId) {
+		if (!userId || !user || !isLoggedIn || isLoading) {
 			setFriends([]);
 			setLoading(false);
 			setError(null);
@@ -59,7 +62,7 @@ export function useFriends(userId?: string | number) {
 		return () => {
 			cleanupFnsArray.forEach((fn) => fn());
 		};
-	}, [userId, refreshTrigger]);
+	}, [userId, user, isLoggedIn, isLoading, refreshTrigger]);
 
 	const refetch = useCallback(() => {
         setRefreshTrigger((prev) => prev + 1);

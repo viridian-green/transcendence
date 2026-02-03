@@ -15,7 +15,12 @@ export function usePresenceSocket(enabled: boolean) {
 		ws.current.onclose = () => setIsConnected(false);
 		ws.current.onerror = () => setIsConnected(false);
 
-		return () => ws.current?.close();
+		return () => {
+			if (ws.current?.readyState === WebSocket.OPEN) {
+				ws.current?.close();
+				ws.current = null;
+			}
+		};
 	}, [enabled]);
 
 	return { isConnected, ws };

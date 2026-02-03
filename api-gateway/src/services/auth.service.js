@@ -40,6 +40,19 @@ export async function authHook(request, reply) {
     return;
     }
 
+
+    if (pathname === '/api/users/me' || pathname === '/api/users/me/') {
+        try {
+            await request.jwtVerify();
+            if (request.user) {
+                ["id", "username", "email"].forEach((key) =>
+                    reply.header(`x-user-${key}`, request.user[key])
+                );
+            }
+        } catch (err) {}
+        return;
+    }
+
     try {
         // Verify JWT token from cookie - this automatically attaches payload to request.user
         await request.jwtVerify();
