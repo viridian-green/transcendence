@@ -1,8 +1,9 @@
 .gitlab-ci.yml
 
 # SSL certificates (regenerate locally)
-nginx/ssl/*.key
-nginx/ssl/*.crt
+*.key
+*.crt
+*.bak
 
 # Keep the directory structure
 !nginx/ssl/.gitkeep# Node.js
