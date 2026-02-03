@@ -10,7 +10,6 @@ export function useNotificationSocket(enabled: boolean) {
 
   useEffect(() => {
     if (!enabled) {
-      console.log('[NOTIFICATION SOCKET] disabled');
       return;
     }
 
@@ -21,7 +20,6 @@ export function useNotificationSocket(enabled: boolean) {
     ws.current = socket;
 
     socket.onopen = () => {
-      console.log('[NOTIFICATION SOCKET] connected');
       setIsConnected(true);
     };
 
@@ -41,7 +39,6 @@ export function useNotificationSocket(enabled: boolean) {
     };
 
     socket.onmessage = (event) => {
-      console.log('[NOTIFICATION SOCKET] raw message', event.data);
       try {
         const data: NotificationServerMessage = JSON.parse(event.data);
         setLastRawMessage(data);
@@ -50,7 +47,6 @@ export function useNotificationSocket(enabled: boolean) {
           //   console.log('[NOTIFICATION SOCKET]', data.message);
           //   break;
           case 'FRIEND_INVITE_RECEIVED':
-            console.log('[NOTIFICATION SOCKET] Friend invite received from', data.fromUsername);
             setFriendRequests(prev => ({
               ...prev,
               [String(data.fromUserId)]: {
@@ -89,7 +85,6 @@ export function useNotificationSocket(enabled: boolean) {
     };
 
     return () => {
-      console.log('[NOTIFICATION SOCKET] cleanup (effect unmounting)');
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
         ws.current.close();
       }
@@ -105,7 +100,6 @@ export function useNotificationSocket(enabled: boolean) {
       );
       return;
     }
-    console.log('[NOTIFICATION SOCKET] sending', payload);
     ws.current.send(
       typeof payload === 'string' ? payload : JSON.stringify(payload)
     );
