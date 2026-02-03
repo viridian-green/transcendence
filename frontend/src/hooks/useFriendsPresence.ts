@@ -5,43 +5,38 @@ import type { Friend } from '@/shared.types';
 import { usePresenceSocket } from './usePresenceSocket';
 import { useMemo } from 'react';
 
+interface FriendStatusMap {
+  [userId: string]: 'online' | 'offline' | 'busy';
+}
+
 export function useFriendsWithStatus(userId?: number) {
 	const { friends, error: friendsError, loading: friendsLoading } = useFriends(userId);
-	const { ws, isConnected } = usePresenceSocket(Boolean(userId));
-	const {
-		users: onlineUsers,
-		error: onlineUsersError,
-		loading: onlineUsersLoading,
-	} = useFetchOnlineUsers(String(userId), ws.current);
+	const { friendStatuses, isConnected } = usePresenceSocket(Boolean(userId));
 
 	console.log('[ONLINE USERS] friends:', JSON.stringify(friends, null, 2));
 
 	const friendsWithStatus: Friend[] = useMemo(
 		() =>
 			friends.map((friend) => {
-				let status: Friend['status'];
-				if (!isConnected) {
-					status = 'offline';
-				} else {
-					// TODO implement busy logic here
-					status = onlineUsers.some((u) => String(u.id) === String(friend.id))
-						? 'online'
-						: 'offline';
+				let status: Friend['status'] = 'offline';
+				if (isConnected) {
+					const wsStatus = friendStatuses[String(friend.id)];
+					status = wsStatus || 'offline';
 				}
-				const friendWithStatus = {
+
+				return {
 					...friend,
-					status: status,
+					status: status as Friend['status']  // 'online' | 'offline' | 'busy'
 				};
-				return friendWithStatus;
 			}),
-		[friends, onlineUsers, isConnected],
+		[friends, friendStatuses, isConnected]
 	);
 
 	console.log('[FETCHING FRIENDS] friends:', JSON.stringify(friends, null, 2));
 
 	return {
 		friends: friendsWithStatus,
-		loading: friendsLoading || onlineUsersLoading,
-		error: friendsError || onlineUsersError,
+		loading: friendsLoading,
+		error: friendsError,
 	};
 }

@@ -3,7 +3,7 @@ import { updateUserState } from "../presenceService.js";
 import { extractUserFromJWT } from "../utils/extractUserFromJWT.js";
 
 // Track active connections
-const activeConnections = new Map();
+export const activeConnections = new Map();
 const heartbeatIntervals = new Map();
 
 export function handlePresenceConnection(connection, request) {

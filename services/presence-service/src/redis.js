@@ -1,5 +1,4 @@
 import Redis from "ioredis";
-
 import { activeConnections } from "./handlers/presenceWebSocket.js";  // Your WS handler map
 
 const redisSubscriber = new Redis({
@@ -15,13 +14,13 @@ redisSubscriber.on("message", (channel, message) => {
     try {
       const data = JSON.parse(message);
       console.log(`[PRESENCE] Broadcasting: ${data.userId} -> ${data.state}`);
-      
+
       const updateMsg = JSON.stringify({
         type: "userStateChanged",
         userId: data.userId,
         state: data.state
       });
-      
+
       // Broadcast to ALL connected presence WS clients
       for (const [userId, conn] of activeConnections) {
         if (conn.readyState === WebSocket.OPEN) {

@@ -1,5 +1,5 @@
 import { redisClient, redisPublisher } from "./redis.js";
-import { broadcastPresenceUpdate } from "./handlers/presenceWebSocket.js";
+import { broadcastPresenceUpdate} from "./handlers/presenceWebSocket.js";
 
 const ALLOWED_STATES = ["online", "busy", "offline"];
 
