@@ -74,7 +74,7 @@ Before running the project, ensure you have the following installed:
    POSTGRES_USER=myuser
    POSTGRES_PASSWORD=your_secure_password
    POSTGRES_DB=transcendence_db
-   POSTGRES_PORT=5432
+
 
    # JWT and Security
    JWT_SECRET=your_jwt_secret_key_here

@@ -16,7 +16,6 @@ jobs:
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       COOKIE_SECRET: ${{ secrets.COOKIE_SECRET }}
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
