@@ -168,7 +168,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET}
-      NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED:-0}
+      NODE_EXTRA_CA_CERTS: /app/ssl/api-gateway.crt
     ports:
       - "3000:3000"
     volumes:
