@@ -123,8 +123,6 @@ services:
       context: ./services/presence-service
       dockerfile: Dockerfile
     environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
       JWT_SECRET_FILE: /run/secrets/jwt_secret
     secrets:
     - jwt_secret

@@ -5,10 +5,8 @@ import { WebSocket } from "ws";
 export const wsByUserId: Map<string, WebSocket> = new Map();
 
 const redisSubscriber = new Redis({
-  //Check if all these envs can be replaced by process.envREDIS_URL
-  host: process.env.REDIS_HOST || "redis",
-  port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6378,
-  password: process.env.REDIS_PASSWORD || undefined,
+  host: "redis",
+  port: 6379,
 });
 
 // Attach the  message handler ONCE

@@ -16,8 +16,8 @@ const clients: Map<WebSocket, User> = new Map();
 
 // Redis publisher for sending messages
 const redisPublisher = new Redis({
-  host: process.env.REDIS_HOST || "redis",
-  port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6378,
+  host: "redis",
+  port: 6379,
 });
 
 // Main WebSocket handler function (not exported directly)
