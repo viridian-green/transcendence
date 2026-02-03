@@ -1,22 +1,27 @@
 import { Toast, type ToastType } from '@components/index';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { ProfileCard } from './ProfileCard';
 import { useAuth } from '@/hooks/useAuth';
 import { FriendsCard } from './FriendsCard';
-import { useFriends } from '@/hooks/useFriends';
 import { useFriendsWithStatus } from '@/hooks/useFriendsPresence';
 import { useNavigate } from 'react-router-dom';
+import { useNotificationSocket } from '@/hooks/useNotificationSocket';
 
 const Profile = () => {
 	const { user, avatarUrl } = useAuth();
-	const { deleteFriend, loading: friendsLoading, error: friendsError } = useFriends(user?.id);
-	const { friends, loading: friendsWithStatusLoading } = useFriendsWithStatus(user?.id);
+	const { friends, loading: friendsWithStatusLoading, error: friendsError, deleteFriend, refetch } = useFriendsWithStatus(user?.id);
+	const { lastRawMessage } = useNotificationSocket(Boolean(user));
 	const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType } | null>({
 		show: false,
 		message: '',
 		type: 'success',
 	});
 	const navigate = useNavigate();
+
+	// Memoize refetch to prevent infinite loops
+	const handleRefreshFriends = useCallback(() => {
+		refetch();
+	}, [refetch]);
 
 	const handleRemoveFriend = async (id: number) => {
 		try {
@@ -36,11 +41,20 @@ const Profile = () => {
 		navigate(`/remote`);
 	};
 
+	// Track initial load vs subsequent refreshes
+	const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
+	
+	if (!hasInitiallyLoaded && friendsWithStatusLoading) {
+		// Only show loading screen on initial load
+		return <div>Loading friends...</div>;
+	}
+	
+	if (hasInitiallyLoaded === false && !friendsWithStatusLoading) {
+		setHasInitiallyLoaded(true);
+	}
+
 	if (!user || friendsError) {
 		return null;
-	}
-	if (friendsLoading || friendsWithStatusLoading) {
-		return <div>Loading friends...</div>;
 	}
 
 	return (
@@ -59,6 +73,8 @@ const Profile = () => {
 						friends={friends}
 						onRemoveFriend={handleRemoveFriend}
 						onChallengeFriend={handleChallengeFriend}
+						onRefreshFriends={handleRefreshFriends}
+						lastRawMessage={lastRawMessage}
 					/>
 				</div>
 			</main>

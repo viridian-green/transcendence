@@ -1,16 +1,18 @@
 import GlobalAlert from '@/components/GlobalAlert';
 import { X } from '@/icons';
 import type { Friend } from '@/shared.types';
-import { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router';
 
 interface FriendsCardProps {
 	friends: Friend[];
 	onRemoveFriend: (id: number) => void;
 	onChallengeFriend: (id: number) => void;
+	onRefreshFriends: () => void;
+	lastRawMessage: any;
 }
 
-export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend }: FriendsCardProps) {
+export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend, onRefreshFriends, lastRawMessage }: FriendsCardProps) {
 	const navigate = useNavigate();
 	const [deleteFriendAlert, setDeleteFriendAlert] = useState<{
 		visible: boolean;
@@ -23,6 +25,18 @@ export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend }: Frie
 		onRemoveFriend(userId);
 		setDeleteFriendAlert({ ...deleteFriendAlert, visible: false });
 	};
+	const lastProcessedMessageKey = useRef<string | null>(null);
+
+	useEffect(() => {
+		const type = lastRawMessage?.type;
+		if (type !== 'FRIEND_INVITE_ACCEPTED' && type !== 'FRIEND_INVITE_CONFIRMED') return;
+
+		const messageKey = `${type}:${lastRawMessage?.fromUserId ?? ''}:${lastRawMessage?.toUserId ?? ''}`;
+		if (lastProcessedMessageKey.current === messageKey) return;
+
+		lastProcessedMessageKey.current = messageKey;
+		onRefreshFriends();
+	}, [lastRawMessage, onRefreshFriends]);
 
 	return (
 		<div className='border-border bg-surface max-h-[436px] overflow-y-auto rounded-2xl border p-8'>
