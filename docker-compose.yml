@@ -2,8 +2,6 @@ services:
   nginx:
     image: nginx:alpine
     container_name: nginx
-    env_file:
-      - .env
     ports:
       - "8443:443"
     volumes:
@@ -108,8 +106,6 @@ services:
     build:
       context: ./services/chat-service
       dockerfile: Dockerfile
-
-    env_file: ./services/chat-service/.env
     volumes:
       - ./services/chat-service/ssl:/app/ssl:ro
     ports:
@@ -145,7 +141,6 @@ services:
       JWT_SECRET_FILE: /run/secrets/jwt_secret
     secrets:
     - jwt_secret
-    env_file: ./services/notification-service/.env
     volumes:
       - ./services/notification-service/ssl:/app/ssl:ro
     ports:
@@ -158,8 +153,6 @@ services:
     build:
       context: ./api-gateway
       dockerfile: Dockerfile
-    env_file:
-      - .env
     environment:
       JWT_SECRET_FILE: /run/secrets/jwt_secret
       NODE_EXTRA_CA_CERTS: /app/ssl/api-gateway.crt
