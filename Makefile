@@ -6,6 +6,7 @@
 # Generate SSL certificates if they don't exist
 setup:
 	./scripts/generate-ssl-certs.sh
+	@bash ./scripts/generate-secrets.sh
 
 
 ## === Lifecycle: start/stop/restart ===
@@ -72,7 +73,7 @@ reset:
 	docker builder prune -af || true
 	@echo "Removing SSL certs to force regeneration..."
 	rm -rf nginx/ssl/*.crt nginx/ssl/*.key || true
-	$(MAKE) setup
+#	$(MAKE) setup
 # 	docker compose build --no-cache --pull
 # 	docker compose up --build -d
 
