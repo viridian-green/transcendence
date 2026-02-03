@@ -85,7 +85,6 @@ Before running the project, ensure you have the following installed:
    REDIS_PORT=6379
 
    # Nginx Ports
-   NGINX_HTTP_PORT=8080
    NGINX_HTTPS_PORT=8443
    ```
 
