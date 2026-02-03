@@ -64,7 +64,7 @@ export async function handleFriendAccepted(event: {
         if (socket.readyState === WebSocket.OPEN) {
             socket.send(
                 JSON.stringify({
-                    type: "FRIEND_INVITE_ACCEPTED",
+                    type: "FRIEND_INVITE_CONFIRMED",
                     toUserId: event.toUserId,
                     toUsername: event.fromUsername,
                 })
