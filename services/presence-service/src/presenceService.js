@@ -46,6 +46,23 @@ export async function getOnlineUsers() {
       return [];
     }
   }
+export async function getBusyUsers() {
+    try {
+      const keys = await redisClient.keys("user:state:*");
+      if (!keys.length)
+        return [];
+
+      const states = await redisClient.mget(...keys);
+      return keys
+        .map((key, i) =>
+          states[i] === "busy" ? key.replace("user:state:", "") : null
+        )
+        .filter((id) => id !== null);
+    } catch (err) {
+      console.error("Failed to get busy users:", err);
+      return [];
+    }
+  }
 export async function isUserOnline(userId) {
     const state = await this.getUserState(userId);
     return state === "online";

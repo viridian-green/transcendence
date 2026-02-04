@@ -1,4 +1,5 @@
 import { redisClient } from "../redis.js";
+import { updateUserState, getUserState as getState, getOnlineUsers as getOnline, getBusyUsers as getBusy } from "../presenceService.js";
 
 const ALLOWED_STATES = ["online", "busy", "offline"];
 
@@ -13,25 +14,15 @@ async function checkIfStateIsValid(state) {
 }
 
 async function getUserState(id) {
-  try {
-    const state = await redisClient.get(`user:state:${id}`);
-    return state || "offline";
-  } catch (err) {
-    const error = new Error("Failed to get user state from Redis");
-    error.statusCode = 500;
-    throw error;
-  }
+  return await getState(id);
 }
 
 async function getOnlineUsers() {
-  const keys = await redisClient.keys("user:state:*");
-  if (!keys.length) return [];
-  const states = await redisClient.mget(...keys);
-  return keys
-    .map((key, i) =>
-      states[i] === "online" ? key.replace("user:state:", "") : null
-    )
-    .filter((id) => !!id);
+  return await getOnline();
+}
+
+async function getBusyUsers() {
+  return await getBusy();
 }
 
 export default async function stateRoutes(app) {
@@ -57,6 +48,11 @@ export default async function stateRoutes(app) {
 
   app.get("/online-users", async (req, reply) => {
     const users = await getOnlineUsers();
+    return reply.code(200).send({ users });
+  });
+
+  app.get("/busy-users", async (req, reply) => {
+    const users = await getBusyUsers();
     return reply.code(200).send({ users });
   });
 }
