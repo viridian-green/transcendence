@@ -30,11 +30,13 @@ export function usePresenceSocket(enabled: boolean) {
 				}
 				// Handle batch presence update
 				if (data.type === 'presence_update' && Array.isArray(data.users)) {
-					const newStatuses: { [userId: string]: string } = {};
-					for (const user of data.users) {
-						newStatuses[String(user.id)] = user.status;
-					}
-					setStatuses(newStatuses);
+					setStatuses((prev) => {
+						const newStatuses = { ...prev };
+						for (const user of data.users) {
+							newStatuses[String(user.id)] = user.status;
+						}
+						return newStatuses;
+					});
 				}
 			} catch (e) {
 				console.error('[PRESENCE SOCKET] Failed to parse message', event.data, e);
