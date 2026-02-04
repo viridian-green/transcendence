@@ -1,6 +1,7 @@
 import Redis from "ioredis";
 import WebSocket from "ws";
 import { activeConnections } from "./handlers/presenceWebSocket.js";
+import { redisClient } from "./redis.js";
 
 const redisSubscriber = new Redis({
   host: process.env.REDIS_HOST || "redis",
@@ -10,11 +11,14 @@ const redisSubscriber = new Redis({
 
 redisSubscriber.subscribe("presence:updates");
 
-redisSubscriber.on("message", (channel, message) => {
+redisSubscriber.on("message", async (channel, message) => {
   if (channel === "presence:updates") {
     try {
       const data = JSON.parse(message);
       console.log(`[PRESENCE] Broadcasting: ${data.userId} -> ${data.state}`);
+
+      // Update Redis state to keep it in sync
+      await redisClient.set(`user:state:${data.userId}`, data.state);
 
       const updateMsg = JSON.stringify({
         type: "userStateChanged",
