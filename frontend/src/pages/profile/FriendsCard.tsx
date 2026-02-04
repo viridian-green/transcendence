@@ -4,12 +4,22 @@ import type { Friend } from '@/shared.types';
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router';
 
+type NotificationServerMessage =
+	| {
+			type: 'FRIEND_INVITE_ACCEPTED' | 'FRIEND_INVITE_CONFIRMED';
+			fromUserId?: number;
+			toUserId?: number;
+	  }
+	| {
+			type: string;
+	  };
+
 interface FriendsCardProps {
 	friends: Friend[];
 	onRemoveFriend: (id: number) => void;
 	onChallengeFriend: (id: number) => void;
 	onRefreshFriends: () => void;
-	lastRawMessage: any;
+	lastRawMessage: NotificationServerMessage | null;
 }
 
 export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend, onRefreshFriends, lastRawMessage }: FriendsCardProps) {
