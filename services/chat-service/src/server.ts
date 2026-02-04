@@ -1,7 +1,6 @@
 import Fastify from "fastify";
 import websocket from "@fastify/websocket";
 import ChatsocketsRoute from "./routes/chatsockets.js";
-import { Server as SocketIOServer } from "socket.io";
 import {
   setupSubscribers,
   subscribeGeneralChat,
@@ -44,15 +43,9 @@ await fastify.register(websocket);
 
 // Register ChatSockets WebSockets routes
 await fastify.register(ChatsocketsRoute);
-// await fastify.register(OnlineUsersRoute);
-
-// Attach socket.io to Fastify's internal HTTP server
-const io = new SocketIOServer(fastify.server, {
-  cors: { origin: "*" }, // adjust as needed
-});
 
 subscribeGeneralChat();
-setupSubscribers(io);
+setupSubscribers();
 
 const start = async () => {
   try {
