@@ -9,8 +9,8 @@ const redisSubscriber = new Redis({
   port: 6379,
 });
 
-// Attach the  message handler ONCE
-export function setupSubscribers(io?: any) {
+// Attach the message handler ONCE
+export function setupSubscribers() {
   redisSubscriber.on("message", (channel: string, message: string) => {
     if (channel === "chat:general") {
         wsByUserId.forEach((ws, userId) => {
