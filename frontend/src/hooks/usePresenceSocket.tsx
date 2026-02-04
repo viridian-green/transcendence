@@ -14,6 +14,7 @@ export function usePresenceSocket(enabled: boolean) {
 
 		ws.current.onopen = () => {
 			setIsConnected(true);
+			ws.current?.send(JSON.stringify({ type: 'get_all_statuses' }));
 		};
 		ws.current.onclose = () => setIsConnected(false);
 		ws.current.onerror = () => setIsConnected(false);
