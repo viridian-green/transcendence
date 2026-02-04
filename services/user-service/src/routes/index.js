@@ -8,5 +8,4 @@ export default async function routes(app) {
     app.register(authRoutes, { prefix: '/auth' });
 
     app.register(userRoutes, { prefix: '/users'});
-
 }

@@ -5,6 +5,7 @@
 
 # Generate SSL certificates if they don't exist
 setup:
+	@bash ./scripts/generate-secrets.sh
 	./scripts/generate-ssl-certs.sh
 	@bash ./scripts/generate-secrets.sh
 
@@ -17,7 +18,7 @@ up: setup env
 	docker compose up -d
 
 # Start services with dev overrides
-dev: setup
+dev: setup env
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml build
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 

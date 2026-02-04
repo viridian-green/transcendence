@@ -6,15 +6,19 @@ import pg from 'pg'
 import fs from 'fs';
 
 async function waitForDatabase(connectionString, maxRetries = 10, delay = 2000) {
-    const client = new pg.Client({ connectionString })
-
     for (let i = 0; i < maxRetries; i++) {
+        const client = new pg.Client({ connectionString })
         try {
             await client.connect()
             await client.query('SELECT 1')
             await client.end()
             return true
         } catch (err) {
+            try {
+                await client.end()
+            } catch {
+                // ignore client end errors
+            }
             if (i < maxRetries - 1) {
                 await new Promise(resolve => setTimeout(resolve, delay))
             } else {

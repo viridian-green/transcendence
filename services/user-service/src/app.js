@@ -40,6 +40,4 @@ const app = Fastify({
 app.register(plugins);
 app.register(routes);
 
-await app.ready();
-
 export default app;

@@ -40,8 +40,10 @@ export async function acceptFriendRequest(app, userId, friendId) {
         `
         UPDATE friends
         SET status = 'accepted'
-        WHERE (user_one = $1 AND user_two = $2)
-        OR (user_one = $2 AND user_two = $1)
+        WHERE ((user_one = $1 AND user_two = $2)
+            OR (user_one = $2 AND user_two = $1))
+        AND status = 'pending'
+        AND (requested_by IS NULL OR requested_by = $2)
         RETURNING *
         `, [userId, friendId]
     );
@@ -56,12 +58,32 @@ export async function acceptFriendRequest(app, userId, friendId) {
 export async function createFriendRequest(app, userId, friendId) {
     const userOne = Math.min(userId, friendId);
     const userTwo = Math.max(userId, friendId);
-    const { rows } = await app.pg.query(`INSERT INTO friends (user_one, user_two)
-            VALUES ($1, $2)
+    const { rows } = await app.pg.query(`INSERT INTO friends (user_one, user_two, requested_by)
+            VALUES ($1, $2, $3)
             RETURNING *`,
-        [userOne, userTwo]
+        [userOne, userTwo, userId]
     );
     return rows[0];
+}
+
+export async function rejectFriendRequest(app, userId, friendId) {
+    const { rows, rowCount } = await app.pg.query(
+        `
+        DELETE FROM friends
+        WHERE ((user_one = $1 AND user_two = $2)
+            OR (user_one = $2 AND user_two = $1))
+        AND status = 'pending'
+        AND (requested_by IS NULL OR requested_by = $2)
+        RETURNING *
+        `,
+        [userId, friendId]
+    );
+    if (rowCount === 0) {
+        const err = new Error("Can't find friendship request");
+        err.statusCode = 404;
+        throw err;
+    }
+    return rows;
 }
 
 export async function deleteFriendship(app, userId, friendId) {
@@ -98,5 +120,45 @@ export async function getFriendsList(app, userId) {
     }
 
     return map;
+}
+
+export async function getPendingFriendRequests(app, userId) {
+    const { rows } = await app.pg.query(
+        `
+        SELECT
+            f.requested_by,
+            f.user_one,
+            f.user_two,
+            u.id,
+            u.username,
+            u.avatar,
+            u.bio
+        FROM friends f
+        JOIN users u ON u.id = CASE WHEN f.user_one = $1 THEN f.user_two ELSE f.user_one END
+        WHERE (f.user_one = $1 OR f.user_two = $1)
+        AND f.status = 'pending'
+        `,
+        [userId]
+    );
+
+    const incoming = [];
+    const outgoing = [];
+
+    for (const row of rows) {
+        const request = {
+            id: row.id,
+            username: row.username,
+            avatar: row.avatar,
+            bio: row.bio,
+        };
+
+        if (row.requested_by && Number(row.requested_by) === Number(userId)) {
+            outgoing.push(request);
+        } else {
+            incoming.push(request);
+        }
+    }
+
+    return { incoming, outgoing };
 }
 
