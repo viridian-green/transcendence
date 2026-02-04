@@ -49,24 +49,22 @@ const Profile = () => {
 
 	// Track initial load vs subsequent refreshes
 	const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
-
-	// Move state transition into useEffect to avoid render side-effects
-	// Only set hasInitiallyLoaded once when loading completes
+	
+	// Mark as loaded once friendsWithStatusLoading becomes false
 	useEffect(() => {
 		if (!friendsWithStatusLoading && !hasInitiallyLoaded) {
 			setHasInitiallyLoaded(true);
 		}
-		// hasInitiallyLoaded is intentionally excluded from deps - it's only set once
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [friendsWithStatusLoading]);
-
+	}, [friendsWithStatusLoading, hasInitiallyLoaded]);
+	
+	// Check user/auth state first before showing loading UI
+	if (!user || friendsError) {
+		return null;
+	}
+	
 	if (!hasInitiallyLoaded && friendsWithStatusLoading) {
 		// Only show loading screen on initial load
 		return <div>Loading friends...</div>;
-	}
-
-	if (!user || friendsError) {
-		return null;
 	}
 
 	return (
