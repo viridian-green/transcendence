@@ -1,5 +1,5 @@
 import { Toast, type ToastType } from '@components/index';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ProfileCard } from './ProfileCard';
 import { useAuth } from '@/hooks/useAuth';
 import { FriendsCard } from './FriendsCard';
@@ -9,7 +9,13 @@ import { useNotificationSocket } from '@/hooks/useNotificationSocket';
 
 const Profile = () => {
 	const { user, avatarUrl } = useAuth();
-	const { friends, loading: friendsWithStatusLoading, error: friendsError, deleteFriend, refetch } = useFriendsWithStatus(user?.id);
+	const {
+		friends,
+		loading: friendsWithStatusLoading,
+		error: friendsError,
+		deleteFriend,
+		refetch,
+	} = useFriendsWithStatus(user?.id);
 	const { lastRawMessage } = useNotificationSocket(Boolean(user));
 	const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType } | null>({
 		show: false,
@@ -43,14 +49,19 @@ const Profile = () => {
 
 	// Track initial load vs subsequent refreshes
 	const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
-	
+
+	// Move state transition into useEffect to avoid render side-effects
+	// Only set hasInitiallyLoaded once when loading completes
+	useEffect(() => {
+		if (!friendsWithStatusLoading && !hasInitiallyLoaded) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
+			setHasInitiallyLoaded(true);
+		}
+	}, [friendsWithStatusLoading, hasInitiallyLoaded]);
+
 	if (!hasInitiallyLoaded && friendsWithStatusLoading) {
 		// Only show loading screen on initial load
 		return <div>Loading friends...</div>;
-	}
-	
-	if (hasInitiallyLoaded === false && !friendsWithStatusLoading) {
-		setHasInitiallyLoaded(true);
 	}
 
 	if (!user || friendsError) {
