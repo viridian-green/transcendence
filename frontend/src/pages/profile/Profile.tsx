@@ -1,5 +1,5 @@
 import { Toast, type ToastType } from '@components/index';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ProfileCard } from './ProfileCard';
 import { useAuth } from '@/hooks/useAuth';
 import { FriendsCard } from './FriendsCard';
@@ -44,6 +44,13 @@ const Profile = () => {
 	// Track initial load vs subsequent refreshes
 	const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
 	
+	// Mark as loaded once friendsWithStatusLoading becomes false
+	useEffect(() => {
+		if (!friendsWithStatusLoading && !hasInitiallyLoaded) {
+			setHasInitiallyLoaded(true);
+		}
+	}, [friendsWithStatusLoading, hasInitiallyLoaded]);
+	
 	// Check user/auth state first before showing loading UI
 	if (!user || friendsError) {
 		return null;
@@ -52,10 +59,6 @@ const Profile = () => {
 	if (!hasInitiallyLoaded && friendsWithStatusLoading) {
 		// Only show loading screen on initial load
 		return <div>Loading friends...</div>;
-	}
-	
-	if (hasInitiallyLoaded === false && !friendsWithStatusLoading) {
-		setHasInitiallyLoaded(true);
 	}
 
 	return (
