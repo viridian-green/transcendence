@@ -6,7 +6,7 @@ import { usePresenceSocket } from './usePresenceSocket';
 import { useMemo } from 'react';
 
 export function useFriendsWithStatus(userId?: number) {
-	const { friends, error: friendsError, loading: friendsLoading } = useFriends(userId);
+	const { friends, error: friendsError, loading: friendsLoading, deleteFriend, refetch } = useFriends(userId);
 	const { ws, isConnected } = usePresenceSocket(Boolean(userId));
 	const {
 		users: onlineUsers,
@@ -40,5 +40,7 @@ export function useFriendsWithStatus(userId?: number) {
 		friends: friendsWithStatus,
 		loading: friendsLoading || onlineUsersLoading,
 		error: friendsError || onlineUsersError,
+		deleteFriend,
+		refetch,
 	};
 }

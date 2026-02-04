@@ -29,7 +29,9 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId,
 
 	useEffect(() => {
         if (
-            lastRawMessage?.type === 'FRIEND_INVITE_ACCEPTED' ||  lastRawMessage?.type === 'FRIEND_INVITE_CONFIRMED'
+            lastRawMessage?.type === 'FRIEND_INVITE_ACCEPTED'
+			|| lastRawMessage?.type === 'FRIEND_INVITE_CONFIRMED'
+
         ) {
             onRefreshFriends?.();
         }
