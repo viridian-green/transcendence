@@ -7,7 +7,7 @@ import {
     getFriendsList,
     acceptFriendRequest
 } from '../../../services/friends.service.js';
-import { emitFriendRequested, emitFriendAccepted, emitFriendRejected } from '../../../events/emitFriendRequested.js';
+import { emitFriendRequested, emitFriendAccepted, emitFriendRejected, emitFriendDeleted } from '../../../events/emitFriendRequested.js';
 
 export default async function friendsRoute(app) {
     // Accept friend request - must come before /:id to avoid route conflict
@@ -79,6 +79,7 @@ export default async function friendsRoute(app) {
         await ensureUserExists(app, friendId);
 
         const rows = await deleteFriendship(app, userId, friendId);
+        await emitFriendDeleted(app, userId, friendId);
         return reply.code(200).send({
             message: 'Friend removed',
             friendship: rows[0]
