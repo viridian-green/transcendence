@@ -23,7 +23,7 @@ redisSubscriber.on("message", (channel, message) => {
       });
 
       // Broadcast to ALL connected presence WS clients
-      for (const [, conn] of activeConnections) {
+      for (const [_userId, conn] of activeConnections) {
         if (conn.readyState === WebSocket.OPEN) {
           conn.send(updateMsg);
         }

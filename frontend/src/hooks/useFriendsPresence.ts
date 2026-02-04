@@ -4,7 +4,6 @@ import type { Friend } from '@/shared.types';
 import { usePresenceSocket } from './usePresenceSocket';
 
 export function useFriendsWithStatus(userId?: number) {
-	console.log('[USER ID],', userId);
 	const { friends, error: friendsError, loading: friendsLoading } = useFriends(userId);
 
 	const { statuses } = usePresenceSocket(Boolean(userId));

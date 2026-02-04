@@ -61,7 +61,7 @@ export default async function gameWebsocket(fastify) {
 
     room.clients.add(ws);
 
-    // Publish "busy" for this specific user when they join
+    // Set user presence to "busy" when they join the game
     if (user) {
       await onGameStart(req);
     }
@@ -83,7 +83,7 @@ export default async function gameWebsocket(fastify) {
       console.log('[GAME WS] Player disconnected from room', gameId);
       room.clients.delete(ws);
 
-      // Publish "online" for this specific user when they disconnect
+      // Set user presence to "online" when they leave the game
       if (user) {
         await onGameEnd(user.id);
       }
