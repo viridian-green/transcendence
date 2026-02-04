@@ -13,6 +13,35 @@ export function useNotificationSocket(enabled: boolean) {
       return;
     }
 
+    let isMounted = true;
+
+    const fetchPendingRequests = async () => {
+      try {
+        const res = await fetch('/api/users/friends/pending', { credentials: 'include' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!isMounted) return;
+
+        const combined = [...(data.incoming || []), ...(data.outgoing || [])];
+        setFriendRequests(prev => {
+          const updated = { ...prev };
+          for (const user of combined) {
+            if (!user?.id) continue;
+            updated[String(user.id)] = {
+              fromUserId: String(user.id),
+              fromUsername: user.username || '',
+              status: 'pending',
+            };
+          }
+          return updated;
+        });
+      } catch {
+        // silently ignore
+      }
+    };
+
+    fetchPendingRequests();
+
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/api/notifications/websocket`;
 
@@ -105,6 +134,7 @@ export function useNotificationSocket(enabled: boolean) {
     };
 
     return () => {
+      isMounted = false;
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
         ws.current.close();
       }
