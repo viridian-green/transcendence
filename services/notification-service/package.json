@@ -20,7 +20,6 @@
     "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
-    "@types/ioredis": "^4.28.10",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^25.0.3",
     "@types/ws": "^8.18.1",

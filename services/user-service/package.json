@@ -1,5 +1,5 @@
 {
-  "name": "transcendence",
+  "name": "user-service",
   "version": "1.0.0",
   "main": "index.js",
   "repository": {
@@ -25,10 +25,12 @@
     "fastify": "^5.6.2",
     "fastify-plugin": "^5.1.0",
     "ioredis": "^5.9.1",
-    "nodemon": "^3.1.11",
     "pg": "^8.16.3",
     "postgrator": "^8.0.0",
     "zod": "^4.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
   },
   "type": "module",
   "scripts": {
