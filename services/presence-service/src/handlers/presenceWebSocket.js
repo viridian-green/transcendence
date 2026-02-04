@@ -1,5 +1,5 @@
 import WebSocket from "ws";
-import { updateUserState } from "../presenceService.js";
+import { updateUserState, getAllUsersState } from "../presenceService.js";
 import { extractUserFromJWT } from "../utils/extractUserFromJWT.js";
 
 // Track active connections
@@ -31,6 +31,20 @@ export function handlePresenceConnection(connection, request) {
       state: "online",
     })
   );
+
+  // Send initial presence state of all users
+  getAllUsersState().then((users) => {
+    if (connection.readyState === WebSocket.OPEN) {
+      connection.send(
+        JSON.stringify({
+          type: "presence_update",
+          users: users,
+        })
+      );
+    }
+  }).catch((err) => {
+    console.error(`Failed to send initial presence state to ${user.username}:`, err);
+  });
 
   // Start heartbeat mechanism
   const heartbeatInterval = setInterval(() => {
