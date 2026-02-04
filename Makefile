@@ -11,7 +11,7 @@ setup:
 ## === Lifecycle: start/stop/restart ===
 
 # Start services (base stack)
-up: setup
+up: setup env
 	docker compose up -d
 
 # Start services with dev overrides
