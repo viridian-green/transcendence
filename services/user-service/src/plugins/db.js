@@ -75,8 +75,8 @@ function buildDatabaseUrl() {
     }
 
     const password = fs.readFileSync(DB_PASSWORD_FILE, 'utf8').trim();
-
-    return `postgres://${DB_USER}:${password}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
+    const encodedPassword = encodeURIComponent(password);
+    return `postgres://${DB_USER}:${encodedPassword}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
 }
 
 export default fastifyPlugin(dbConnector)
