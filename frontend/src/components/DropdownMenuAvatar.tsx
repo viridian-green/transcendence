@@ -35,6 +35,7 @@ const ProfileCard = () => {
 		sessionStorage.removeItem(CHAT_WIDGET_STORAGE_KEYS.privateTabs);
 		sessionStorage.removeItem(CHAT_WIDGET_STORAGE_KEYS.privateMessages);
 		sessionStorage.removeItem(CHAT_WIDGET_STORAGE_KEYS.generalMessages);
+		sessionStorage.removeItem(CHAT_WIDGET_STORAGE_KEYS.welcomeShown);
 		await fetch('/api/auth/signout', {
 			method: 'POST',
 			credentials: 'include',
