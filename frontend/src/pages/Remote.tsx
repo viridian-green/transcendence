@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { PinkButton } from '@/components';
 import { useNotificationSocket } from '@/hooks/useNotificationSocket';
 import { useNavigate } from 'react-router-dom';
-import type { Friend } from '@/shared.types';
+import type { Friend, InviteSentState } from '@/shared.types';
 import { useFriendsWithStatus } from '@/hooks/useFriendsPresence';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -18,7 +18,21 @@ const Remote = () => {
 	const { friends, loading: friendsLoading } = useFriendsWithStatus(user?.id);
 	const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
 	const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
+	const [inviteSent, setInviteSent] = useState<InviteSentState>(null);
 	const { send, lastRawMessage, isConnected } = useNotificationSocket(true);
+
+	useEffect(() => {
+		if (!inviteSent) return;
+
+		const timer = setInterval(() => {
+			setInviteSent((prev) => {
+				if (!prev) return null;
+				return { ...prev, timeElapsed: prev.timeElapsed + 1 };
+			});
+		}, 1000);
+
+		return () => clearInterval(timer);
+	}, [inviteSent]);
 
 	useEffect(() => {
 		if (!lastRawMessage) return;
@@ -32,9 +46,26 @@ const Remote = () => {
 			});
 		}
 
+				if (lastRawMessage.type === 'INVITE_SENT') {
+			// Show "waiting for response" popup
+			const friendName = friends.find((f) => f.id === lastRawMessage.toUserId)?.username || 'Friend';
+			setInviteSent({
+				toUsername: friendName,
+				gameMode: lastRawMessage.gameMode || 'pong',
+				timeElapsed: 0,
+			});
+		}
+
+		if (lastRawMessage.type === 'INVITE_SENT_FAILED') {
+			alert(`Invite failed: ${lastRawMessage.reason}`);
+			setInviteSent(null);
+		}
+
 		if (lastRawMessage.type === 'GAME_START') {
 			const { gameId, leftPlayerId, rightPlayerId, yourSide, leftPlayer, rightPlayer } =
 				lastRawMessage;
+
+			setInviteSent(null);
 
 			navigate(`/game/${gameId}`, {
 				state: {
@@ -47,6 +78,9 @@ const Remote = () => {
 				},
 			});
 		}
+
+
+
 	}, [lastRawMessage, navigate]);
 
 	const handleChallenge = (friend: Friend) => {
@@ -160,6 +194,29 @@ const Remote = () => {
 					</div>
 				</div>
 			)}
+
+			{/* Invite sent - waiting for response popup */}
+			{inviteSent && (
+				<div className='fixed inset-0 flex items-center justify-center bg-black/50'>					<div className='bg-surface rounded-lg p-6 shadow-lg'>
+						<p className='mb-4 text-lg font-semibold'>Invitation Sent!</p>
+						<p className='mb-2 text-text-secondary'>
+							Hang tight! Stay on this page while your friend accepts.
+						</p>
+						<p className='mb-4 text-sm text-text-muted'>
+						</p>
+						<div className='flex justify-end'>
+							<button
+								type='button'
+								className='rounded border px-3 py-1 text-accent-pink hover:bg-surface-hover'
+								onClick={() => setInviteSent(null)}
+							>
+								Close
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+
 		</div>
 	);
 };

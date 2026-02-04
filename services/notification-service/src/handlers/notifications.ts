@@ -140,6 +140,14 @@ if (data.type === 'INVITE') {
     }
   }
 
+   connection.send(
+   JSON.stringify({
+     type: 'INVITE_SENT',
+     toUserId: toUserId,
+     gameMode: data.gameMode ?? 'pong',
+   })
+ );
+
   return;
 }
 

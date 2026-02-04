@@ -10,6 +10,14 @@ export type Friend = User & {
 	status: 'online' | 'offline' | 'busy';
 };
 
+
+
+export type InviteSentState = {
+	toUsername: string;
+	gameMode: string;
+	timeElapsed: number;
+} | null;
+
 // Game phase types
 export type GamePhase = 'countdown' | 'playing' | 'ended';
 
