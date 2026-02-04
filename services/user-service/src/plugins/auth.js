@@ -19,14 +19,30 @@ function resolveJwtSecret() {
     throw new Error('JWT secret is not configured. Set JWT_SECRET or JWT_SECRET_FILE.');
 }
 
+function resolveCookieSecret() {
+    if (process.env.COOKIE_SECRET) {
+        return process.env.COOKIE_SECRET;
+    }
+    const cookieSecretFile = process.env.COOKIE_SECRET_FILE;
+    if (cookieSecretFile) {
+        try {
+            return fs.readFileSync(cookieSecretFile, 'utf8').trim();
+        } catch (err) {
+            throw new Error(`Failed to read cookie secret file at ${cookieSecretFile}: ${err.message}`);
+        }
+    }
+    throw new Error('Cookie secret is not configured. Set COOKIE_SECRET or COOKIE_SECRET_FILE.');
+}
+
 /**
  * Authentication plugin for User Service
  * Sets up cookie and JWT for token signing, and authenticate decorator
  */
 async function authPlugin(app) {
     // Register cookie plugin
+    const cookieSecret = resolveCookieSecret();
     app.register(cookie, {
-        secret: process.env.COOKIE_SECRET,
+        secret: cookieSecret,
         cookie: {
             cookieName: 'access_token',
             signed: false

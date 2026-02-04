@@ -66,26 +66,27 @@ Before running the project, ensure you have the following installed:
    cd transcendence
    ```
 
-2. **Set up environment variables:**
+2. **Set up environment variables and secrets:**
 
-   Create a `.env` file in the root directory with the following variables:
+   Run the setup script to generate secrets and copy environment templates:
+   ```bash
+   make setup
+   ```
+
+   This will automatically:
+   - Generate `secrets/jwt_secret`
+   - Generate `secrets/postgres_password`
+   - Generate `secrets/cookie_secret`
+   - Generate SSL certificates
+
+   You can also manually create a `.env` file in the root directory:
    ```bash
    # Database Configuration
    POSTGRES_USER=myuser
-   POSTGRES_PASSWORD=your_secure_password
    POSTGRES_DB=transcendence_db
-
-
-   # JWT and Security
-   COOKIE_SECRET=your_cookie_secret_key_here
-
-   # Redis Configuration
-   REDIS_HOST=redis
-   REDIS_PORT=6379
-
    ```
 
-   **Note**: Replace all placeholder values with secure, randomly generated strings. Never commit `.env` files to version control.
+   **Note**: Secrets (JWT, Postgres password, Cookie secret) are stored in the `secrets/` directory and mounted as Docker secrets. Never commit the `secrets/` directory to version control.
 
    For detailed environment setup instructions, see [ENV_SETUP.md](./ENV_SETUP.md).
 

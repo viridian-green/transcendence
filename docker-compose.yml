@@ -75,6 +75,7 @@ services:
     secrets:
     - postgres_password
     - jwt_secret
+    - cookie_secret
 
     depends_on:
       user-db:
@@ -86,6 +87,7 @@ services:
 
     environment:
       JWT_SECRET_FILE: /run/secrets/jwt_secret
+      COOKIE_SECRET_FILE: /run/secrets/cookie_secret
       NODE_EXTRA_CA_CERTS: /app/ssl/user-service.crt
       NODE_TLS_REJECT_UNAUTHORIZED: 0
 
@@ -201,3 +203,5 @@ secrets:
     file: ./secrets/postgres_password
   jwt_secret:
     file: ./secrets/jwt_secret
+  cookie_secret:
+    file: ./secrets/cookie_secret

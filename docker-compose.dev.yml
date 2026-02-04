@@ -109,10 +109,12 @@ services:
       - ./services/user-service/.env
     environment:
       JWT_SECRET_FILE: /run/secrets/jwt_secret
+      COOKIE_SECRET_FILE: /run/secrets/cookie_secret
       NODE_EXTRA_CA_CERTS: /app/ssl/server.crt
       NODE_TLS_REJECT_UNAUTHORIZED: 0
     secrets:
       - jwt_secret
+      - cookie_secret
     volumes:
       - ./services/user-service/uploads:/app/uploads
       - ./services/user-service/ssl:/app/ssl:ro
@@ -234,3 +236,5 @@ volumes:
 secrets:
   jwt_secret:
     file: ./secrets/jwt_secret
+  cookie_secret:
+    file: ./secrets/cookie_secret

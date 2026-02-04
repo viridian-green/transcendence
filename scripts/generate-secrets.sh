@@ -7,6 +7,7 @@ CERTS_DIR="$ROOT_DIR/nginx/ssl"
 
 JWT_SECRET_FILE="$SECRETS_DIR/jwt_secret"
 POSTGRES_PASSWORD_FILE="$SECRETS_DIR/postgres_password"
+COOKIE_SECRET_FILE="$SECRETS_DIR/cookie_secret"
 
 echo "🔧 Transcendence setup starting..."
 echo "Root: $ROOT_DIR"
@@ -48,6 +49,21 @@ fi
 chmod 600 "$POSTGRES_PASSWORD_FILE"
 
 # --------------------------------------------------
+# 4️⃣ Cookie secret
+# --------------------------------------------------
+if [ -n "$COOKIE_SECRET" ]; then
+  echo "→ Using COOKIE_SECRET from environment"
+  echo -n "$COOKIE_SECRET" > "$COOKIE_SECRET_FILE"
+elif [ -f "$COOKIE_SECRET_FILE" ]; then
+  echo "✓ cookie_secret already exists"
+else
+  echo "→ Generating cookie_secret"
+  openssl rand -hex 32 > "$COOKIE_SECRET_FILE"
+fi
+
+chmod 600 "$COOKIE_SECRET_FILE"
+
+# --------------------------------------------------
 # 5️⃣ Summary
 # --------------------------------------------------
 echo
@@ -56,5 +72,6 @@ echo
 echo "Generated files:"
 echo "  - $JWT_SECRET_FILE"
 echo "  - $POSTGRES_PASSWORD_FILE"
+echo "  - $COOKIE_SECRET_FILE"
 echo
 echo "You can now run: make up"
