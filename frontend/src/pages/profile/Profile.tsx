@@ -54,10 +54,11 @@ const Profile = () => {
 	// Only set hasInitiallyLoaded once when loading completes
 	useEffect(() => {
 		if (!friendsWithStatusLoading && !hasInitiallyLoaded) {
-			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setHasInitiallyLoaded(true);
 		}
-	}, [friendsWithStatusLoading, hasInitiallyLoaded]);
+		// hasInitiallyLoaded is intentionally excluded from deps - it's only set once
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [friendsWithStatusLoading]);
 
 	if (!hasInitiallyLoaded && friendsWithStatusLoading) {
 		// Only show loading screen on initial load
