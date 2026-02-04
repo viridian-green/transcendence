@@ -84,8 +84,6 @@ Before running the project, ensure you have the following installed:
    REDIS_HOST=redis
    REDIS_PORT=6379
 
-   # Nginx Ports
-   NGINX_HTTPS_PORT=8443
    ```
 
    **Note**: Replace all placeholder values with secure, randomly generated strings. Never commit `.env` files to version control.

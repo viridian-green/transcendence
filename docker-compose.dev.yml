@@ -30,7 +30,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${NGINX_HTTPS_PORT:-8443}:443"
+      - "8443:443"
     volumes:
       - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
