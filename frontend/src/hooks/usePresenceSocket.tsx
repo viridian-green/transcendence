@@ -5,6 +5,8 @@ let globalWs: WebSocket | null = null;
 let globalStatuses: { [userId: string]: string } = {};
 let connectionCount = 0;
 const listeners = new Set<() => void>();
+// Stable ref object to avoid creating new objects on every render
+const wsRef = { current: null as WebSocket | null };
 
 // Notify all subscribers when statuses change
 function notifyListeners() {
@@ -26,13 +28,18 @@ function getSnapshot() {
 
 // Initialize or reuse global WebSocket connection
 function initializeWebSocket() {
-	if (globalWs && globalWs.readyState === WebSocket.OPEN) {
-		return; // Already connected
+	// Don't create a new connection if one exists and is connecting or open
+	if (
+		globalWs &&
+		(globalWs.readyState === WebSocket.OPEN || globalWs.readyState === WebSocket.CONNECTING)
+	) {
+		return; // Already connected or connecting
 	}
 
 	const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 	const wsUrl = `${protocol}//${window.location.host}/api/presence`;
 	globalWs = new WebSocket(wsUrl);
+	wsRef.current = globalWs;
 
 	globalWs.onopen = () => {
 		notifyListeners();
@@ -82,10 +89,8 @@ export function usePresenceSocket(enabled: boolean) {
 		// Increment connection count
 		connectionCount++;
 
-		// Initialize WebSocket if not already done
-		if (connectionCount === 1) {
-			initializeWebSocket();
-		}
+		// Initialize WebSocket (function handles checking if already initialized)
+		initializeWebSocket();
 
 		// Update connection status
 		const updateConnectionStatus = () => {
@@ -104,9 +109,12 @@ export function usePresenceSocket(enabled: boolean) {
 			if (connectionCount === 0 && globalWs) {
 				globalWs.close();
 				globalWs = null;
+				wsRef.current = null;
+				// Clear stale statuses when connection is closed
+				globalStatuses = {};
 			}
 		};
 	}, [enabled]);
 
-	return { isConnected, ws: { current: globalWs }, statuses };
+	return { isConnected, ws: wsRef, statuses };
 }
