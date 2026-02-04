@@ -18,7 +18,13 @@ redisSubscriber.on("message", async (channel, message) => {
       console.log(`[PRESENCE] Broadcasting: ${data.userId} -> ${data.state}`);
 
       // Update Redis state to keep it in sync
-      await redisClient.set(`user:state:${data.userId}`, data.state);
+      try {
+        await redisClient.set(`user:state:${data.userId}`, data.state);
+      } catch (redisErr) {
+        console.error(`[PRESENCE] Failed to update Redis state for user ${data.userId}:`, redisErr);
+        // Don't broadcast if we failed to persist the state
+        return;
+      }
 
       const updateMsg = JSON.stringify({
         type: "userStateChanged",
