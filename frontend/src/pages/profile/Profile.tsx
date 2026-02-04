@@ -9,7 +9,13 @@ import { useNotificationSocket } from '@/hooks/useNotificationSocket';
 
 const Profile = () => {
 	const { user, avatarUrl } = useAuth();
-	const { friends, loading: friendsWithStatusLoading, error: friendsError, deleteFriend, refetch } = useFriendsWithStatus(user?.id);
+	const {
+		friends,
+		loading: friendsWithStatusLoading,
+		error: friendsError,
+		deleteFriend,
+		refetch,
+	} = useFriendsWithStatus(user?.id);
 	const { lastRawMessage } = useNotificationSocket(Boolean(user));
 	const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType } | null>({
 		show: false,
