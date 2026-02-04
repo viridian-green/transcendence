@@ -6,7 +6,7 @@ import { extractUserFromJWT } from "../utils/extractUserFromJWT.js";
 export const activeConnections = new Map();
 const heartbeatIntervals = new Map();
 
-export function handlePresenceConnection(connection, request) {
+export async function handlePresenceConnection(connection, request) {
   const user = extractUserFromJWT(request);
   if (!user) {
     console.log('Extracted user from JWT: null');
@@ -33,7 +33,8 @@ export function handlePresenceConnection(connection, request) {
   );
 
   // Send initial presence state of all users
-  getAllUsersState().then((users) => {
+  try {
+    const users = await getAllUsersState();
     if (connection.readyState === WebSocket.OPEN) {
       connection.send(
         JSON.stringify({
@@ -42,9 +43,9 @@ export function handlePresenceConnection(connection, request) {
         })
       );
     }
-  }).catch((err) => {
+  } catch (err) {
     console.error(`Failed to send initial presence state to ${user.username}:`, err);
-  });
+  }
 
   // Start heartbeat mechanism
   const heartbeatInterval = setInterval(() => {
