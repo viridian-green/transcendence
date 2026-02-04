@@ -5,6 +5,7 @@
 
 # Generate SSL certificates if they don't exist
 setup:
+	@bash ./scripts/generate-secrets.sh
 	./scripts/generate-ssl-certs.sh
 
 
@@ -15,7 +16,7 @@ up: setup env
 	docker compose up -d
 
 # Start services with dev overrides
-dev: setup
+dev: setup env
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml build
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
@@ -72,7 +73,7 @@ reset:
 	docker builder prune -af || true
 	@echo "Removing SSL certs to force regeneration..."
 	rm -rf nginx/ssl/*.crt nginx/ssl/*.key || true
-	$(MAKE) setup
+#	$(MAKE) setup
 # 	docker compose build --no-cache --pull
 # 	docker compose up --build -d
 
