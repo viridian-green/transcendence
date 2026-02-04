@@ -67,7 +67,9 @@ services:
       database:
         condition: service_healthy
     env_file:
-      - ./services/user-service/.env
+      - ./services/game-service/.env
+    volumes:
+      - ./services/game-service/ssl:/app/ssl:ro
     ports:
       - "3002:3002"
     networks:

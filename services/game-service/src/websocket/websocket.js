@@ -1,7 +1,7 @@
 import { AIController } from '../game/AIController.js';
 import { createInitialState, stopPaddle, movePaddle, GameLoop, GAME_CONFIG } from '../game/game-logic.js';
-import { redisPublisher } from "../redis/subscribers.ts";
-import {extractUserFromJWT} from "../utils/extractUserFromJWT.ts";
+import { redisPublisher } from "../redis/subscribers.js";
+import { extractUserFromJWT } from "../utils/extractUserFromJWT.js";
 
 const rooms = new Map();
 
@@ -61,8 +61,10 @@ export default async function gameWebsocket(fastify) {
 
     room.clients.add(ws);
 
-    if (user && room.clients.size === 1)
-      await onGameStart(req); 
+    // Publish "busy" for this specific user when they join
+    if (user) {
+      await onGameStart(req);
+    }
 
     ws.send(JSON.stringify({ type: 'STATE', payload: buildStateSnapshot(room.state) }));
 
@@ -81,12 +83,16 @@ export default async function gameWebsocket(fastify) {
       console.log('[GAME WS] Player disconnected from room', gameId);
       room.clients.delete(ws);
 
-    if (room.clients.size === 0) {
-      console.log('[GAME WS] No clients left, deleting room', gameId);
-      await onGameEnd(user.id);
-      stopRoomLoop(room);
-      rooms.delete(gameId);} else {
+      // Publish "online" for this specific user when they disconnect
+      if (user) {
+        await onGameEnd(user.id);
+      }
 
+      if (room.clients.size === 0) {
+        console.log('[GAME WS] No clients left, deleting room', gameId);
+        stopRoomLoop(room);
+        rooms.delete(gameId);
+      } else {
         console.log(`[GAME WS] Notifying ${room.clients.size} remaining client(s) in ${gameId}`);
         const payload = JSON.stringify({ type: 'OPPONENT_LEFT' });
         for (const client of room.clients) {

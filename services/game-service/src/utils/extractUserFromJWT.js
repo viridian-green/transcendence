@@ -1,15 +1,9 @@
 import jwt from "jsonwebtoken";
 
-interface User {
-  id: string;
-  username: string;
-  state?: "online" | "offline" | "busy";
-}
-
 // Extract user info from JWT in cookies
-export function extractUserFromJWT(request: any): User | null {
-  const cookieHeader = request.headers["cookie"] as string | undefined;
-  let cookies: Record<string, string> = {};
+export function extractUserFromJWT(request) {
+  const cookieHeader = request.headers["cookie"];
+  let cookies = {};
   if (cookieHeader) {
     cookieHeader.split(";").forEach((cookie) => {
       const parts = cookie.split("=");
@@ -22,7 +16,7 @@ export function extractUserFromJWT(request: any): User | null {
   const jwtSecret = process.env.JWT_SECRET;
   if (accessToken && jwtSecret) {
     try {
-      const decoded = jwt.verify(accessToken, jwtSecret) as any;
+      const decoded = jwt.verify(accessToken, jwtSecret);
       if (decoded.username && decoded.id) {
         return { username: decoded.username, id: String(decoded.id) };
       }

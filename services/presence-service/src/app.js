@@ -6,6 +6,8 @@ import presenceRoutes from "./routes/presence.routes.js";
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+// Initialize Redis subscriber for broadcasting presence updates
+import "./redisSubscriber.js";
 
 dotenv.config();
 
