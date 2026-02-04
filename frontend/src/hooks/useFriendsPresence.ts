@@ -19,14 +19,13 @@ export function useFriendsWithStatus(userId?: number) {
 const friendsWithStatus: Friend[] = friends.map((friend) => {
     let status: Friend['status'];
 
-    // 1. Check WebSocket real-time status FIRST
     const wsStatus = statuses[String(friend.id)];
 
 
     status = wsStatus as Friend['status'];
 
-    console.log('[DEBUG] statuses keys:', Object.keys(statuses));
-    console.log('[DEBUG] friend.id:', friend.id, 'as string:', String(friend.id));
+    console.log('[WSSTATUS]:', wsStatus);
+    // console.log('[DEBUG] friend.id:', friend.id, 'as string:', String(friend.id));
     // 2. Fallback: Check HTTP API (your existing useFetchOnlineUsers)
     //  if (onlineUsers.some(u => String(u.id) === String(friend.id))) {
     //     status = 'online';
