@@ -87,7 +87,7 @@ export async function handleFriendRejected(event: {
         if (socket.readyState === WebSocket.OPEN) {
             socket.send(
                 JSON.stringify({
-                    type: "FRIEND_INVITE_DECLINED",
+                    type: "FRIEND_INVITE_REJECTED",
                     fromUserId: event.fromUserId,
                     fromUsername: event.fromUsername,
                 })
