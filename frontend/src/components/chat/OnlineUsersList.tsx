@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSendFriendInvite } from './hooks/useSendFriendInvite';
 import type { User } from '@/shared.types';
 import GlobalAlert from '../GlobalAlert';
@@ -31,7 +31,8 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId,
         if (
             lastRawMessage?.type === 'FRIEND_INVITE_ACCEPTED'
 			|| lastRawMessage?.type === 'FRIEND_INVITE_CONFIRMED'
-
+			|| lastRawMessage?.type === 'FRIEND_DELETED'
+			|| lastRawMessage?.type === 'FRIEND_UNFRIENDED'
         ) {
             onRefreshFriends?.();
         }

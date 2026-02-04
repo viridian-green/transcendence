@@ -3,23 +3,14 @@ import { X } from '@/icons';
 import type { Friend } from '@/shared.types';
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router';
-
-type NotificationServerMessage =
-	| {
-			type: 'FRIEND_INVITE_ACCEPTED' | 'FRIEND_INVITE_CONFIRMED';
-			fromUserId?: number;
-			toUserId?: number;
-	  }
-	| {
-			type: string;
-	  };
+import type { NotificationFriendRequest } from '@/components/chat/types/chat';
 
 interface FriendsCardProps {
 	friends: Friend[];
 	onRemoveFriend: (id: number) => void;
 	onChallengeFriend: (id: number) => void;
 	onRefreshFriends: () => void;
-	lastRawMessage: NotificationServerMessage | null;
+	lastRawMessage: NotificationFriendRequest | null;
 }
 
 export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend, onRefreshFriends, lastRawMessage }: FriendsCardProps) {
@@ -39,7 +30,13 @@ export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend, onRefr
 
 	useEffect(() => {
 		const type = lastRawMessage?.type;
-		if (type !== 'FRIEND_INVITE_ACCEPTED' && type !== 'FRIEND_INVITE_CONFIRMED') return;
+		if (
+			type !== 'FRIEND_INVITE_ACCEPTED' &&
+			type !== 'FRIEND_INVITE_CONFIRMED' &&
+			type !== 'FRIEND_DELETED' &&
+			type !== 'FRIEND_UNFRIENDED'
+		)
+			return;
 
 		const messageKey = `${type}:${lastRawMessage?.fromUserId ?? ''}:${lastRawMessage?.toUserId ?? ''}`;
 		if (lastProcessedMessageKey.current === messageKey) return;

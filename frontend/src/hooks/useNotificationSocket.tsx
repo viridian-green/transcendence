@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import type { ChatRenderMessage, NotificationServerMessage, FriendRequest } from '@/components/chat/types/chat';
+import type { ChatRenderMessage, NotificationFriendRequest, FriendRequest } from '@/components/chat/types/chat';
 
 export function useNotificationSocket(enabled: boolean) {
   const [messages, setMessages] = useState<ChatRenderMessage[]>([]);
@@ -40,7 +40,7 @@ export function useNotificationSocket(enabled: boolean) {
 
     socket.onmessage = (event) => {
       try {
-        const data: NotificationServerMessage = JSON.parse(event.data);
+        const data: NotificationFriendRequest = JSON.parse(event.data);
         setLastRawMessage(data);
         switch (data.type) {
           // case 'welcome':
@@ -77,6 +77,26 @@ export function useNotificationSocket(enabled: boolean) {
                 status: 'rejected',
               },
             }));
+            break;
+          case 'FRIEND_DELETED':
+            // Remove friend request state for the deleted friend (toUserId)
+            if (data.toUserId) {
+              setFriendRequests(prev => {
+                const updated = { ...prev };
+                delete updated[String(data.toUserId)];
+                return updated;
+              });
+            }
+            break;
+          case 'FRIEND_UNFRIENDED':
+            // Remove friend request state for the user who unfriended us (fromUserId)
+            if (data.fromUserId) {
+              setFriendRequests(prev => {
+                const updated = { ...prev };
+                delete updated[String(data.fromUserId)];
+                return updated;
+              });
+            }
             break;
         }
       } catch (parseError) {
