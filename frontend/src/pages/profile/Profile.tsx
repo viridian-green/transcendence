@@ -44,6 +44,10 @@ const Profile = () => {
 	// Track initial load vs subsequent refreshes
 	const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
 	
+	if (!user || friendsError) {
+		return null;
+	}
+	
 	if (!hasInitiallyLoaded && friendsWithStatusLoading) {
 		// Only show loading screen on initial load
 		return <div>Loading friends...</div>;
@@ -51,10 +55,6 @@ const Profile = () => {
 	
 	if (hasInitiallyLoaded === false && !friendsWithStatusLoading) {
 		setHasInitiallyLoaded(true);
-	}
-
-	if (!user || friendsError) {
-		return null;
 	}
 
 	return (
