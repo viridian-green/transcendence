@@ -14,6 +14,7 @@ import ChatHeader from './ChatHeader';
 import ConversationTab from './ConversationTab';
 import UsersList from './OnlineUsersList';
 import ChatTabs from './ChatTabs';
+import { CHAT_WIDGET_LOCALSTORAGE_KEYS } from '@/const';
 
 const ChatWidget = () => {
 	const { user } = useAuth();
@@ -25,14 +26,14 @@ const ChatWidget = () => {
 		'conversation_all',
 	);
 	const [privateTabs, setPrivateTabs] = useLocalStorageState<{ id: number; name: string }[]>(
-		'privateTabs',
+		CHAT_WIDGET_LOCALSTORAGE_KEYS.privateTabs,
 		[],
 	);
 	const [privateMessages, setPrivateMessages] = useLocalStorageState<
 		Record<number, ChatRenderMessage[]>
-	>('privateMessages', {});
+	>(CHAT_WIDGET_LOCALSTORAGE_KEYS.privateMessages, {});
 	const [generalMessages, setGeneralMessages] = useLocalStorageState<ChatRenderMessage[]>(
-		'generalMessages',
+		CHAT_WIDGET_LOCALSTORAGE_KEYS.generalMessages,
 		[],
 	);
 	const { unreadPrivate, totalUnread } = useUnreadPrivateMessages(
@@ -80,7 +81,7 @@ const ChatWidget = () => {
 	useEffect(() => {
 		if (!user || !isPresenceConnected) {
 			setGeneralMessages([]);
-			localStorage.removeItem('generalMessages');
+			localStorage.removeItem(CHAT_WIDGET_LOCALSTORAGE_KEYS.generalMessages);
 		}
 	}, [user, isPresenceConnected, setGeneralMessages]);
 
@@ -104,7 +105,10 @@ const ChatWidget = () => {
 				...prev,
 				{ kind: 'chat', username: user?.username || '', text } as ChatRenderMessage,
 			];
-			localStorage.setItem('generalMessages', JSON.stringify(updated));
+			localStorage.setItem(
+				CHAT_WIDGET_LOCALSTORAGE_KEYS.generalMessages,
+				JSON.stringify(updated),
+			);
 			return updated;
 		});
 	};
@@ -119,7 +123,10 @@ const ChatWidget = () => {
 					{ kind: 'chat', username: user?.username || '', text } as ChatRenderMessage,
 				],
 			};
-			localStorage.setItem('privateMessages', JSON.stringify(updated));
+			localStorage.setItem(
+				CHAT_WIDGET_LOCALSTORAGE_KEYS.privateMessages,
+				JSON.stringify(updated),
+			);
 			return updated;
 		});
 	};
@@ -171,16 +178,16 @@ const ChatWidget = () => {
 						)}
 						{activeTab === 'users_list' && (
 							<UsersList
-                                users={onlinePeople}
-                                friends={friends}
-                                loading={loadingOnline}
-                                error={errorOnline}
-                                onUserClick={(user) =>
-                                    openPrivateTab({ id: user.id, name: user.username })
-                                }
-                                currentUserId={currentUserId}
-                                onRefreshFriends={refetch}
-                            />
+								users={onlinePeople}
+								friends={friends}
+								loading={loadingOnline}
+								error={errorOnline}
+								onUserClick={(user) =>
+									openPrivateTab({ id: user.id, name: user.username })
+								}
+								currentUserId={currentUserId}
+								onRefreshFriends={refetch}
+							/>
 						)}
 						{typeof activeTab === 'number' &&
 							privateTabs.some((t) => t.id === activeTab) &&
