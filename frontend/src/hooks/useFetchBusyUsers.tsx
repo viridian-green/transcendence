@@ -62,7 +62,8 @@ export function useFetchBusyUsers(currentUserId?: string, socket?: WebSocket | n
 			// Native WebSocket: listen for 'message' events
 			const handler = (event: MessageEvent) => {
 				const data = JSON.parse(event.data);
-				if (data.type === 'onlineUsersUpdated') {
+				// Refresh on any presence update since busy status changes affect the list
+				if (data.type === 'onlineUsersUpdated' || data.type === 'userStateChanged') {
 					fetchBusyUsers();
 				}
 			};
