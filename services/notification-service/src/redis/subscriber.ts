@@ -1,5 +1,5 @@
 import Redis from "ioredis";
-import { handleFriendRequested, handleFriendAccepted, handleFriendRejected } from "../handlers/handleFriendRequested.js";
+import { handleFriendRequested, handleFriendAccepted, handleFriendRejected, handleFriendDeleted } from "../handlers/handleFriendRequested.js";
 
 const redisSubscriber = new Redis({
     host: process.env.REDIS_HOST || "redis",
@@ -29,12 +29,14 @@ export function setupNotificationSubscriber() {
             return;
         }
 
-        if (event.type === "friend.requested") {
+        if (event.type === "FRIEND_INVITE_RECEIVED") {
             handleFriendRequested(event);
-        } else if (event.type === "friend.accepted") {
+        } else if (event.type === "FRIEND_INVITE_ACCEPTED") {
             handleFriendAccepted(event);
-        } else if (event.type === "friend.rejected") {
+        } else if (event.type === "FRIEND_INVITE_REJECTED") {
             handleFriendRejected(event);
+        } else if (event.type === "FRIEND_DELETED") {
+            handleFriendDeleted(event);
         }
     });
 

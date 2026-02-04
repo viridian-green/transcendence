@@ -97,3 +97,47 @@ export async function handleFriendRejected(event: {
     }
 }
 
+export async function handleFriendDeleted(event: {
+    type: string;
+    fromUserId: string | number;
+    toUserId: string | number;
+    fromUsername: string;
+}) {
+    // Notify both users that the friendship was deleted
+    // The user who initiated the delete
+    const initiatorId = String(event.fromUserId);
+    const initiatorTargets = socketsByUserId.get(initiatorId);
+    if (initiatorTargets) {
+        for (const socket of initiatorTargets) {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(
+                    JSON.stringify({
+                        type: "FRIEND_DELETED",
+                        fromUserId: event.fromUserId,
+                        toUserId: event.toUserId,
+                        fromUsername: event.fromUsername,
+                    })
+                );
+            }
+        }
+    }
+
+    // The user who was deleted
+    const targetId = String(event.toUserId);
+    const targetTargets = socketsByUserId.get(targetId);
+    if (targetTargets) {
+        for (const socket of targetTargets) {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(
+                    JSON.stringify({
+                        type: "FRIEND_UNFRIENDED",
+                        fromUserId: event.fromUserId,
+                        toUserId: event.toUserId,
+                        fromUsername: event.fromUsername,
+                    })
+                );
+            }
+        }
+    }
+}
+
