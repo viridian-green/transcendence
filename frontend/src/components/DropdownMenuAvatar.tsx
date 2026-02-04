@@ -1,5 +1,5 @@
 import { Avatar } from '@/components';
-import { loginSessionStorageKey } from '@/const';
+import { CHAT_WIDGET_STORAGE_KEYS, loginSessionStorageKey } from '@/const';
 import { useAuth } from '@/hooks/useAuth';
 import { ProfileCircle, Exit, SettingsIcon, HomeIcon } from '@/icons';
 import { useEffect, useRef, useState } from 'react';
@@ -30,8 +30,11 @@ const ProfileCard = () => {
 	const navigate = useNavigate();
 
 	const handleSignout = async () => {
-		// signout();
 		navigate('/', { replace: true });
+		localStorage.clear();
+		sessionStorage.removeItem(CHAT_WIDGET_STORAGE_KEYS.privateTabs);
+		sessionStorage.removeItem(CHAT_WIDGET_STORAGE_KEYS.privateMessages);
+		sessionStorage.removeItem(CHAT_WIDGET_STORAGE_KEYS.generalMessages);
 		await fetch('/api/auth/signout', {
 			method: 'POST',
 			credentials: 'include',

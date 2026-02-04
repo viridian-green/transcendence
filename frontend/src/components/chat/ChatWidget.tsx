@@ -7,14 +7,14 @@ import { useFriends } from '../../hooks/useFriends';
 import { usePresenceSocket } from '@/hooks/usePresenceSocket';
 import { useChatSocket } from '@/hooks/useChatSocket';
 import { useUnreadPrivateMessages } from '../../hooks/useUnreadPrivateMessages';
-import { useLocalStorageState } from '../../hooks/useLocalStorageState';
+import { useSessionStorageState } from '../../hooks/useStorageState';
 import type { ChatRenderMessage } from './types/chat';
 import type { User } from '@/shared.types';
 import ChatHeader from './ChatHeader';
 import ConversationTab from './ConversationTab';
 import UsersList from './OnlineUsersList';
 import ChatTabs from './ChatTabs';
-import { CHAT_WIDGET_LOCALSTORAGE_KEYS } from '@/const';
+import { CHAT_WIDGET_STORAGE_KEYS } from '@/const';
 
 const ChatWidget = () => {
 	const { user } = useAuth();
@@ -25,15 +25,15 @@ const ChatWidget = () => {
 	const [activeTab, setActiveTab] = useState<'conversation_all' | 'users_list' | number>(
 		'conversation_all',
 	);
-	const [privateTabs, setPrivateTabs] = useLocalStorageState<{ id: number; name: string }[]>(
-		CHAT_WIDGET_LOCALSTORAGE_KEYS.privateTabs,
+	const [privateTabs, setPrivateTabs] = useSessionStorageState<{ id: number; name: string }[]>(
+		CHAT_WIDGET_STORAGE_KEYS.privateTabs,
 		[],
 	);
-	const [privateMessages, setPrivateMessages] = useLocalStorageState<
+	const [privateMessages, setPrivateMessages] = useSessionStorageState<
 		Record<number, ChatRenderMessage[]>
-	>(CHAT_WIDGET_LOCALSTORAGE_KEYS.privateMessages, {});
-	const [generalMessages, setGeneralMessages] = useLocalStorageState<ChatRenderMessage[]>(
-		CHAT_WIDGET_LOCALSTORAGE_KEYS.generalMessages,
+	>(CHAT_WIDGET_STORAGE_KEYS.privateMessages, {});
+	const [generalMessages, setGeneralMessages] = useSessionStorageState<ChatRenderMessage[]>(
+		CHAT_WIDGET_STORAGE_KEYS.generalMessages,
 		[],
 	);
 	const { unreadPrivate, totalUnread } = useUnreadPrivateMessages(
@@ -70,10 +70,10 @@ const ChatWidget = () => {
 				return updated;
 			});
 		},
-		generalMessages, // Pass messages from localStorage as initialMessages
+		generalMessages, // Pass messages from sessionStorage as initialMessages
 	);
 
-	// Sync general messages from socket to state and localStorage
+	// Sync general messages from socket to state and sessionStorage
 	useEffect(() => {
 		setGeneralMessages(socketGeneralMessages);
 	}, [socketGeneralMessages, setGeneralMessages]);
@@ -81,11 +81,10 @@ const ChatWidget = () => {
 	useEffect(() => {
 		if (!user || !isPresenceConnected) {
 			setGeneralMessages([]);
-			localStorage.removeItem(CHAT_WIDGET_LOCALSTORAGE_KEYS.generalMessages);
+			sessionStorage.removeItem(CHAT_WIDGET_STORAGE_KEYS.generalMessages);
 		}
 	}, [user, isPresenceConnected, setGeneralMessages]);
 
-	// ...localStorage logic now handled by useLocalStorageState hook...
 	const {
 		users: rawOnlinePeople,
 		loading: loadingOnline,
@@ -105,8 +104,8 @@ const ChatWidget = () => {
 				...prev,
 				{ kind: 'chat', username: user?.username || '', text } as ChatRenderMessage,
 			];
-			localStorage.setItem(
-				CHAT_WIDGET_LOCALSTORAGE_KEYS.generalMessages,
+			sessionStorage.setItem(
+				CHAT_WIDGET_STORAGE_KEYS.generalMessages,
 				JSON.stringify(updated),
 			);
 			return updated;
@@ -123,8 +122,8 @@ const ChatWidget = () => {
 					{ kind: 'chat', username: user?.username || '', text } as ChatRenderMessage,
 				],
 			};
-			localStorage.setItem(
-				CHAT_WIDGET_LOCALSTORAGE_KEYS.privateMessages,
+			sessionStorage.setItem(
+				CHAT_WIDGET_STORAGE_KEYS.privateMessages,
 				JSON.stringify(updated),
 			);
 			return updated;
@@ -185,7 +184,7 @@ const ChatWidget = () => {
 								onUserClick={(user) =>
 									openPrivateTab({ id: user.id, name: user.username })
 								}
-								currentUserId={currentUserId}
+								currentUserId={currentUserId ?? '0'}
 								onRefreshFriends={refetch}
 							/>
 						)}
