@@ -7,32 +7,33 @@ import { useFriends } from '../../hooks/useFriends';
 import { usePresenceSocket } from '@/hooks/usePresenceSocket';
 import { useChatSocket } from '@/hooks/useChatSocket';
 import { useUnreadPrivateMessages } from '../../hooks/useUnreadPrivateMessages';
-import { useLocalStorageState } from '../../hooks/useLocalStorageState';
+import { useSessionStorageState } from '../../hooks/useStorageState';
 import type { ChatRenderMessage } from './types/chat';
 import type { User } from '@/shared.types';
 import ChatHeader from './ChatHeader';
 import ConversationTab from './ConversationTab';
 import UsersList from './OnlineUsersList';
 import ChatTabs from './ChatTabs';
+import { CHAT_WIDGET_STORAGE_KEYS } from '@/const';
 
 const ChatWidget = () => {
 	const { user } = useAuth();
 	const currentUserId = user?.id ? String(user.id) : undefined;
-	const { isConnected: isPresenceConnected, ws: presenceWs } = usePresenceSocket(Boolean(user));
+	const { ws: presenceWs } = usePresenceSocket(Boolean(user));
 	const { friends, refetch } = useFriends(currentUserId);
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'conversation_all' | 'users_list' | number>(
 		'conversation_all',
 	);
-	const [privateTabs, setPrivateTabs] = useLocalStorageState<{ id: number; name: string }[]>(
-		'privateTabs',
+	const [privateTabs, setPrivateTabs] = useSessionStorageState<{ id: number; name: string }[]>(
+		CHAT_WIDGET_STORAGE_KEYS.privateTabs,
 		[],
 	);
-	const [privateMessages, setPrivateMessages] = useLocalStorageState<
+	const [privateMessages, setPrivateMessages] = useSessionStorageState<
 		Record<number, ChatRenderMessage[]>
-	>('privateMessages', {});
-	const [generalMessages, setGeneralMessages] = useLocalStorageState<ChatRenderMessage[]>(
-		'generalMessages',
+	>(CHAT_WIDGET_STORAGE_KEYS.privateMessages, {});
+	const [generalMessages, setGeneralMessages] = useSessionStorageState<ChatRenderMessage[]>(
+		CHAT_WIDGET_STORAGE_KEYS.generalMessages,
 		[],
 	);
 	const { unreadPrivate, totalUnread } = useUnreadPrivateMessages(
@@ -69,22 +70,14 @@ const ChatWidget = () => {
 				return updated;
 			});
 		},
-		generalMessages, // Pass messages from localStorage as initialMessages
+		generalMessages, // Pass messages from sessionStorage as initialMessages
 	);
 
-	// Sync general messages from socket to state and localStorage
+	// Sync general messages from socket to state and sessionStorage
 	useEffect(() => {
 		setGeneralMessages(socketGeneralMessages);
 	}, [socketGeneralMessages, setGeneralMessages]);
-	// Clear general messages when user logs out or goes offline
-	useEffect(() => {
-		if (!user || !isPresenceConnected) {
-			setGeneralMessages([]);
-			localStorage.removeItem('generalMessages');
-		}
-	}, [user, isPresenceConnected, setGeneralMessages]);
 
-	// ...localStorage logic now handled by useLocalStorageState hook...
 	const {
 		users: rawOnlinePeople,
 		loading: loadingOnline,
@@ -104,7 +97,10 @@ const ChatWidget = () => {
 				...prev,
 				{ kind: 'chat', username: user?.username || '', text } as ChatRenderMessage,
 			];
-			localStorage.setItem('generalMessages', JSON.stringify(updated));
+			sessionStorage.setItem(
+				CHAT_WIDGET_STORAGE_KEYS.generalMessages,
+				JSON.stringify(updated),
+			);
 			return updated;
 		});
 	};
@@ -119,7 +115,10 @@ const ChatWidget = () => {
 					{ kind: 'chat', username: user?.username || '', text } as ChatRenderMessage,
 				],
 			};
-			localStorage.setItem('privateMessages', JSON.stringify(updated));
+			sessionStorage.setItem(
+				CHAT_WIDGET_STORAGE_KEYS.privateMessages,
+				JSON.stringify(updated),
+			);
 			return updated;
 		});
 	};
@@ -171,16 +170,16 @@ const ChatWidget = () => {
 						)}
 						{activeTab === 'users_list' && (
 							<UsersList
-                                users={onlinePeople}
-                                friends={friends}
-                                loading={loadingOnline}
-                                error={errorOnline}
-                                onUserClick={(user) =>
-                                    openPrivateTab({ id: user.id, name: user.username })
-                                }
-                                currentUserId={currentUserId}
-                                onRefreshFriends={refetch}
-                            />
+								users={onlinePeople}
+								friends={friends}
+								loading={loadingOnline}
+								error={errorOnline}
+								onUserClick={(user) =>
+									openPrivateTab({ id: user.id, name: user.username })
+								}
+								currentUserId={currentUserId ?? '0'}
+								onRefreshFriends={refetch}
+							/>
 						)}
 						{typeof activeTab === 'number' &&
 							privateTabs.some((t) => t.id === activeTab) &&
