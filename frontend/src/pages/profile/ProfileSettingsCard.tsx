@@ -9,7 +9,8 @@ const profileUpdateSchema = z.object({
 	username: z
 		.string()
 		.min(1, 'Username is required')
-		.max(15, 'Username must be at most 15 characters'),
+		.max(15, 'Username must be at most 15 characters')
+		.regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
 	bio: z.string().max(150, 'Bio must be at most 150 characters'),
 	avatar: z.string(),
 });
