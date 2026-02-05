@@ -1,7 +1,7 @@
 import cookie from '@fastify/cookie';
 import jwt from '@fastify/jwt';
 import fp from 'fastify-plugin';
-import { authenticate } from '../services/auth.service.js';
+import { authenticate, optionalAuth } from '../services/auth.service.js';
 
 /**
  * Authentication plugin for User Service
@@ -29,6 +29,8 @@ async function authPlugin(app) {
     // Decorate app with authenticate middleware
     // This reads user info from headers set by API Gateway
     app.decorate("authenticate", authenticate);
+
+    app.decorate("optionalAuth", optionalAuth);
 }
 
 export default fp(authPlugin);

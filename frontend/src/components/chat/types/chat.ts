@@ -8,10 +8,16 @@ export type ChatServerMessage =
 	| { type: 'welcome'; message: string }
 	| { type: 'user_joined' | 'user_left'; user: { id: string; username: string } };
 
-export type	NotificationServerMessage =
-	| { type: 'FRIEND_INVITE_RECEIVED'; fromUserId: string; fromUsername: string }
-	| { type: 'FRIEND_INVITE_ACCEPTED'; fromUserId: string; fromUsername: string }
-	| { type: 'FRIEND_INVITE_REJECTED'; fromUserId: string; fromUsername: string }
+ export type NotificationFriendRequest =
+	| {
+			type: 'FRIEND_INVITE_ACCEPTED' | 'FRIEND_INVITE_CONFIRMED' | 'FRIEND_INVITE_REJECTED';
+			fromUserId?: number;
+			toUserId?: number;
+	  }
+	| {
+			type: string;
+	  };
+
 
 export type FriendRequest = {
 	fromUserId: string;

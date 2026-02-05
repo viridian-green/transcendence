@@ -1,32 +1,115 @@
 # Notification Service
 
-The **notification-service** handles real-time notifications for remote players via WebSocket connections.
+The **notification-service** handles real-time friend request and friend status notifications via WebSocket connections. It subscribes to Redis events from other services and broadcasts them to connected clients.
 
 ---
 
-## Current responsibilities
+## Architecture
 
-- Real-time notification delivery via WebSocket
-- Notification storage for offline users
-- Support for various notification types:
-  - Game invitations
-  - Friend requests
-  - Friend accepted notifications
-  - Game start/end notifications
-  - System messages
+The notification service follows a pub/sub pattern:
+
+1. **Redis Subscriber**: Listens for events on the `notifications.events` Redis channel
+2. **Event Handlers**: Process specific event types and route notifications to connected clients
+3. **WebSocket Server**: Maintains active connections with authenticated clients and sends notifications
 
 ---
 
-## Routes
+## Current Responsibilities
 
-All routes are prefixed with:
-```bash
-/api/notifications
+- Real-time friend request notifications
+- Friend status change notifications (accepted, rejected, deleted/unfriended)
+- WebSocket connection management with JWT authentication
+- Client-to-user routing for targeted notifications
+
+---
+
+## Message Flow
+
+### Friend Request Flow
+
+```
+1. Backend (User Service)
+   ├─ DELETE /api/users/friends/:id (friend deletion)
+   ├─ POST /api/users/friends/:id (friend request)
+   ├─ POST /api/users/friends/:id/accept (accept request)
+   └─ POST /api/users/friends/:id/reject (reject request)
+   
+   ↓ Emits event to Redis:
+   {
+     type: "FRIEND_DELETED" | "FRIEND_INVITE_RECEIVED" | "FRIEND_INVITE_ACCEPTED" | "FRIEND_INVITE_REJECTED",
+     fromUserId: X,
+     toUserId: Y,
+     fromUsername: "..."
+   }
+
+2. Notification Service (Redis Subscriber)
+   ├─ Listens on "notifications.events" Redis channel
+   ├─ Parses event type
+   └─ Routes to appropriate handler:
+      ├─ handleFriendRequested() → sends FRIEND_INVITE_RECEIVED to recipient
+      ├─ handleFriendAccepted() → sends FRIEND_INVITE_ACCEPTED to inviter + FRIEND_INVITE_CONFIRMED to accepter
+      ├─ handleFriendRejected() → sends FRIEND_INVITE_REJECTED to inviter
+      └─ handleFriendDeleted() → sends FRIEND_DELETED to initiator + FRIEND_UNFRIENDED to target
+
+3. Notification Service (WebSocket Handler)
+   ├─ Looks up connected sockets for target user(s)
+   ├─ Sends WebSocket message to all active connections:
+      {
+        type: "FRIEND_INVITE_RECEIVED" | "FRIEND_INVITE_ACCEPTED" | "FRIEND_INVITE_CONFIRMED" | 
+              "FRIEND_INVITE_REJECTED" | "FRIEND_DELETED" | "FRIEND_UNFRIENDED",
+        fromUserId: X,
+        toUserId: Y,
+        fromUsername: "..."
+      }
+
+4. Frontend (Browser WebSocket)
+   ├─ useNotificationSocket receives message
+   ├─ Updates friendRequests state
+   ├─ Sets lastRawMessage (triggers side effects)
+   ├─ useNotificationSocket handlers:
+   │  ├─ FRIEND_INVITE_RECEIVED → store pending request
+   │  ├─ FRIEND_INVITE_ACCEPTED → update request status
+   │  ├─ FRIEND_INVITE_REJECTED → update request status
+   │  ├─ FRIEND_DELETED → remove request state
+   │  └─ FRIEND_UNFRIENDED → remove request state
+   │
+   └─ Listeners refresh UI:
+      ├─ OnlineUsersList → refreshes friends list on accept/confirm
+      └─ FriendsCard → refreshes profile friend list on delete/unfriended
 ```
 
-| Method | Path        | Description                              | Status        |
-|-------:|-------------|------------------------------------------|---------------|
-| GET    | `/websocket` | WebSocket connection for notifications   | ✅ Implemented |
+---
+
+## Event Types
+
+### Friend Invitation Events
+
+| Event Type | From | To | Description |
+|---|---|---|---|
+| `FRIEND_INVITE_RECEIVED` | User Service | Recipient | Friend request received notification |
+| `FRIEND_INVITE_ACCEPTED` | User Service | Inviter | Friend request was accepted |
+| `FRIEND_INVITE_CONFIRMED` | User Service | Accepter | Confirmation that friendship was accepted |
+| `FRIEND_INVITE_REJECTED` | User Service | Inviter | Friend request was rejected |
+| `FRIEND_DELETED` | User Service | Initiator | Friendship deleted by you |
+| `FRIEND_UNFRIENDED` | User Service | Target | You were removed as a friend |
+
+---
+
+## Redis Channel
+
+**Channel**: `notifications.events`
+
+Events are published in this format:
+
+```json
+{
+  "type": "FRIEND_INVITE_RECEIVED",
+  "fromUserId": 1,
+  "toUserId": 2,
+  "fromUsername": "alice",
+  "at": "2024-01-01T00:00:00.000Z"
+}
+```
 
 ---
 
@@ -34,105 +117,61 @@ All routes are prefixed with:
 
 ### Connection
 
-Connect to the WebSocket endpoint:
-```
-ws://localhost:8443/api/notifications/websocket?user=<username>
-```
+Connect using JWT authentication via cookies:
 
-### Message Types (Client → Server)
-
-#### Mark notification as read
-```json
-{
-  "type": "mark_read",
-  "notificationId": "notif-123"
-}
+```
+wss://localhost/api/notifications/websocket
 ```
 
-#### Mark all notifications as read
-```json
-{
-  "type": "mark_all_read"
-}
-```
+**Authentication**: JWT token must be in `access_token` cookie
 
-#### Get all notifications
-```json
-{
-  "type": "get_notifications"
-}
-```
+### Welcome Message
 
-### Message Types (Server → Client)
+On successful connection:
 
-#### Welcome message
 ```json
 {
   "type": "welcome",
   "message": "Notification service connected, username!",
-  "user": { "id": "u1", "username": "alice" }
+  "user": { "id": "123", "username": "alice" }
 }
 ```
 
-#### New notification
+### Server → Client Messages
+
+Friend request notification:
+
 ```json
 {
-  "type": "notification",
-  "payload": {
-    "id": "notif-123",
-    "type": "game_invite",
-    "title": "Game Invitation",
-    "message": "alice invited you to play pong",
-    "userId": "u2",
-    "fromUserId": "u1",
-    "fromUsername": "alice",
-    "read": false,
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "metadata": { "gameMode": "pong" }
-  }
+  "type": "FRIEND_INVITE_RECEIVED",
+  "fromUserId": "1",
+  "fromUsername": "bob"
 }
 ```
 
-#### Pending notifications (on connect)
+Friendship accepted notification:
+
 ```json
 {
-  "type": "pending_notifications",
-  "count": 5,
-  "notifications": [...]
+  "type": "FRIEND_INVITE_ACCEPTED",
+  "fromUserId": "1",
+  "fromUsername": "bob"
 }
 ```
 
 ---
 
-## Notification Types
+## Routes
 
-- `game_invite`: Game invitation from another player
-- `friend_request`: Friend request received
-- `friend_accepted`: Friend request accepted
-- `game_start`: Game is starting
-- `game_end`: Game has ended
-- `message`: Chat message notification
-- `system`: System notification
+All routes are prefixed with:
 
----
-
-## Usage Example
-
-### Sending a notification from another service
-
-```typescript
-import { sendNotificationToUser, createGameInviteNotification } from './handlers/notifications';
-
-// Create and send a game invite notification
-const notification = createGameInviteNotification(
-  'u2',           // toUserId
-  'u1',           // fromUserId
-  'alice',        // fromUsername
-  'pong'          // gameMode
-);
-
-sendNotificationToUser('u2', notification);
+```bash
+/api/notifications
 ```
+
+| Method | Path | Description | Status |
+|-------:|------|-------------|--------|
+| GET | `/websocket` | WebSocket upgrade endpoint | ✅ Implemented |
 
 ---
 
@@ -140,6 +179,15 @@ sendNotificationToUser('u2', notification);
 
 - Default port: `3006`
 - Configurable via `PORT` environment variable
+
+---
+
+## Environment Variables
+
+- `REDIS_HOST`: Redis server hostname (default: `redis`)
+- `REDIS_PORT`: Redis server port (default: `6379`)
+- `REDIS_PASSWORD`: Redis password (optional)
+- `JWT_SECRET`: Secret key for JWT verification
 
 ---
 
@@ -151,3 +199,11 @@ npm run build  # Build TypeScript
 npm start      # Run production build
 ```
 
+---
+
+## Error Handling
+
+- Invalid JWT: Connection rejected with error message
+- No active WebSocket connections for user: Event logged but processing continues
+- Redis connection failure: Error logged, reconnection attempted
+- Parse errors: Error logged, event skipped

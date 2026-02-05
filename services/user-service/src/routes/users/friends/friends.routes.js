@@ -5,9 +5,11 @@ import {
     createFriendRequest,
     deleteFriendship,
     getFriendsList,
-    acceptFriendRequest
+    acceptFriendRequest,
+    rejectFriendRequest,
+    getPendingFriendRequests
 } from '../../../services/friends.service.js';
-import { emitFriendRequested, emitFriendAccepted, emitFriendRejected } from '../../../events/emitFriendRequested.js';
+import { emitFriendRequested, emitFriendAccepted, emitFriendRejected, emitFriendDeleted } from '../../../events/emitFriendRequested.js';
 
 export default async function friendsRoute(app) {
     // Accept friend request - must come before /:id to avoid route conflict
@@ -21,7 +23,6 @@ export default async function friendsRoute(app) {
         //await ensureNoExistingFriendship(app, userId, friendId);
         const friendshipId = await acceptFriendRequest(app, userId, friendId);
         await emitFriendAccepted(app, userId, friendId);
-        await emitFriendRejected(app, userId, friendId);
         return reply.code(200).send(friendshipId);
     })
 
@@ -34,11 +35,20 @@ export default async function friendsRoute(app) {
         ensureNotSelf(userId, friendId);
         await ensureUserExists(app, friendId);
         //await ensureNoExistingFriendship(app, userId, friendId);
-        const rows = await deleteFriendship(app, userId, friendId);
+        const rows = await rejectFriendRequest(app, userId, friendId);
+        await emitFriendRejected(app, userId, friendId);
         return reply.code(200).send({
             message: 'Friend rejected',
             friendship: rows[0]
         });
+    })
+
+    // Get pending friend requests (incoming/outgoing)
+    // GET /friends/pending
+    app.get('/pending', { preHandler: app.authenticate }, async (req, reply) => {
+        const userId = req.user.id;
+        const pending = await getPendingFriendRequests(app, userId);
+        return reply.code(200).send(pending);
     })
 
     // Get friends list for a specific user
@@ -79,6 +89,7 @@ export default async function friendsRoute(app) {
         await ensureUserExists(app, friendId);
 
         const rows = await deleteFriendship(app, userId, friendId);
+        await emitFriendDeleted(app, userId, friendId);
         return reply.code(200).send({
             message: 'Friend removed',
             friendship: rows[0]

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import type { ChatRenderMessage, NotificationServerMessage, FriendRequest } from '@/components/chat/types/chat';
+import type { ChatRenderMessage, NotificationFriendRequest, FriendRequest } from '@/components/chat/types/chat';
 
 export function useNotificationSocket(enabled: boolean) {
   const [messages, setMessages] = useState<ChatRenderMessage[]>([]);
@@ -10,9 +10,37 @@ export function useNotificationSocket(enabled: boolean) {
 
   useEffect(() => {
     if (!enabled) {
-      console.log('[NOTIFICATION SOCKET] disabled');
       return;
     }
+
+    let isMounted = true;
+
+    const fetchPendingRequests = async () => {
+      try {
+        const res = await fetch('/api/users/friends/pending', { credentials: 'include' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!isMounted) return;
+
+        const combined = [...(data.incoming || []), ...(data.outgoing || [])];
+        setFriendRequests(prev => {
+          const updated = { ...prev };
+          for (const user of combined) {
+            if (!user?.id) continue;
+            updated[String(user.id)] = {
+              fromUserId: String(user.id),
+              fromUsername: user.username || '',
+              status: 'pending',
+            };
+          }
+          return updated;
+        });
+      } catch {
+        // silently ignore
+      }
+    };
+
+    fetchPendingRequests();
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/api/notifications/websocket`;
@@ -21,7 +49,6 @@ export function useNotificationSocket(enabled: boolean) {
     ws.current = socket;
 
     socket.onopen = () => {
-      console.log('[NOTIFICATION SOCKET] connected');
       setIsConnected(true);
     };
 
@@ -41,16 +68,14 @@ export function useNotificationSocket(enabled: boolean) {
     };
 
     socket.onmessage = (event) => {
-      console.log('[NOTIFICATION SOCKET] raw message', event.data);
       try {
-        const data: NotificationServerMessage = JSON.parse(event.data);
+        const data: NotificationFriendRequest = JSON.parse(event.data);
         setLastRawMessage(data);
         switch (data.type) {
           // case 'welcome':
           //   console.log('[NOTIFICATION SOCKET]', data.message);
           //   break;
           case 'FRIEND_INVITE_RECEIVED':
-            console.log('[NOTIFICATION SOCKET] Friend invite received from', data.fromUsername);
             setFriendRequests(prev => ({
               ...prev,
               [String(data.fromUserId)]: {
@@ -82,6 +107,26 @@ export function useNotificationSocket(enabled: boolean) {
               },
             }));
             break;
+          case 'FRIEND_DELETED':
+            // Remove friend request state for the deleted friend (toUserId)
+            if (data.toUserId) {
+              setFriendRequests(prev => {
+                const updated = { ...prev };
+                delete updated[String(data.toUserId)];
+                return updated;
+              });
+            }
+            break;
+          case 'FRIEND_UNFRIENDED':
+            // Remove friend request state for the user who unfriended us (fromUserId)
+            if (data.fromUserId) {
+              setFriendRequests(prev => {
+                const updated = { ...prev };
+                delete updated[String(data.fromUserId)];
+                return updated;
+              });
+            }
+            break;
         }
       } catch (parseError) {
         console.error('[NOTIFICATION SOCKET] parse error:', parseError);
@@ -89,7 +134,7 @@ export function useNotificationSocket(enabled: boolean) {
     };
 
     return () => {
-      console.log('[NOTIFICATION SOCKET] cleanup (effect unmounting)');
+      isMounted = false;
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
         ws.current.close();
       }
@@ -105,7 +150,6 @@ export function useNotificationSocket(enabled: boolean) {
       );
       return;
     }
-    console.log('[NOTIFICATION SOCKET] sending', payload);
     ws.current.send(
       typeof payload === 'string' ? payload : JSON.stringify(payload)
     );

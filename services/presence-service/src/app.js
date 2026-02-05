@@ -44,8 +44,6 @@ await app.register(websocket);
 // Register routes
 await app.register(presenceRoutes);
 await app.register(stateRoutes, { prefix: "/" });
-await app.ready();
-console.log(app.printRoutes());
 
 export default app;
 

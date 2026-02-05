@@ -1,4 +1,4 @@
-export const authErroMapper = (code: number) => {
+export const authErrorMapper = (code: number) => {
 	switch (code) {
 		case 400:
 			return 'Invalid request. Please check your input.';

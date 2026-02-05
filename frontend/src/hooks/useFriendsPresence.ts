@@ -1,12 +1,13 @@
 // hooks/useFriendsWithStatus.ts
 import { useFriends } from './useFriends';
+import { useFetchOnlineUsers } from './useFetchOnlineUsers';
 import type { Friend } from '@/shared.types';
 import { usePresenceSocket } from './usePresenceSocket';
-import { useFetchOnlineUsers } from './useFetchOnlineUsers';
+
 
 export function useFriendsWithStatus(userId?: number) {
-	const { friends, error: friendsError, loading: friendsLoading } = useFriends(userId);
-	const { ws, statuses, isConnected } = usePresenceSocket(Boolean(userId));
+	const { friends, error: friendsError, loading: friendsLoading, deleteFriend, refetch } = useFriends(userId);
+	const { ws, isConnected, statuses } = usePresenceSocket(Boolean(userId));
 	const {
 		users: onlineUsers,
 		error: onlineUsersError,
@@ -26,12 +27,14 @@ export function useFriendsWithStatus(userId?: number) {
 						? 'online'
 						: 'offline';
 		}
-		return { ...friend, status : status };
+		return { ...friend, status : status, onlineUsers, isConnected };
 	});
 
 	return {
 		friends: friendsWithStatus,
-		loading: friendsLoading,
-		error: friendsError,
-	};
+		loading: friendsLoading || onlineUsersLoading,
+		error: friendsError || onlineUsersError,
+		deleteFriend,
+		refetch,
+    };
 }

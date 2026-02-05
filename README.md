@@ -74,7 +74,6 @@ Before running the project, ensure you have the following installed:
    POSTGRES_USER=myuser
    POSTGRES_PASSWORD=your_secure_password
    POSTGRES_DB=transcendence_db
-   POSTGRES_PORT=5432
 
    # JWT and Security
    JWT_SECRET=your_jwt_secret_key_here
@@ -84,9 +83,6 @@ Before running the project, ensure you have the following installed:
    REDIS_HOST=redis
    REDIS_PORT=6379
 
-   # Nginx Ports
-   NGINX_HTTP_PORT=8080
-   NGINX_HTTPS_PORT=8443
    ```
 
    **Note**: Replace all placeholder values with secure, randomly generated strings. Never commit `.env` files to version control.

@@ -11,6 +11,7 @@ const Game = () => {
 	const mode = state?.mode ?? 'local'; // Default to local if not provided
 	const side: 'left' | 'right' = state?.side ?? 'left';
 	const { gameId } = useParams<{ gameId: string }>();
+	const hasEndedRef = useRef(false);
 
 	const [gameState, setGameState] = useState<GameState | null>(null);
 	const wsRef = useRef<WebSocket | null>(null);
@@ -30,7 +31,6 @@ const Game = () => {
 		wsRef.current = ws;
 
 		ws.onopen = () => {
-			console.log('Connected to game server');
 			ws.send(JSON.stringify({ type: 'RESET_GAME' }));
 		};
 
@@ -41,18 +41,19 @@ const Game = () => {
 			}
 
 			if (msg.type === 'OPPONENT_LEFT') {
+				if (hasEndedRef.current) return;
+				hasEndedRef.current = true;
 				alert('Opponent left the game.');
 				navigate('/remote');
 				return;
 			}
 		};
 
-		ws.onerror = (error) => {
-			console.error('WebSocket error:', error);
+		ws.onerror = () => {
+			return;
 		};
 
 		ws.onclose = () => {
-			console.log('WebSocket closed');
 			if (wsRef.current === ws) {
 				wsRef.current = null;
 			}
@@ -174,8 +175,10 @@ const Game = () => {
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown, { capture: true });
 			window.removeEventListener('keyup', handleKeyUp, { capture: true });
-			ws.close();
-			wsRef.current = null;
+			if (ws.readyState === WebSocket.OPEN && wsRef.current === ws) {
+				ws.close();
+				wsRef.current = null;
+			}
 		};
 	}, [navigate, gameId, mode, side]);
 
@@ -183,6 +186,8 @@ const Game = () => {
 		if (gameState?.phase === 'ended') {
 			const winner =
 				gameState.scores.left > gameState.scores.right ? leftPlayer : rightPlayer;
+			if (hasEndedRef.current) return;
+			hasEndedRef.current = true;
 
 			navigate('/game-end', {
 				state: {
@@ -214,7 +219,7 @@ const Game = () => {
 			<div className='flex w-full max-w-[800px] justify-between px-4 xl:hidden'>
 				{/* Left Player Controls - Only show if not AI mode */}
 				<div className='flex touch-none flex-col gap-4'>
-					{mode !== 'AI' && (
+					{(mode !== 'AI') && (mode !== 'remote' || side === 'left') && (
 						<>
 							<button
 								type='button'
@@ -302,7 +307,9 @@ const Game = () => {
 
 				{/* Right Player Controls */}
 				<div className='flex touch-none flex-col gap-4'>
-					<button
+					{(mode !== 'remote' || side === 'right') && (
+						<>
+							<button
 						type='button'
 						className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
 						onContextMenu={(e) => e.preventDefault()}
@@ -342,7 +349,7 @@ const Game = () => {
 					>
 						↑
 					</button>
-					<button
+						<button
 						type='button'
 						className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
 						onContextMenu={(e) => e.preventDefault()}
@@ -382,6 +389,8 @@ const Game = () => {
 					>
 						↓
 					</button>
+						</>
+					)}
 				</div>
 			</div>
 		</div>

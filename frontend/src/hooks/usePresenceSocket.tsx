@@ -43,7 +43,12 @@ export function usePresenceSocket(enabled: boolean) {
 				console.error('[PRESENCE SOCKET] Failed to parse message', event.data, e);
 			}
 		};
-		return () => ws.current?.close();
+		return () => {
+			if (ws.current?.readyState === WebSocket.OPEN) {
+				ws.current?.close();
+				ws.current = null;
+			}
+		};
 	}, [enabled]);
 
 	return { isConnected, ws, statuses };
