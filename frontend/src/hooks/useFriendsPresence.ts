@@ -3,6 +3,7 @@ import { useFriends } from './useFriends';
 import { useFetchOnlineUsers } from './useFetchOnlineUsers';
 import type { Friend } from '@/shared.types';
 import { usePresenceSocket } from './usePresenceSocket';
+import { useMemo } from 'react';
 
 
 export function useFriendsWithStatus(userId?: number) {
@@ -15,20 +16,59 @@ export function useFriendsWithStatus(userId?: number) {
 	} = useFetchOnlineUsers(String(userId), ws.current);
 
 
-	const friendsWithStatus: Friend[] = friends.map((friend) => {
-		let status: Friend['status'];
-		const wsStatus = statuses[String(friend.id)];
-		if (wsStatus) {
-			status = wsStatus as Friend['status'];
-		} else if (!isConnected) {
-			status = 'offline';
-		} else {
-			status = onlineUsers.some((u) => String(u.id) === String(friend.id))
+// 	const friendsWithStatus: Friend[] = useMemo(
+//         () =>
+//         friends.map((friend) => {
+// 		let status: Friend['status'];
+// 		// const wsStatus = statuses[String(friend.id)];
+// 		// if (wsStatus) {
+// 		// 	status = wsStatus as Friend['status'];
+// 		} if (!isConnected) {
+// 			status = 'offline';
+// 		} else {
+// 			status = onlineUsers.some((u) => String(u.id) === String(friend.id))
+// 						? 'online'
+// 						: 'offline';
+// 		}
+// 		const friendWithStatus = {
+// 					...friend,
+// 					status: status,
+// 				};
+//         return friendWithStatus;
+//     }),
+// 		[friends, onlineUsers, isConnected],
+// 	);
+
+// 	return {
+// 		friends: friendsWithStatus,
+// 		loading: friendsLoading || onlineUsersLoading,
+// 		error: friendsError || onlineUsersError,
+// 		deleteFriend,
+// 		refetch,
+//     };
+// }
+
+
+	const friendsWithStatus: Friend[] = useMemo(
+		() =>
+			friends.map((friend) => {
+				let status: Friend['status'];
+				if (!isConnected) {
+					status = 'offline';
+				} else {
+					// TODO implement busy logic here
+					status = onlineUsers.some((u) => String(u.id) === String(friend.id))
 						? 'online'
 						: 'offline';
-		}
-		return { ...friend, status : status, onlineUsers, isConnected };
-	});
+				}
+				const friendWithStatus = {
+					...friend,
+					status: status,
+				};
+				return friendWithStatus;
+			}),
+		[friends, onlineUsers, isConnected],
+	);
 
 	return {
 		friends: friendsWithStatus,
@@ -36,5 +76,5 @@ export function useFriendsWithStatus(userId?: number) {
 		error: friendsError || onlineUsersError,
 		deleteFriend,
 		refetch,
-    };
+	};
 }
