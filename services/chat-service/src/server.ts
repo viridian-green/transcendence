@@ -12,7 +12,11 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = process.env.CHAT_PORT ? parseInt(process.env.CHAT_PORT, 10) : 3004;
+if (!process.env.CHAT_PORT) {
+  console.error('ERROR: CHAT_PORT environment variable is required');
+  process.exit(1);
+}
+const PORT = parseInt(process.env.CHAT_PORT, 10);
 
 // SSL configuration - HTTPS is mandatory
 const certPath = path.join(__dirname, "../ssl/chat-service.crt");

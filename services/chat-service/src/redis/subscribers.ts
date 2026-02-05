@@ -2,11 +2,20 @@
 import Redis from "ioredis";
 import { WebSocket } from "ws";
 
+if (!process.env.REDIS_HOST) {
+  console.error('ERROR: REDIS_HOST environment variable is required');
+  process.exit(1);
+}
+if (!process.env.REDIS_PORT) {
+  console.error('ERROR: REDIS_PORT environment variable is required');
+  process.exit(1);
+}
+
 export const wsByUserId: Map<string, WebSocket> = new Map();
 
 const redisSubscriber = new Redis({
-  host: "redis",
-  port: 6379,
+  host: process.env.REDIS_HOST,
+  port: parseInt(process.env.REDIS_PORT, 10),
 });
 
 // Attach the message handler ONCE

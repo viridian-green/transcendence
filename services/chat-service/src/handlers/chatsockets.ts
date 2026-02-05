@@ -14,10 +14,15 @@ import { User } from "../types.js";
 // Map to keep track of connected clients and their user info
 const clients: Map<WebSocket, User> = new Map();
 
+if (!process.env.REDIS_HOST || !process.env.REDIS_PORT) {
+  console.error('ERROR: REDIS_HOST and REDIS_PORT environment variables are required');
+  process.exit(1);
+}
+
 // Redis publisher for sending messages
 const redisPublisher = new Redis({
-  host: "redis",
-  port: 6379,
+  host: process.env.REDIS_HOST,
+  port: parseInt(process.env.REDIS_PORT, 10),
 });
 
 // Main WebSocket handler function (not exported directly)
