@@ -19,7 +19,7 @@ import { CHAT_WIDGET_STORAGE_KEYS } from '@/const';
 const ChatWidget = () => {
 	const { user } = useAuth();
 	const currentUserId = user?.id ? String(user.id) : undefined;
-	const { isConnected: isPresenceConnected, ws: presenceWs } = usePresenceSocket(Boolean(user));
+	const { ws: presenceWs } = usePresenceSocket(Boolean(user));
 	const { friends, refetch } = useFriends(currentUserId);
 	const [expanded, setExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState<'conversation_all' | 'users_list' | number>(
@@ -77,13 +77,6 @@ const ChatWidget = () => {
 	useEffect(() => {
 		setGeneralMessages(socketGeneralMessages);
 	}, [socketGeneralMessages, setGeneralMessages]);
-	// Clear general messages when user logs out or goes offline
-	useEffect(() => {
-		if (!user || !isPresenceConnected) {
-			setGeneralMessages([]);
-			sessionStorage.removeItem(CHAT_WIDGET_STORAGE_KEYS.generalMessages);
-		}
-	}, [user, isPresenceConnected, setGeneralMessages]);
 
 	const {
 		users: rawOnlinePeople,
