@@ -52,9 +52,6 @@ const Remote = () => {
 	};
 
 
-	// Track initial load vs subsequent refreshes
-	const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
-
 	// Check user/auth state first before showing loading UI
 	if (!user || friendsError) {
 		return null;
@@ -109,7 +106,7 @@ const Remote = () => {
 		});
 		setToast({
 			show: true,
-			message: 'Hang tight! Stay on this page while your friend accepts',
+			message: 'Stay on this page while your friend accepts',
 			type: 'success',
 		});
 	};
@@ -133,14 +130,14 @@ const Remote = () => {
 	};
 
 return (
-	<div className='flex flex-1'>
-		{toast?.show && (
-			<Toast
-				message={toast.message}
-				type={toast.type}
-				onClose={() => setToast({ show: false, message: '', type: 'success' })}
-			/>
-		)}
+		<div className='flex flex-1'>
+			{toast?.show && (
+				<Toast
+					message={toast.message}
+					type={toast.type}
+					onClose={() => setToast({ show: false, message: '', type: 'success' })}
+				/>
+			)}
 
 		{/* Invitation Received Modal */}
 		{incomingInvite && (
@@ -169,10 +166,10 @@ return (
 		)}
 
 		{/* Hang tight! Confirmation Modal */}
-		{toast?.show && toast.type === 'success' && toast.message === 'Hang tight! Stay on this page while your friend accepts' && (
+		{toast?.show && toast.type === 'success' && toast.message === 'Stay on this page while your friend accepts' && (
 			<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
 				<div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm flex flex-col items-center">
-					<p className="mb-4 text-center text-black font-semibold">Hang tight! Stay on this page while your friend accepts</p>
+					<p className="mb-4 text-center text-black font-semibold">Stay on this page while your friend accepts</p>
 					<button
 						className="px-4 py-2 bg-pink-500 text-black rounded hover:bg-pink-600 border border-pink-700 font-semibold"
 						onClick={() => setToast({ show: false, message: '', type: 'success' })}
@@ -183,19 +180,19 @@ return (
 			</div>
 		)}
 
-		<main className='mx-auto my-auto max-w-6xl flex-1 overflow-y-auto px-6 py-8'>
-			<div className='grid gap-6 md:grid-cols-2'>
-				<FriendsCard
-					friends={friends}
-					onRemoveFriend={handleRemoveFriend}
-					onChallengeFriend={handleChallengeFriend}
-					onRefreshFriends={handleRefreshFriends}
-					lastRawMessage={lastRawMessage}
-				/>
-			</div>
-		</main>
-	</div>
-);
+			<main className='mx-auto my-auto max-w-6xl flex-1 overflow-y-auto px-6 py-8'>
+				<div className='grid gap-6 md:grid-cols-2'>
+					<FriendsCard
+						friends={friends}
+						onRemoveFriend={handleRemoveFriend}
+						onChallengeFriend={handleChallengeFriend}
+						onRefreshFriends={handleRefreshFriends}
+						lastRawMessage={lastRawMessage}
+					/>
+				</div>
+			</main>
+		</div>
+	);
 };
 
 export default Remote;
