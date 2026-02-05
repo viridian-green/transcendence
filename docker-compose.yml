@@ -36,6 +36,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./services/game-service/ssl:/app/ssl:ro
+    env_file:
+      - ./services/game-service/.env
     ports:
       - "3002:3002"
     networks:
@@ -109,6 +111,8 @@ services:
     build:
       context: ./services/chat-service
       dockerfile: Dockerfile
+    env_file:
+      - ./services/chat-service/.env
     environment:
       JWT_SECRET_FILE: /run/secrets/jwt_secret
     secrets:
@@ -127,6 +131,8 @@ services:
       dockerfile: Dockerfile
     environment:
       JWT_SECRET_FILE: /run/secrets/jwt_secret
+    env_file:
+      - ./services/presence-service/.env
     secrets:
     - jwt_secret
     volumes:
@@ -146,6 +152,8 @@ services:
       dockerfile: Dockerfile
     environment:
       JWT_SECRET_FILE: /run/secrets/jwt_secret
+    env_file:
+      - ./services/notification-service/.env
     secrets:
     - jwt_secret
     volumes:
