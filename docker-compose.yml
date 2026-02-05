@@ -36,6 +36,8 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./services/game-service/.env
+    environment:
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
     secrets:
       - jwt_secret
     volumes:
