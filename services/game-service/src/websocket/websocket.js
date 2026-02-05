@@ -1,5 +1,6 @@
 import { AIController } from '../game/AIController.js';
 import { createInitialState, stopPaddle, movePaddle, GameLoop, GAME_CONFIG } from '../game/game-logic.js';
+import { redisPublisher } from "../redis.js";
 
 const rooms = new Map();
 
@@ -33,6 +34,11 @@ export default async function gameWebsocket(fastify) {
 
     room.clients.add(ws);
 
+    // Set user as busy in presence service
+    if (req.user && req.user.id) {
+      publishPresenceState(req.user.id, 'busy');
+    }
+
     ws.send(JSON.stringify({ type: 'STATE', payload: buildStateSnapshot(room.state) }));
 
     startRoomLoop(room);
@@ -50,11 +56,16 @@ export default async function gameWebsocket(fastify) {
       console.log('[GAME WS] Player disconnected from room', gameId);
       room.clients.delete(ws);
 
+      // Set user as online in presence service if no more clients in room
+      if (req.user && req.user.id && room.clients.size === 0) {
+        publishPresenceState(req.user.id, 'online');
+      }
+
     if (room.clients.size === 0) {
       console.log('[GAME WS] No clients left, deleting room', gameId);
       stopRoomLoop(room);
-      rooms.delete(gameId);} else {
-
+      rooms.delete(gameId);
+    } else {
         console.log(`[GAME WS] Notifying ${room.clients.size} remaining client(s) in ${gameId}`);
         const payload = JSON.stringify({ type: 'OPPONENT_LEFT' });
         for (const client of room.clients) {
@@ -64,6 +75,12 @@ export default async function gameWebsocket(fastify) {
         }
       }
     });
+
+    // Publishes presence state to the presence service
+    function publishPresenceState(userId, state) {
+      const message = JSON.stringify({ userId, state });
+      redisPublisher.publish('presence:state', message);
+    }
 
     ws.on('error', (err) => {
       console.error(`[GAME WS] Error in room ${gameId}:`, err);
