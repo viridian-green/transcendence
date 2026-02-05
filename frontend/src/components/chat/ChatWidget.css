@@ -177,7 +177,7 @@
 	font-weight: bold;
 }
 
-chat.button.disabled
+chat.button.disabled /*this makes chat stop being responsive*/
 
 @media (max-width: 768px) {
 	.chat-widget.expanded {
