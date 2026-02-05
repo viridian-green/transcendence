@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
-import { PinkButton } from '@/components';
-import { useNotificationSocket } from '@/hooks/useNotificationSocket';
-import { useNavigate } from 'react-router-dom';
 import type { Friend } from '@/shared.types';
-import { useFriendsWithStatus } from '@/hooks/useFriendsPresence';
+import { Toast, type ToastType } from '@components/index';
+import { useState, useCallback, useEffect } from 'react';
+import { ProfileCard } from './profile/ProfileCard';
 import { useAuth } from '@/hooks/useAuth';
+import { FriendsCard } from './profile/FriendsCard';
+import { useFriendsWithStatus } from '@/hooks/useFriendsPresence';
+import { useNavigate } from 'react-router-dom';
+import { useNotificationSocket } from '@/hooks/useNotificationSocket';
 
 type InvitePopupState = {
 	fromUserId: string;
@@ -13,12 +15,51 @@ type InvitePopupState = {
 } | null;
 
 const Remote = () => {
+    const { user, avatarUrl } = useAuth();
+	const {
+		friends,
+		loading: friendsWithStatusLoading,
+		error: friendsError,
+		deleteFriend,
+		refetch,
+	} = useFriendsWithStatus(user?.id);
+    const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
+	const { send, lastRawMessage, isConnected } = useNotificationSocket(Boolean(user));
+	const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType } | null>({
+		show: false,
+		message: '',
+		type: 'success',
+	});
 	const navigate = useNavigate();
-	const { user } = useAuth();
-	const { friends, loading: friendsLoading } = useFriendsWithStatus(user?.id);
-	const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
-	const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
-	const { send, lastRawMessage, isConnected } = useNotificationSocket(true);
+
+	// Memoize refetch to prevent infinite loops
+	const handleRefreshFriends = useCallback(() => {
+		refetch();
+	}, [refetch]);
+
+	const handleRemoveFriend = async (id: number) => {
+		try {
+			await deleteFriend(id);
+		} catch (error) {
+			setToast({
+				show: true,
+				message: error instanceof Error ? error.message : 'Failed to remove friend',
+				type: 'failure',
+			});
+			return;
+		}
+		setToast({ show: true, message: `Friend removed`, type: 'success' });
+	};
+
+
+	// Track initial load vs subsequent refreshes
+	const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
+
+	// Check user/auth state first before showing loading UI
+	if (!user || friendsError) {
+		return null;
+	}
+
 
 	useEffect(() => {
 		if (!lastRawMessage) return;
@@ -49,9 +90,15 @@ const Remote = () => {
 		}
 	}, [lastRawMessage, navigate]);
 
-	const handleChallenge = (friend: Friend) => {
-		if (friend.status !== 'online') return;
+	const handleChallengeFriend = (id: number) => {
+		const friend = friends.find(f => f.id === id);
+		if (!friend || friend.status !== 'online') return;
 		if (!isConnected) {
+			setToast({
+				show: true,
+				message: 'Not connected to server. Try again later.',
+				type: 'failure',
+			});
 			return;
 		}
 
@@ -59,6 +106,11 @@ const Remote = () => {
 			type: 'INVITE',
 			toUserId: friend.id,
 			gameMode: 'pong',
+		});
+		setToast({
+			show: true,
+			message: 'Hang tight! Stay on this page while your friend accepts',
+			type: 'success',
 		});
 	};
 
@@ -80,88 +132,70 @@ const Remote = () => {
 		setIncomingInvite(null);
 	};
 
-	return (
-		<div className='flex flex-1 flex-col items-center justify-center gap-6 p-4'>
-			<h1 className='text-accent-pink font-retro text-4xl font-bold'>Remote</h1>
+return (
+	<div className='flex flex-1'>
+		{toast?.show && (
+			<Toast
+				message={toast.message}
+				type={toast.type}
+				onClose={() => setToast({ show: false, message: '', type: 'success' })}
+			/>
+		)}
 
-			{friendsLoading ? (
-				<p className='text-text-muted py-8 text-center'>Loading friends...</p>
-			) : friends.length === 0 ? (
-				<p className='text-text-muted py-8 text-center'>
-					No friends yet. Add some friends via the Chat to get started!
-				</p>
-			) : (
-				<div className='w-full max-w-xl space-y-4'>
-					{friends.map((friend) => (
-						<div
-							key={friend.id}
-							className={`flex w-full items-center justify-between rounded-lg border px-4 py-3 ${
-								selectedFriend?.id === friend.id
-									? 'border-accent-pink bg-surface'
-									: 'border-border bg-bg'
-							}`}
+		{/* Invitation Received Modal */}
+		{incomingInvite && (
+			<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+				<div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+					<h2 className="text-lg font-bold mb-2 text-black">Game Invitation</h2>
+					<p className="mb-4 text-black">
+						<strong className="text-black">{incomingInvite.fromUsername}</strong> invited you to play <strong className="text-black">{incomingInvite.gameMode}</strong>!
+					</p>
+					<div className="flex justify-end gap-2">
+						<button
+							className="px-4 py-2 bg-pink-500 text-black rounded hover:bg-pink-600 border border-pink-700 font-semibold"
+							onClick={handleInviteAccept}
 						>
-							<button
-								type='button'
-								onClick={() => setSelectedFriend(friend)}
-								className='flex flex-1 items-center justify-between text-left'
-							>
-								<div>
-									<p className='text-lg font-semibold'>{friend.username}</p>
-									<p className='text-text-secondary text-sm'>
-										{friend.status === 'online' && 'Online'}
-										{friend.status === 'busy' && 'Playing'}
-										{friend.status === 'offline' && 'Offline'}
-									</p>
-								</div>
-								<span
-									className={`ml-4 h-3 w-3 rounded-full ${
-										friend.status === 'online'
-											? 'bg-status-online'
-											: friend.status === 'busy'
-												? 'bg-status-busy'
-												: 'bg-text-muted'
-									}`}
-								/>
-							</button>
-
-							<PinkButton
-								text='Challenge'
-								className={`text-accent-pink ml-4 ${friend.status !== 'online' || !isConnected ? 'no-scale opacity-50' : ''}`}
-								disabled={friend.status !== 'online' || !isConnected}
-								onClick={() => handleChallenge(friend)}
-							/>
-						</div>
-					))}
-				</div>
-			)}
-
-			{incomingInvite && (
-				<div className='fixed inset-0 flex items-center justify-center bg-black/50'>
-					<div className='bg-surface rounded-lg p-6 shadow-lg'>
-						<p className='mb-4 text-lg font-semibold'>
-							{incomingInvite.fromUsername} invites you to play{' '}
-							{incomingInvite.gameMode}.
-						</p>
-						<div className='flex justify-end gap-2'>
-							<button
-								type='button'
-								className='rounded border px-3 py-1'
-								onClick={handleInviteDecline}
-							>
-								Cancel
-							</button>
-							<PinkButton
-								text='Accept'
-								className='px-3 py-1'
-								onClick={handleInviteAccept}
-							/>
-						</div>
+							Accept
+						</button>
+						<button
+							className="px-4 py-2 bg-pink-200 text-black rounded hover:bg-pink-300 border border-pink-400 font-semibold"
+							onClick={handleInviteDecline}
+						>
+							Decline
+						</button>
 					</div>
 				</div>
-			)}
-		</div>
-	);
+			</div>
+		)}
+
+		{/* Hang tight! Confirmation Modal */}
+		{toast?.show && toast.type === 'success' && toast.message === 'Hang tight! Stay on this page while your friend accepts' && (
+			<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+				<div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm flex flex-col items-center">
+					<p className="mb-4 text-center text-black font-semibold">Hang tight! Stay on this page while your friend accepts</p>
+					<button
+						className="px-4 py-2 bg-pink-500 text-black rounded hover:bg-pink-600 border border-pink-700 font-semibold"
+						onClick={() => setToast({ show: false, message: '', type: 'success' })}
+					>
+						Close
+					</button>
+				</div>
+			</div>
+		)}
+
+		<main className='mx-auto my-auto max-w-6xl flex-1 overflow-y-auto px-6 py-8'>
+			<div className='grid gap-6 md:grid-cols-2'>
+				<FriendsCard
+					friends={friends}
+					onRemoveFriend={handleRemoveFriend}
+					onChallengeFriend={handleChallengeFriend}
+					onRefreshFriends={handleRefreshFriends}
+					lastRawMessage={lastRawMessage}
+				/>
+			</div>
+		</main>
+	</div>
+);
 };
 
 export default Remote;
