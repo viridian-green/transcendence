@@ -131,7 +131,7 @@ const Remote = () => {
 
 return (
 		<div className='flex flex-1'>
-			{toast?.show && (
+			{toast?.show && toast.message !== 'Stay on this page while your friend accepts' && (
 				<Toast
 					message={toast.message}
 					type={toast.type}
