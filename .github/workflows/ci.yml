@@ -24,25 +24,13 @@ jobs:
 
     - name: Prepare env files and secrets
       run: |
-        # Create root .env file if .env.example exists, otherwise create minimal one
-        if [ -f .env.example ]; then
-          cp .env.example .env
-        else
-          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" > .env
-          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
-        fi
-
-        # Create user-service .env file if .env.example exists
-        if [ -f services/user-service/.env.example ]; then
+        cp .env.example .env
+          cp api-gateway/.env.example api-gateway/.env
+          cp services/game-service/.env.example services/game-service/.env
           cp services/user-service/.env.example services/user-service/.env
-        else
-          echo "DB_USER=${{ secrets.POSTGRES_USER }}" > services/user-service/.env
-          echo "DB_HOST=user-db" >> services/user-service/.env
-          echo "DB_PORT=5432" >> services/user-service/.env
-          echo "DB_NAME=user_db" >> services/user-service/.env
-          echo "DB_PASSWORD_FILE=/run/secrets/postgres_password" >> services/user-service/.env
-        fi
+          cp services/chat-service/.env.example services/chat-service/.env
+          cp services/notification-service/.env.example services/notification-service/.env
+          cp services/presence-service/.env.example services/presence-service/.env
 
         # Create secrets directory and files
         mkdir -p secrets
