@@ -14,6 +14,9 @@ export const socketsByUserId: Map<string, Set<WebSocket>> = new Map();
 
 function resolveJwtSecret(): string | undefined {
 
+    if (process.env.JWT_SECRET) {
+        return process.env.JWT_SECRET;
+  }
   const jwtSecretFile = process.env.JWT_SECRET_FILE;
   if (jwtSecretFile) {
     try {

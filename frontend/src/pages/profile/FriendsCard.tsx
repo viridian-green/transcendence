@@ -100,8 +100,8 @@ export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend, onRefr
 								<p className='text-(--color-text-primary)'>{friend.username}</p>
 								<p className='text-text-muted'>
 									{friend.status === 'online' && 'Online'}
-									{friend.status === 'busy' && 'Playing'}
-									{friend.status === 'offline' && 'Unavailable'}
+									{friend.status === 'busy' && 'Busy'}
+									{friend.status === 'offline' && 'Offline'}
 								</p>
 							</div>
 							{/* Challenge Button */}

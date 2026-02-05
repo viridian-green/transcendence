@@ -8,10 +8,10 @@ async function gameRoutes(fastify, options) {
     websocket: true,
     rewritePrefix: "",
     rewriteRequestHeaders: (originalReq, headers) => {
-      if (originalReq.headers.cookie) {
-        headers.cookie = originalReq.headers.cookie;
-      }
-      return headers;
+    if (originalReq.headers.cookie) {
+    headers.cookie = originalReq.headers.cookie;
+    }
+    return headers;
     },
   });
 }

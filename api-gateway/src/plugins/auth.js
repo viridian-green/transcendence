@@ -5,7 +5,9 @@ import { authHook } from '../services/auth.service.js';
 
 // Resolve JWT secret either from env var or from a mounted secret file
 function resolveJwtSecret() {
-
+    if (process.env.JWT_SECRET) {
+        return process.env.JWT_SECRET;
+    }
     const jwtSecretFile = process.env.JWT_SECRET_FILE;
     if (jwtSecretFile) {
         try {
