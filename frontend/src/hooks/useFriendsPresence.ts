@@ -1,5 +1,5 @@
 // hooks/useFriendsWithStatus.ts
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useFriends } from './useFriends';
 import type { Friend } from '@/shared.types';
 import { usePresenceSocket } from './usePresenceSocket';
@@ -14,11 +14,24 @@ export function useFriendsWithStatus(userId?: number) {
 		refetch,
 	} = useFriends(userId);
 	const { ws, statuses, isConnected } = usePresenceSocket(Boolean(userId));
+
+	// Track socket for useFetchOnlineUsers - update when connection status changes
+	const [socket, setSocket] = useState<WebSocket | null>(null);
+
+	// Update socket reference when connection status changes
+	useEffect(() => {
+		if (isConnected && ws.current) {
+			setSocket(ws.current);
+		} else {
+			setSocket(null);
+		}
+	}, [isConnected, ws]);
+
 	const {
 		users: onlineUsers,
 		error: onlineUsersError,
 		loading: onlineUsersLoading,
-	} = useFetchOnlineUsers(String(userId), ws.current);
+	} = useFetchOnlineUsers(String(userId), socket);
 
 	const friendsWithStatus: Friend[] = useMemo(
 		() =>

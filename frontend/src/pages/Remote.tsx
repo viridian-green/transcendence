@@ -1,7 +1,5 @@
-import type { Friend } from '@/shared.types';
 import { Toast, type ToastType } from '@components/index';
 import { useState, useCallback, useEffect } from 'react';
-import { ProfileCard } from './profile/ProfileCard';
 import { useAuth } from '@/hooks/useAuth';
 import { FriendsCard } from './profile/FriendsCard';
 import { useFriendsWithStatus } from '@/hooks/useFriendsPresence';
@@ -15,10 +13,9 @@ type InvitePopupState = {
 } | null;
 
 const Remote = () => {
-    const { user, avatarUrl } = useAuth();
+	const { user } = useAuth();
 	const {
 		friends,
-		loading: friendsWithStatusLoading,
 		error: friendsError,
 		deleteFriend,
 		refetch,
@@ -37,32 +34,11 @@ const Remote = () => {
 		refetch();
 	}, [refetch]);
 
-	const handleRemoveFriend = async (id: number) => {
-		try {
-			await deleteFriend(id);
-		} catch (error) {
-			setToast({
-				show: true,
-				message: error instanceof Error ? error.message : 'Failed to remove friend',
-				type: 'failure',
-			});
-			return;
-		}
-		setToast({ show: true, message: `Friend removed`, type: 'success' });
-	};
-
-
-	// Check user/auth state first before showing loading UI
-	if (!user || friendsError) {
-		return null;
-	}
-
-
+	// Handle incoming notifications (must be before conditional returns)
 	useEffect(() => {
 		if (!lastRawMessage) return;
 
 		if (lastRawMessage.type === 'INVITE_RECEIVED') {
-			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setIncomingInvite({
 				fromUserId: lastRawMessage.fromUserId,
 				fromUsername: lastRawMessage.fromUsername,
@@ -86,6 +62,25 @@ const Remote = () => {
 			});
 		}
 	}, [lastRawMessage, navigate]);
+
+	const handleRemoveFriend = async (id: number) => {
+		try {
+			await deleteFriend(id);
+		} catch (error) {
+			setToast({
+				show: true,
+				message: error instanceof Error ? error.message : 'Failed to remove friend',
+				type: 'failure',
+			});
+			return;
+		}
+		setToast({ show: true, message: `Friend removed`, type: 'success' });
+	};
+
+	// Check user/auth state first before showing loading UI
+	if (!user || friendsError) {
+		return null;
+	}
 
 	const handleChallengeFriend = (id: number) => {
 		const friend = friends.find(f => f.id === id);

@@ -49,19 +49,19 @@ const Profile = () => {
 
 	// Track initial load vs subsequent refreshes
 	const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
-	
-	// Check user/auth state first before showing loading UI
-	if (!user || friendsError) {
-		return null;
-	}	
 
-  // Mark as loaded once friendsWithStatusLoading becomes false
+	// Mark as loaded once friendsWithStatusLoading becomes false (must be before conditional returns)
 	useEffect(() => {
 		if (!friendsWithStatusLoading && !hasInitiallyLoaded) {
 			setHasInitiallyLoaded(true);
 		}
 	}, [friendsWithStatusLoading, hasInitiallyLoaded]);
-	
+
+	// Check user/auth state first before showing loading UI
+	if (!user || friendsError) {
+		return null;
+	}
+
 	if (!hasInitiallyLoaded && friendsWithStatusLoading) {
 		// Only show loading screen on initial load
 		return <div>Loading friends...</div>;
