@@ -1,6 +1,10 @@
 import app from './app.js';
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3002;
+if (!process.env.PORT) {
+  console.error('ERROR: PORT environment variable is required');
+  process.exit(1);
+}
+const PORT = parseInt(process.env.PORT, 10);
 
 const start = async () => {
   try {

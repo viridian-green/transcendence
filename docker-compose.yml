@@ -1,31 +1,7 @@
 services:
-  database:
-    image: postgres:16-alpine
-    container_name: postgres_db
-    restart: always
-    env_file:
-      - .env
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
-    networks:
-      - transcendence-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d game_db"]
-      interval: 30s      # Changed from 5s - default Docker interval
-      timeout: 5s
-      retries: 3         # Changed from 5 - fewer retries needed with longer interval
-      start_period: 10s
-
   nginx:
     image: nginx:alpine
     container_name: nginx
-    env_file:
-      - .env
     ports:
       - "8443:443"
     volumes:
@@ -34,8 +10,6 @@ services:
       - frontend_dist:/usr/share/nginx/html:ro
     depends_on:
       api-gateway:
-        condition: service_healthy
-      database:
         condition: service_healthy
       frontend:
         condition: service_started
@@ -60,44 +34,75 @@ services:
     build:
       context: ./services/game-service
       dockerfile: Dockerfile
-    depends_on:
-      database:
-        condition: service_healthy
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/game_db
     volumes:
       - ./services/game-service/ssl:/app/ssl:ro
+    env_file:
+      - ./services/game-service/.env
     ports:
       - "3002:3002"
     networks:
       - transcendence-network
+
+  user-db:
+    image: postgres:16-alpine
+    container_name: user_db
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: user_db
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+    - postgres_password
+    volumes:
+      - user_db_data:/var/lib/postgresql/data
+    networks:
+      - transcendence-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d user_db"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   user:
     container_name: user
     build:
       context: ./services/user-service
       dockerfile: Dockerfile
-    depends_on:
-      database:
-        condition: service_healthy
     env_file:
       - ./services/user-service/.env
-    environment:
-      NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED:-0}
+
+    secrets:
+    - postgres_password
+    - jwt_secret
+    - cookie_secret
+
+    depends_on:
+      user-db:
+        condition: service_healthy
+
     volumes:
       - ./services/user-service/uploads:/app/uploads
       - ./services/user-service/ssl:/app/ssl:ro
+
+    environment:
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+      COOKIE_SECRET_FILE: /run/secrets/cookie_secret
+      NODE_EXTRA_CA_CERTS: /app/ssl/user-service.crt
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+
     healthcheck:
       test: ["CMD", "curl", "-f", "-k", "https://user:3003/health"]
-      interval: 30s      # Changed from 5s
-      timeout: 5s        # Changed from 3s
-      retries: 3         # Changed from 10
-      start_period: 30s  # Grace period for service startup
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
     ports:
       - "3003:3003"
+
     networks:
       - transcendence-network
 
@@ -106,10 +111,12 @@ services:
     build:
       context: ./services/chat-service
       dockerfile: Dockerfile
-    depends_on:
-      database:
-        condition: service_healthy
-    env_file: ./services/chat-service/.env
+    env_file:
+      - ./services/chat-service/.env
+    environment:
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+    secrets:
+      - jwt_secret
     volumes:
       - ./services/chat-service/ssl:/app/ssl:ro
     ports:
@@ -123,9 +130,11 @@ services:
       context: ./services/presence-service
       dockerfile: Dockerfile
     environment:
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-      JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+    env_file:
+      - ./services/presence-service/.env
+    secrets:
+    - jwt_secret
     volumes:
       - ./services/presence-service/ssl:/app/ssl:ro
     depends_on:
@@ -142,11 +151,11 @@ services:
       context: ./services/notification-service
       dockerfile: Dockerfile
     environment:
-      JWT_SECRET: ${JWT_SECRET}
-    depends_on:
-      database:
-        condition: service_healthy
-    env_file: ./services/notification-service/.env
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+    env_file:
+      - ./services/notification-service/.env
+    secrets:
+    - jwt_secret
     volumes:
       - ./services/notification-service/ssl:/app/ssl:ro
     ports:
@@ -159,14 +168,12 @@ services:
     build:
       context: ./api-gateway
       dockerfile: Dockerfile
-    env_file:
-      - .env
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      JWT_SECRET: ${JWT_SECRET}
-      NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED:-0}
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+      NODE_EXTRA_CA_CERTS: /app/ssl/api-gateway.crt
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+    secrets:
+    - jwt_secret
     ports:
       - "3000:3000"
     volumes:
@@ -178,10 +185,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "-k", "https://localhost:3000/health"]
-      interval: 30s      # Changed from 5s
-      timeout: 5s        # Changed from 3s
-      retries: 3         # Changed from 10
-      start_period: 30s  # Grace period for service startup
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   redis:
     image: redis:7-alpine
@@ -196,5 +203,13 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
+  user_db_data:
   frontend_dist:
+
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password
+  jwt_secret:
+    file: ./secrets/jwt_secret
+  cookie_secret:
+    file: ./secrets/cookie_secret

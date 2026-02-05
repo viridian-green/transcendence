@@ -2,17 +2,24 @@
 import Redis from "ioredis";
 import { WebSocket } from "ws";
 
+if (!process.env.REDIS_HOST) {
+  console.error('ERROR: REDIS_HOST environment variable is required');
+  process.exit(1);
+}
+if (!process.env.REDIS_PORT) {
+  console.error('ERROR: REDIS_PORT environment variable is required');
+  process.exit(1);
+}
+
 export const wsByUserId: Map<string, WebSocket> = new Map();
 
 const redisSubscriber = new Redis({
-  //Check if all these envs can be replaced by process.envREDIS_URL
-  host: process.env.REDIS_HOST || "redis",
-  port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6378,
-  password: process.env.REDIS_PASSWORD || undefined,
+  host: process.env.REDIS_HOST,
+  port: parseInt(process.env.REDIS_PORT, 10),
 });
 
-// Attach the  message handler ONCE
-export function setupSubscribers(io?: any) {
+// Attach the message handler ONCE
+export function setupSubscribers() {
   redisSubscriber.on("message", (channel: string, message: string) => {
     if (channel === "chat:general") {
         wsByUserId.forEach((ws, userId) => {

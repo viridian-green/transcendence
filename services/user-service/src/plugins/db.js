@@ -3,6 +3,7 @@ import fastifyPostgres from '@fastify/postgres'
 import Postgrator from 'postgrator'
 import path from 'path'
 import pg from 'pg'
+import fs from 'fs';
 
 async function waitForDatabase(connectionString, maxRetries = 10, delay = 2000) {
     for (let i = 0; i < maxRetries; i++) {
@@ -29,8 +30,7 @@ async function waitForDatabase(connectionString, maxRetries = 10, delay = 2000) 
 }
 
 async function dbConnector(app, options) {
-    const connectionString = process.env.DATABASE_URL
-
+    const connectionString = buildDatabaseUrl();
     // Wait for database to be ready before registering the plugin
     try {
         app.log.info('Waiting for database to be ready...')
@@ -60,9 +60,27 @@ async function dbConnector(app, options) {
             app.log.info({ applied }, 'Database migrations completed')
         } catch (err) {
             app.log.error(err, 'Database migration failed')
-            throw err // fail fast in CI
+            throw err
         }
     })
+}
+
+function buildDatabaseUrl() {
+    const {
+        DB_USER,
+        DB_HOST,
+        DB_PORT,
+        DB_NAME,
+        DB_PASSWORD_FILE,
+    } = process.env;
+
+    if (!DB_PASSWORD_FILE) {
+        throw new Error('DB_PASSWORD_FILE is not set');
+    }
+
+    const password = fs.readFileSync(DB_PASSWORD_FILE, 'utf8').trim();
+    const encodedPassword = encodeURIComponent(password);
+    return `postgres://${DB_USER}:${encodedPassword}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
 }
 
 export default fastifyPlugin(dbConnector)

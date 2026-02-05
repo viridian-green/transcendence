@@ -51,7 +51,6 @@ const start = async () => {
         await fastify.register(userRoutes);
 
 
-        //DEBUGGING - This is needed to print the routes
         await fastify.ready();
 
         await fastify.listen({
