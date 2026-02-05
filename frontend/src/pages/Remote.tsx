@@ -51,10 +51,7 @@ const Remote = () => {
 	}, [lastRawMessage, navigate]);
 
 	const handleChallenge = (friend: Friend) => {
-		if (friend.status !== 'online') return;
-		if (!isConnected) {
-			return;
-		}
+		if (friend.status !== 'online' || !isConnected) return;
 
 		send({
 			type: 'INVITE',
