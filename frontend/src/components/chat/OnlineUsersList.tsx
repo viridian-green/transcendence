@@ -86,7 +86,6 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId,
 				<ul>
 					{onlineOthers.map((user) => {
 						const status = friendRequests[String(user.id)]?.status ?? null;
-						console.log('User:', user.username, 'Request Status:', status);
 						return (
 							<li
 								key={user.id}

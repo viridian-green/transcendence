@@ -14,13 +14,8 @@ type InvitePopupState = {
 
 const Remote = () => {
 	const { user } = useAuth();
-	const {
-		friends,
-		error: friendsError,
-		deleteFriend,
-		refetch,
-	} = useFriendsWithStatus(user?.id);
-    const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
+	const { friends, error: friendsError, deleteFriend, refetch } = useFriendsWithStatus(user?.id);
+	const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
 	const { send, lastRawMessage, isConnected } = useNotificationSocket(Boolean(user));
 	const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType } | null>({
 		show: false,
@@ -83,7 +78,7 @@ const Remote = () => {
 	}
 
 	const handleChallengeFriend = (id: number) => {
-		const friend = friends.find(f => f.id === id);
+		const friend = friends.find((f) => f.id === id);
 		if (!friend || friend.status !== 'online') return;
 		if (!isConnected) {
 			setToast({
@@ -124,7 +119,7 @@ const Remote = () => {
 		setIncomingInvite(null);
 	};
 
-return (
+	return (
 		<div className='flex flex-1'>
 			{toast?.show && toast.message !== 'Stay on this page while your friend accepts' && (
 				<Toast
@@ -134,46 +129,54 @@ return (
 				/>
 			)}
 
-		{/* Invitation Received Modal */}
-		{incomingInvite && (
-			<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-				<div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-					<h2 className="text-lg font-bold mb-2 text-black">Game Invitation</h2>
-					<p className="mb-4 text-black">
-						<strong className="text-black">{incomingInvite.fromUsername}</strong> invited you to play <strong className="text-black">{incomingInvite.gameMode}</strong>!
-					</p>
-					<div className="flex justify-end gap-2">
-						<button
-							className="px-4 py-2 bg-pink-500 text-black rounded hover:bg-pink-600 border border-pink-700 font-semibold"
-							onClick={handleInviteAccept}
-						>
-							Accept
-						</button>
-						<button
-							className="px-4 py-2 bg-pink-200 text-black rounded hover:bg-pink-300 border border-pink-400 font-semibold"
-							onClick={handleInviteDecline}
-						>
-							Decline
-						</button>
+			{/* Invitation Received Modal */}
+			{incomingInvite && (
+				<div className='bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black'>
+					<div className='w-full max-w-md rounded-lg bg-white p-6 shadow-lg'>
+						<h2 className='mb-2 text-lg font-bold text-black'>Game Invitation</h2>
+						<p className='mb-4 text-black'>
+							<strong className='text-black'>{incomingInvite.fromUsername}</strong>{' '}
+							invited you to play{' '}
+							<strong className='text-black'>{incomingInvite.gameMode}</strong>!
+						</p>
+						<div className='flex justify-end gap-2'>
+							<button
+								className='rounded border border-pink-700 bg-pink-500 px-4 py-2 font-semibold text-black hover:bg-pink-600'
+								onClick={handleInviteAccept}
+							>
+								Accept
+							</button>
+							<button
+								className='rounded border border-pink-400 bg-pink-200 px-4 py-2 font-semibold text-black hover:bg-pink-300'
+								onClick={handleInviteDecline}
+							>
+								Decline
+							</button>
+						</div>
 					</div>
 				</div>
-			</div>
-		)}
+			)}
 
-		{/* Hang tight! Confirmation Modal */}
-		{toast?.show && toast.type === 'success' && toast.message === 'Stay on this page while your friend accepts' && (
-			<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-				<div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm flex flex-col items-center">
-					<p className="mb-4 text-center text-black font-semibold">Stay on this page while your friend accepts</p>
-					<button
-						className="px-4 py-2 bg-pink-500 text-black rounded hover:bg-pink-600 border border-pink-700 font-semibold"
-						onClick={() => setToast({ show: false, message: '', type: 'success' })}
-					>
-						Close
-					</button>
-				</div>
-			</div>
-		)}
+			{/* Hang tight! Confirmation Modal */}
+			{toast?.show &&
+				toast.type === 'success' &&
+				toast.message === 'Stay on this page while your friend accepts' && (
+					<div className='bg-opacity-40 fixed inset-0 z-50 flex items-center justify-center bg-black'>
+						<div className='flex w-full max-w-sm flex-col items-center rounded-lg bg-white p-6 shadow-lg'>
+							<p className='mb-4 text-center font-semibold text-black'>
+								Stay on this page while your friend accepts
+							</p>
+							<button
+								className='rounded border border-pink-700 bg-pink-500 px-4 py-2 font-semibold text-black hover:bg-pink-600'
+								onClick={() =>
+									setToast({ show: false, message: '', type: 'success' })
+								}
+							>
+								Close
+							</button>
+						</div>
+					</div>
+				)}
 
 			<main className='mx-auto my-auto max-w-6xl flex-1 overflow-y-auto px-6 py-8'>
 				<div className='grid gap-6 md:grid-cols-2'>

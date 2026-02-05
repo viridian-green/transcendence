@@ -15,7 +15,6 @@ redisSubscriber.on("message", async (channel, message) => {
   if (channel === "presence:updates") {
     try {
       const data = JSON.parse(message);
-      console.log(`[PRESENCE] Received update: ${data.userId} -> ${data.state}`);
 
       // Persist the state to Redis (so REST API returns correct data)
       await redisClient.set(`user:state:${data.userId}`, data.state);

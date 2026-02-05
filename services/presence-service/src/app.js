@@ -31,7 +31,6 @@ const httpsOptions = {
     key: fs.readFileSync(keyPath),
 };
 
-console.log('SSL enabled for Presence Service - HTTPS is mandatory');
 
 const app = Fastify({
   logger: true,

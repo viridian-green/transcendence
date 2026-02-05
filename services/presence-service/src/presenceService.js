@@ -13,7 +13,6 @@ export async function updateUserState(userId, state) {
         "presence:updates",
         JSON.stringify({ userId, state, timestamp: Date.now() })
       );
-      console.log(`User ${userId} state updated to ${state}`);
       broadcastPresenceUpdate();
     } catch (err) {
       console.error(`Failed to update user state for ${userId}:`, err);

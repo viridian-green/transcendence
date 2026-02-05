@@ -53,12 +53,6 @@ export function useNotificationSocket(enabled: boolean) {
     };
 
     socket.onclose = (event) => {
-      console.log('[NOTIFICATION SOCKET] closed', {
-        code: event.code,
-        reason: event.reason,
-        wasClean: event.wasClean,
-        readyState: socket.readyState,
-      });
       setIsConnected(false);
     };
 
@@ -72,9 +66,6 @@ export function useNotificationSocket(enabled: boolean) {
         const data: NotificationFriendRequest = JSON.parse(event.data);
         setLastRawMessage(data);
         switch (data.type) {
-          // case 'welcome':
-          //   console.log('[NOTIFICATION SOCKET]', data.message);
-          //   break;
           case 'FRIEND_INVITE_RECEIVED':
             setFriendRequests(prev => ({
               ...prev,

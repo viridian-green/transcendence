@@ -10,8 +10,6 @@ const redisSubscriber = new Redis({
 redisSubscriber.subscribe("presence:updates", (err, count) => {
   if (err) {
     console.error("[GAME-SERVICE] Failed to subscribe to presence:updates:", err);
-  } else {
-    console.log(`[GAME-SERVICE] Subscribed to ${count} channel(s)`);
   }
 });
 
@@ -19,7 +17,6 @@ redisSubscriber.on("message", (channel, message) => {
   if (channel === "presence:updates") {
     try {
       const data = JSON.parse(message);
-      console.log(`[GAME-SERVICE] Received presence update: ${data.userId} -> ${data.state}`);
     } catch (err) {
       console.error("[GAME-SERVICE] Redis message parse error:", err);
     }

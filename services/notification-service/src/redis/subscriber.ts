@@ -17,7 +17,6 @@ const redisSubscriber = new Redis({
 
 export function setupNotificationSubscriber() {
     redisSubscriber.on("connect", () => {
-        console.log("[REDIS SUBSCRIBER] Connected to Redis");
     });
 
     redisSubscriber.on("error", (err) => {
@@ -30,7 +29,6 @@ export function setupNotificationSubscriber() {
         let event;
         try {
             event = JSON.parse(message);
-            console.log(`[REDIS SUBSCRIBER] Parsed event:`, event);
         } catch (err) {
             return;
         }
@@ -50,7 +48,6 @@ export function setupNotificationSubscriber() {
         if (err) {
             console.error("[REDIS SUBSCRIBER] Failed to subscribe:", err);
         } else {
-            console.log("[REDIS SUBSCRIBER] Successfully subscribed to notifications.events");
         }
     });
 }

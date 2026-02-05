@@ -26,8 +26,6 @@ const httpsOptions = {
     key: fs.readFileSync(keyPath),
 };
 
-console.log('SSL enabled for Game Service - HTTPS is mandatory');
-
 const app = Fastify({
     logger: true,
     https: httpsOptions,
