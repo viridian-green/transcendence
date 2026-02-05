@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { PinkButton } from '@/components';
+import { useCallback, useEffect, useState } from 'react';
 import { useNotificationSocket } from '@/hooks/useNotificationSocket';
 import { useNavigate } from 'react-router-dom';
 import type { Friend } from '@/shared.types';
 import { useFriendsWithStatus } from '@/hooks/useFriendsPresence';
 import { useAuth } from '@/hooks/useAuth';
 import GlobalAlert from '@/components/GlobalAlert';
+import { FriendsCard } from './profile/FriendsCard';
 
 type InvitePopupState = {
 	fromUserId: string;
@@ -16,8 +16,7 @@ type InvitePopupState = {
 const Remote = () => {
 	const navigate = useNavigate();
 	const { user } = useAuth();
-	const { friends, loading: friendsLoading } = useFriendsWithStatus(user?.id);
-	const [selectedFriend, setSelectedFriend] = useState<Friend | null>(null);
+	const { friends, loading: friendsLoading, refetch } = useFriendsWithStatus(user?.id);
 	const [incomingInvite, setIncomingInvite] = useState<InvitePopupState>(null);
 	const { send, lastRawMessage, isConnected } = useNotificationSocket(true);
 
@@ -78,6 +77,10 @@ const Remote = () => {
 		setIncomingInvite(null);
 	};
 
+	const handleRefreshFriends = useCallback(() => {
+		refetch();
+	}, [refetch]);
+
 	return (
 		<div className='flex flex-1 flex-col items-center justify-center gap-6 p-4'>
 			<h1 className='text-accent-pink font-retro text-4xl font-bold'>Remote</h1>
@@ -90,47 +93,14 @@ const Remote = () => {
 				</p>
 			) : (
 				<div className='w-full max-w-xl space-y-4'>
-					{friends.map((friend) => (
-						<div
-							key={friend.id}
-							className={`flex w-full items-center justify-between rounded-lg border px-4 py-3 ${
-								selectedFriend?.id === friend.id
-									? 'border-accent-pink bg-surface'
-									: 'border-border bg-bg'
-							}`}
-						>
-							<button
-								type='button'
-								onClick={() => setSelectedFriend(friend)}
-								className='flex flex-1 items-center justify-between text-left'
-							>
-								<div>
-									<p className='text-lg font-semibold'>{friend.username}</p>
-									<p className='text-text-secondary text-sm'>
-										{friend.status === 'online' && 'Online'}
-										{friend.status === 'busy' && 'Playing'}
-										{friend.status === 'offline' && 'Offline'}
-									</p>
-								</div>
-								<span
-									className={`ml-4 h-3 w-3 rounded-full ${
-										friend.status === 'online'
-											? 'bg-status-online'
-											: friend.status === 'busy'
-												? 'bg-status-busy'
-												: 'bg-text-muted'
-									}`}
-								/>
-							</button>
-
-							<PinkButton
-								text='Challenge'
-								className={`text-accent-pink ml-4 ${friend.status !== 'online' || !isConnected ? 'no-scale opacity-50' : ''}`}
-								disabled={friend.status !== 'online' || !isConnected}
-								onClick={() => handleChallenge(friend)}
-							/>
-						</div>
-					))}
+					<FriendsCard
+						friends={friends}
+						onChallengeFriend={handleChallenge}
+						onRefreshFriends={handleRefreshFriends}
+						onRemoveFriend={() => {}}
+						lastRawMessage={lastRawMessage}
+						deleteable={false}
+					/>
 				</div>
 			)}
 

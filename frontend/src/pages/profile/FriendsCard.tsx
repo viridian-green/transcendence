@@ -8,12 +8,20 @@ import type { NotificationFriendRequest } from '@/components/chat/types/chat';
 interface FriendsCardProps {
 	friends: Friend[];
 	onRemoveFriend: (id: number) => void;
-	onChallengeFriend: (id: number) => void;
+	onChallengeFriend: (friend: Friend) => void;
 	onRefreshFriends: () => void;
 	lastRawMessage: NotificationFriendRequest | null;
+	deleteable?: boolean;
 }
 
-export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend, onRefreshFriends, lastRawMessage }: FriendsCardProps) {
+export function FriendsCard({
+	friends,
+	onRemoveFriend,
+	onChallengeFriend,
+	onRefreshFriends,
+	lastRawMessage,
+	deleteable = true,
+}: FriendsCardProps) {
 	const navigate = useNavigate();
 	const [deleteFriendAlert, setDeleteFriendAlert] = useState<{
 		visible: boolean;
@@ -116,20 +124,22 @@ export function FriendsCard({ friends, onRemoveFriend, onChallengeFriend, onRefr
 							)}
 
 							{/* Remove Button */}
-							<button
-								type='button'
-								onClick={() =>
-									setDeleteFriendAlert({
-										visible: true,
-										message: `Are you sure you want to remove ${friend.username} from your friends?`,
-										type: 'remove',
-										userId: friend.id,
-									})
-								}
-								className='text-text-muted hover:bg-accent-pink/10 hover:text-accent-pink rounded-md border-0 p-1'
-							>
-								<X className='h-4 w-4' />
-							</button>
+							{deleteable && (
+								<button
+									type='button'
+									onClick={() =>
+										setDeleteFriendAlert({
+											visible: true,
+											message: `Are you sure you want to remove ${friend.username} from your friends?`,
+											type: 'remove',
+											userId: friend.id,
+										})
+									}
+									className='text-text-muted hover:bg-accent-pink/10 hover:text-accent-pink rounded-md border-0 p-1'
+								>
+									<X className='h-4 w-4' />
+								</button>
+							)}
 						</div>
 					))}
 			</div>
