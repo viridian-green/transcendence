@@ -12,20 +12,6 @@ async function checkIfStateIsValid(state) {
   }
 }
 
-async function updateUserState(id, state) {
-  try {
-    await redisClient.set(`user:state:${id}`, state);
-    await redisClient.publish(
-      "presence:updates",
-      JSON.stringify({ userId: id, state })
-    );
-  } catch (err) {
-    const error = new Error("Failed to update user state in Redis");
-    error.statusCode = 500;
-    throw error;
-  }
-}
-
 async function getUserState(id) {
   try {
     const state = await redisClient.get(`user:state:${id}`);
