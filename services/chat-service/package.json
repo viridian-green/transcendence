@@ -14,13 +14,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@fastify/static": "^9.0.0",
     "@fastify/websocket": "^11.2.0",
     "fastify": "^5.6.2",
     "ioredis": "^5.9.1",
-    "jsonwebtoken": "^9.0.2",
-    "node-fetch": "^3.3.2",
-    "socket.io": "^4.8.3"
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.9",

@@ -9,7 +9,11 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3006;
+if (!process.env.PORT) {
+  console.error('ERROR: PORT environment variable is required');
+  process.exit(1);
+}
+const PORT = parseInt(process.env.PORT, 10);
 
 // SSL configuration - HTTPS is mandatory
 const certPath = path.join(__dirname, "../ssl/notification-service.crt");

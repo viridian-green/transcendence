@@ -2,6 +2,7 @@ import { AIController } from '../game/AIController.js';
 import { createInitialState, stopPaddle, movePaddle, GameLoop, GAME_CONFIG } from '../game/game-logic.js';
 import { redisPublisher } from "../redis/subscribers.js";
 import { extractUserFromJWT } from "../utils/extractUserFromJWT.js";
+import WebSocket from 'ws';
 
 const rooms = new Map();
 
@@ -26,34 +27,34 @@ function getOrCreateRoom(gameId, mode) {
 async function onGameStart(req) {
   const user = extractUserFromJWT(req);  // Don't trust req.query.userId
   if (user) {
-    await redisPublisher.publish("presence:updates", JSON.stringify({ 
-      userId: user.id, 
-      state: "busy" 
+    await redisPublisher.publish("presence:updates", JSON.stringify({
+      userId: user.id,
+      state: "busy"
     }));
     console.log(`[GAME] User ${user.username} set busy`);
   }
 }
 
 async function onGameEnd(userId) {
-  await redisPublisher.publish("presence:updates", JSON.stringify({ 
-    userId, 
-    state: "online" 
+  await redisPublisher.publish("presence:updates", JSON.stringify({
+    userId,
+    state: "online"
   }));
   console.log(`[GAME] User ${userId} set online`);
 }
 
 
 export default async function gameWebsocket(fastify) {
-  fastify.get('/:gameId', { websocket: true }, async (connection, req) => {
+  fastify.get('/:gameId', { websocket: true }, async (socket, req) => {
     const { gameId } = req.params;
     const { mode} = req.query;
     const user = extractUserFromJWT(req);
     if (!user) {
-        connection.socket.send(JSON.stringify({ type: "error", error: "Authentication required" }));
-        connection.socket.close();
+        socket.send(JSON.stringify({ type: "error", error: "Authentication required" }));
+        socket.close();
         return;
     }
-    const ws = connection.socket;
+    const ws = socket;
 
     console.log(`[GAME WS] Client connected to room ${gameId} (mode: ${mode})`);
 

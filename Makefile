@@ -7,11 +7,13 @@
 setup:
 	@bash ./scripts/generate-secrets.sh
 	./scripts/generate-ssl-certs.sh
+	@bash ./scripts/generate-secrets.sh
 
 
 ## === Lifecycle: start/stop/restart ===
 
 # Start services (base stack)
+
 up: setup env
 	docker compose up -d
 

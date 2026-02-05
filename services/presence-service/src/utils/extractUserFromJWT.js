@@ -1,4 +1,24 @@
 import jwt from "jsonwebtoken";
+import fs from "fs";
+
+function resolveJwtSecret() {
+  const jwtSecretFile = process.env.JWT_SECRET_FILE;
+  if (jwtSecretFile) {
+    try {
+      return fs.readFileSync(jwtSecretFile, "utf8").trim();
+    } catch (err) {
+      console.error(
+        `Failed to read JWT secret file at ${jwtSecretFile}:`,
+        err
+      );
+      return undefined;
+    }
+  }
+
+  return undefined;
+}
+
+const jwtSecret = resolveJwtSecret();
 
 // Extract user info from JWT in cookies
 export function extractUserFromJWT(request) {
@@ -14,7 +34,6 @@ export function extractUserFromJWT(request) {
   }
 
   const accessToken = cookies["access_token"];
-  const jwtSecret = process.env.JWT_SECRET;
 
   if (accessToken && jwtSecret) {
     try {
