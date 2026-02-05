@@ -42,6 +42,9 @@ services:
       - jwt_secret
     volumes:
       - ./services/game-service/ssl:/app/ssl:ro
+    depends_on:
+      redis:
+        condition: service_started
     ports:
       - "3002:3002"
     networks:
