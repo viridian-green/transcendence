@@ -95,11 +95,18 @@ const NotificationManager: React.FC = () => {
 						credentials: 'include',
 					});
 					if (!res.ok) throw new Error('Failed to accept friend invite');
-					setAlertProps((prev: any) => ({ ...prev, message: 'Friend invite accepted!' }));
+					setAlertProps((prev: any) => ({ 
+						...prev, 
+						message: 'Friend invite accepted!',
+						onAccept: undefined,
+						onDecline: undefined,
+					}));
 				} catch (err) {
 					setAlertProps((prev: any) => ({
 						...prev,
 						message: err instanceof Error ? err.message : 'Unknown error',
+						onAccept: undefined,
+						onDecline: undefined,
 					}));
 				} finally {
 					setTimeout(() => {
@@ -115,11 +122,18 @@ const NotificationManager: React.FC = () => {
 						credentials: 'include',
 					});
 					if (!res.ok) throw new Error('Failed to reject friend invite');
-					setAlertProps((prev: any) => ({ ...prev, message: 'Friend invite rejected.' }));
+					setAlertProps((prev: any) => ({ 
+						...prev, 
+						message: 'Friend invite rejected.',
+						onAccept: undefined,
+						onDecline: undefined,
+					}));
 				} catch (err) {
 					setAlertProps((prev: any) => ({
 						...prev,
 						message: err instanceof Error ? err.message : 'Unknown error',
+						onAccept: undefined,
+						onDecline: undefined,
 					}));
 				} finally {
 					setTimeout(() => {
