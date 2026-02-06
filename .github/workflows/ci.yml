@@ -50,6 +50,15 @@ jobs:
         docker compose build --no-cache
         docker compose up -d
 
+    - name: Wait for services to be healthy
+      run: |
+        echo "Waiting for services to be ready..."
+        timeout 120 bash -c 'until docker compose ps api-gateway | grep -q "healthy"; do echo "Waiting for api-gateway..."; sleep 5; done'
+        echo "api-gateway is healthy!"
+        # Wait for nginx to be ready (it depends on api-gateway being healthy)
+        timeout 30 bash -c 'until curl -k -s -o /dev/null -w "%{http_code}" https://localhost:8443/health | grep -q "200"; do echo "Waiting for nginx..."; sleep 2; done'
+        echo "nginx is ready!"
+
    #Test: Show that environment variables are working
     - name: Print environment variables
       run: |

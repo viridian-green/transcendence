@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-API="https://localhost:3000/api/auth/login"
+API="https://localhost:8443/api/auth/login"
 
 assert_status () {
   payload=$1
