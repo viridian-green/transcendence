@@ -37,7 +37,7 @@ logsdev:
 
 clean:
 	docker compose down --remove-orphans
-	rm -rf nginx/ssl/*.crt nginx/ssl/*.key
+	find . -type d -name "ssl" -exec sh -c 'rm -f "$$1"/*.crt "$$1"/*.key' _ {} \;
 
 rebuild: clean setup
 	docker compose up --build -d
@@ -52,7 +52,7 @@ prune:
 	docker network prune -f
 	docker builder prune -af
 
-reset:
+reset: clean
 	@echo "Stopping all containers..."
 	docker stop $$(docker ps -aq) || true
 	@echo "Removing all containers..."
@@ -66,8 +66,6 @@ reset:
 	docker network prune -f || true
 	@echo "Removing all builders..."
 	docker builder prune -af || true
-	@echo "Removing SSL certs..."
-	rm -rf nginx/ssl/*.crt nginx/ssl/*.key || true
 
 # Rebuild from scratch
 rebuild: clean setup
