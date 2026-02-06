@@ -719,8 +719,8 @@ Redis is used for ephemeral real-time data (not persisted):
 #### Primary Contributions
 | Area | Details |
 |------|---------|
-| **Real-time Chat** | Built complete chat service, WebSocket handlers, chat widget UI, message broadcasting |
-| **User Profiles** | Profile page components, profile data display |
+| **Real-time Chat** | Built complete chat service, WebSocket handlers, chat widget UI, message broadcasting and real-time user presence |
+| **User Profile** | Friends list in real-time |
 | **Friends System** | Friend request handling, friends list integration |
 | **Frontend UI** | Component development, page layouts, styling |
 | **DevOps** | Docker configuration, Makefile commands, deployment setup |
@@ -729,6 +729,7 @@ Redis is used for ephemeral real-time data (not persisted):
 - Designed and implemented the entire real-time chat system from scratch
 - Created the chat widget with intuitive UX for message composition and display
 - Integrated chat with presence system to show online status
+- Integrated friends request notification managment for backend and frontend and real-time friends list
 
 #### Challenges Overcome
 - **Challenge:** Handling WebSocket disconnections and message delivery guarantees
