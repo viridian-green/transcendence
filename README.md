@@ -538,7 +538,7 @@ Redis is used for ephemeral real-time data (not persisted):
 - Graceful reconnection handling on client side
 - Redis pub/sub for broadcasting across service instances
 
-**Team Members:** Natália, Daiana, Adèle
+**Team Members:** Daiana, Adèle
 </details>
 
 <details>
@@ -567,7 +567,7 @@ Redis is used for ephemeral real-time data (not persisted):
 - Online status tracking integrated with presence service
 - Profile page displaying all user information
 
-**Team Members:** Natália
+**Team Members:** Natália, Petra
 </details>
 
 <details>
@@ -641,7 +641,7 @@ Redis is used for ephemeral real-time data (not persisted):
 <details>
 <summary><strong>8. Modules of Choice - Redis</strong> (2 pts)</summary>
 
-**Justification:** 
+**Justification:**
 
 **Implementation:**
 
