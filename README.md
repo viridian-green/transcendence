@@ -97,8 +97,7 @@ transcendence/
 │   └── notification-service/ # Real-time notifications
 ├── nginx/                    # Nginx reverse proxy configuration
 ├── scripts/                  # Setup and utility scripts
-├── init-scripts/             # Database init and test scripts
-│   └── test-scripts/         # CI/CD test scripts for services
+├── init-scripts/             # Database initialization scripts
 ├── secrets/                  # Generated secrets (not in git)
 ├── docker-compose.yml        # Production Docker configuration
 ├── docker-compose.dev.yml    # Development Docker overrides
@@ -131,7 +130,7 @@ Before running the project, ensure you have the following installed:
 #### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/viridian-green/transcendence.git
 cd transcendence
 ```
 
