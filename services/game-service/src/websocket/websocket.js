@@ -26,9 +26,6 @@ export default async function gameWebsocket(fastify) {
     const { gameId } = req.params;
     const { mode } = req.query;
     const ws = connection.socket;
-
-    console.log(`[GAME WS] Client connected to room ${gameId} (mode: ${mode})`);
-
     const room = getOrCreateRoom(gameId, mode);
 
     room.clients.add(ws);
@@ -47,15 +44,12 @@ export default async function gameWebsocket(fastify) {
     });
 
     ws.on('close', () => {
-      console.log('[GAME WS] Player disconnected from room', gameId);
       room.clients.delete(ws);
 
     if (room.clients.size === 0) {
-      console.log('[GAME WS] No clients left, deleting room', gameId);
       stopRoomLoop(room);
-      rooms.delete(gameId);} else {
-
-        console.log(`[GAME WS] Notifying ${room.clients.size} remaining client(s) in ${gameId}`);
+      rooms.delete(gameId);} 
+    else {
         const payload = JSON.stringify({ type: 'OPPONENT_LEFT' });
         for (const client of room.clients) {
           if (client.readyState === WebSocket.OPEN) {

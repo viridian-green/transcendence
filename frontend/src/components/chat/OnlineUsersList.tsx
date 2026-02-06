@@ -14,7 +14,15 @@ interface UsersListProps {
 	onRefreshFriends?: () => void;
 }
 
-function UsersList({ users, friends, loading, error, onUserClick, currentUserId, onRefreshFriends }: UsersListProps) {
+function UsersList({
+	users,
+	friends,
+	loading,
+	error,
+	onUserClick,
+	currentUserId,
+	onRefreshFriends,
+}: UsersListProps) {
 	const { friendRequests, setFriendRequests, lastRawMessage } = useNotificationSocket(true);
 	const { sendInvite, alert, setAlert } = useSendFriendInvite((user) => {
 		setFriendRequests((prev) => ({
@@ -28,15 +36,15 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId,
 	});
 
 	useEffect(() => {
-        if (
-            lastRawMessage?.type === 'FRIEND_INVITE_ACCEPTED'
-			|| lastRawMessage?.type === 'FRIEND_INVITE_CONFIRMED'
-			|| lastRawMessage?.type === 'FRIEND_DELETED'
-			|| lastRawMessage?.type === 'FRIEND_UNFRIENDED'
-        ) {
-            onRefreshFriends?.();
-        }
-    }, [lastRawMessage, onRefreshFriends]);
+		if (
+			lastRawMessage?.type === 'FRIEND_INVITE_ACCEPTED' ||
+			lastRawMessage?.type === 'FRIEND_INVITE_CONFIRMED' ||
+			lastRawMessage?.type === 'FRIEND_DELETED' ||
+			lastRawMessage?.type === 'FRIEND_UNFRIENDED'
+		) {
+			onRefreshFriends?.();
+		}
+	}, [lastRawMessage, onRefreshFriends]);
 
 	if (loading) return <div>Loading online users...</div>;
 	if (error) return <div>Error: {error}</div>;
@@ -53,7 +61,7 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId,
 				<>
 					<div className='chat-labels relative flex items-center'>
 						<h3 className='private-message text-color-muted m-0 text-xs uppercase'>
-							Friends
+							Online Friends
 						</h3>
 						<hr className='ml-2 flex-1 border-t' />
 					</div>
@@ -75,7 +83,9 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId,
 						</ul>
 					)}
 					<div className='chat-labels relative flex items-center'>
-						<h3 className='private-message text-color-muted m-0 text-xs uppercase'>Others</h3>
+						<h3 className='private-message text-color-muted m-0 text-xs uppercase'>
+							Online Others
+						</h3>
 						<hr className='ml-2 flex-1 border-t' />
 					</div>
 				</>
@@ -86,7 +96,6 @@ function UsersList({ users, friends, loading, error, onUserClick, currentUserId,
 				<ul>
 					{onlineOthers.map((user) => {
 						const status = friendRequests[String(user.id)]?.status ?? null;
-						console.log('User:', user.username, 'Request Status:', status);
 						return (
 							<li
 								key={user.id}

@@ -29,8 +29,6 @@ const httpsOptions = {
     key: fs.readFileSync(keyPath),
 };
 
-console.log('SSL enabled for User Service - HTTPS is mandatory');
-
 const app = Fastify({
     logger: true,
     pluginTimeout: 30000, // 30 seconds - allows time for database connection retries

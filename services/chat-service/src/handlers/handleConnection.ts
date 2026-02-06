@@ -7,9 +7,6 @@ export function handleConnection(
   clients: Map<WebSocket, User>
 ) {
   clients.set(connection, user);
-  console.log(
-    `User ${user.username} connected. Total clients: ${clients.size}`
-  );
   connection.send(
     JSON.stringify({
       type: "welcome",

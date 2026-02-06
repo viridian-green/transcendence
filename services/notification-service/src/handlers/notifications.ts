@@ -92,10 +92,6 @@ function handleConnection(connection: WebSocket, user: User) {
   }
   set.add(connection);
 
-  console.log(
-    `[NOTIFICATION WS] User ${user.username} (id: ${userId}, type: ${typeof userId}) connected. Total clients: ${clients.size}`
-  );
-
   // Send welcome message
   connection.send(
     JSON.stringify({
@@ -116,10 +112,6 @@ function handleDisconnect(connection: WebSocket, user: User) {
     set.delete(connection);
     if (set.size === 0) socketsByUserId.delete(user.id);
   }
-
-  console.log(
-    `[NOTIFICATION WS] User ${user.username} disconnected. Total clients: ${clients.size}`
-  );
 }
 
 function handleMessage(
@@ -128,7 +120,6 @@ function handleMessage(
   message: string | Buffer,
 ) {
   const text = typeof message === 'string' ? message : message.toString();
-  console.log('WS raw from', user.username, ':', text);
 
   let data: any;
   try {
@@ -141,12 +132,9 @@ function handleMessage(
 // switch on type
 if (data.type === 'INVITE') {
   const toUserId = String(data.toUserId);
-  console.log('Handling INVITE from', user.id, 'to', toUserId);
 
   const targets = socketsByUserId.get(toUserId);
-  console.log('Targets for', toUserId, ':', targets?.size ?? 0);
   if (!targets) {
-    console.log('No sockets for target', toUserId);
     return;
   }
 
@@ -188,11 +176,8 @@ if (data.type === 'INVITE_ACCEPT') {
 
   const gameId = `game-${Date.now()}`;
 
-  console.log("---------------------> invited user", invitedUsername, "---------------------> inviter user" ,inviterUsername);
-
   const notifyUser = (userId: string, payload: any) => {
     const targets = socketsByUserId.get(userId);
-    console.log('Targets for', userId, ':', targets?.size ?? 0);
     if (!targets) return;
     for (const sock of targets) {
       if (sock.readyState === WebSocket.OPEN) {

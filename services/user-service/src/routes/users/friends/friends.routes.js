@@ -67,8 +67,6 @@ export default async function friendsRoute(app) {
         const userId = Number(req.user.id);
         const friendId = Number(req.params.id);
 
-        console.log('[FRIENDS ROUTE] Sending friend request:', { userId, friendId, userIdType: typeof userId, friendIdType: typeof friendId });
-
         ensureNotSelf(userId, friendId);
         await ensureUserExists(app, friendId);
         await ensureNoExistingFriendship(app, userId, friendId);

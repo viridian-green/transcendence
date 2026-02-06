@@ -35,8 +35,6 @@ const httpsOptions = {
     key: fs.readFileSync(keyPath),
 };
 
-console.log('SSL enabled for Chat Service - HTTPS is mandatory');
-
 const fastify = Fastify({
   logger: true,
   https: httpsOptions
@@ -57,7 +55,6 @@ const start = async () => {
       port: PORT,
       host: "0.0.0.0"
     });
-    console.log(`Chat Service running on https://localhost:${PORT}`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
