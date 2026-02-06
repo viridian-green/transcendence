@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Friend } from '@/shared.types';
 import { useFriendsWithStatus } from '@/hooks/useFriendsPresence';
 import { useAuth } from '@/hooks/useAuth';
+import GlobalAlert from '@/components/GlobalAlert';
 
 type InvitePopupState = {
 	fromUserId: string;
@@ -50,10 +51,7 @@ const Remote = () => {
 	}, [lastRawMessage, navigate]);
 
 	const handleChallenge = (friend: Friend) => {
-		if (friend.status !== 'online') return;
-		if (!isConnected) {
-			return;
-		}
+		if (friend.status !== 'online' || !isConnected) return;
 
 		send({
 			type: 'INVITE',
@@ -137,28 +135,16 @@ const Remote = () => {
 			)}
 
 			{incomingInvite && (
-				<div className='fixed inset-0 flex items-center justify-center bg-black/50'>
-					<div className='bg-surface rounded-lg p-6 shadow-lg'>
-						<p className='mb-4 text-lg font-semibold'>
-							{incomingInvite.fromUsername} invites you to play{' '}
-							{incomingInvite.gameMode}.
-						</p>
-						<div className='flex justify-end gap-2'>
-							<button
-								type='button'
-								className='rounded border px-3 py-1'
-								onClick={handleInviteDecline}
-							>
-								Cancel
-							</button>
-							<PinkButton
-								text='Accept'
-								className='px-3 py-1'
-								onClick={handleInviteAccept}
-							/>
-						</div>
-					</div>
-				</div>
+				<GlobalAlert
+					message={`${incomingInvite.fromUsername} invites you to play ${incomingInvite.gameMode}.`}
+					visible={incomingInvite !== null}
+					type={'received'}
+					acceptText='Yes'
+					declineText='No'
+					onClose={handleInviteDecline}
+					onDecline={handleInviteDecline}
+					onAccept={handleInviteAccept}
+				/>
 			)}
 		</div>
 	);
