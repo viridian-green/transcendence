@@ -97,6 +97,8 @@ transcendence/
 │   └── notification-service/ # Real-time notifications
 ├── nginx/                    # Nginx reverse proxy configuration
 ├── scripts/                  # Setup and utility scripts
+├── init-scripts/             # Database init and test scripts
+│   └── test-scripts/         # CI/CD test scripts for services
 ├── secrets/                  # Generated secrets (not in git)
 ├── docker-compose.yml        # Production Docker configuration
 ├── docker-compose.dev.yml    # Development Docker overrides
@@ -145,7 +147,9 @@ This command automatically:
 - Generates `secrets/jwt_secret` (JWT signing key)
 - Generates `secrets/postgres_password` (database password)
 - Generates `secrets/cookie_secret` (session cookie secret)
-- Creates SSL certificates for HTTPS
+- Creates SSL certificates for HTTPS (nginx, api-gateway, and all services)
+
+**Environment files**: When running `make up` or `make dev`, environment files are automatically synced from `.env.example` templates. You can also run `make env` manually to sync them, or `make env-check` to verify they match.
 
 **Optional**: Create a `.env` file in the root directory for custom database configuration:
 
@@ -202,19 +206,49 @@ Once services are running:
 
 ### Available Commands
 
+#### Lifecycle Commands
+
 | Command | Description |
 |---------|-------------|
+| `make setup` | Generate secrets and SSL certificates |
 | `make up` | Start all services in production mode |
 | `make dev` | Start with development overrides (hot reload) |
+| `make down` | Stop all services |
+| `make restart` | Restart services in production mode |
+| `make restartdev` | Restart services in development mode |
+
+#### Logging
+
+| Command | Description |
+|---------|-------------|
 | `make logs` | View logs from all services |
 | `make logsdev` | View logs in development mode |
-| `make down` | Stop all services |
-| `make clean` | Stop services and remove SSL certificates |
-| `make prune` | Clean Docker cache/containers/networks |
-| `make reset` | Full destructive reset (removes all data) |
-| `make rebuild` | Clean rebuild from scratch |
-| `make rebuilddev` | Clean rebuild in development mode |
+
+#### Cleanup & Rebuild
+
+| Command | Description |
+|---------|-------------|
+| `make clean` | Stop services and remove SSL certificates (keeps volumes) |
+| `make prune` | Clean Docker cache/containers/networks (keeps certs and database) |
+| `make reset` | Full destructive reset — removes all containers, images, networks, volumes, and SSL certs |
+| `make rebuild` | Clean rebuild from scratch (production) |
+| `make rebuilddev` | Clean rebuild from scratch (development) |
+
+#### Environment Management
+
+| Command | Description |
+|---------|-------------|
+| `make env` | Sync `.env` files from `.env.example` templates |
+| `make env-check` | Verify `.env` files match their `.env.example` counterparts |
+
+#### Utilities
+
+| Command | Description |
+|---------|-------------|
 | `make open` | Open application in browser |
+| `make users` | Create test users for development |
+| `make usertable` | Display users table from database |
+| `make friendstable` | Display friends table from database |
 
 ### First Steps After Installation
 
@@ -393,6 +427,8 @@ The team followed an **Agile-inspired workflow** with the following practices:
 | **Docker Compose** | Orchestration | Simplified multi-container management; single command to spin up entire stack |
 | **Nginx** | Reverse Proxy | High-performance request routing, SSL termination, and static file serving |
 | **SSL/TLS** | Security | HTTPS encryption for all communications; self-signed certificates for development |
+| **Health Checks** | Reliability | Container health monitoring ensures services are ready before dependent services start |
+| **CI/CD** | Automation | GitHub Actions workflow for automated builds, tests, and deployment validation |
 
 ### Key Technical Decisions
 
