@@ -50,6 +50,15 @@ jobs:
         docker compose build --no-cache
         docker compose up -d
 
+    - name: Wait for services to be healthy
+      run: |
+        echo "Waiting for services to be ready..."
+        timeout 120 bash -c 'until docker compose ps api-gateway | grep -q "healthy"; do echo "Waiting for api-gateway..."; sleep 5; done'
+        echo "api-gateway is healthy!"
+        # Wait for nginx to be ready (it depends on api-gateway being healthy)
+        timeout 30 bash -c 'until curl -k -s -o /dev/null -w "%{http_code}" https://localhost:8443/health | grep -q "200"; do echo "Waiting for nginx..."; sleep 2; done'
+        echo "nginx is ready!"
+
    #Test: Show that environment variables are working
     - name: Print environment variables
       run: |
@@ -61,32 +70,18 @@ jobs:
 
     - name: Run user-service register tests
       run: |
-        chmod +x init-scripts/test-scripts/user-service/register.sh
-        ./init-scripts/test-scripts/user-service/register.sh
+        chmod +x scripts/tests/user-service/register.sh
+        ./scripts/tests/user-service/register.sh
 
     - name: Run user-service login tests
       run: |
-        chmod +x init-scripts/test-scripts/user-service/login.sh
-        ./init-scripts/test-scripts/user-service/login.sh
+        chmod +x scripts/tests/user-service/login.sh
+        ./scripts/tests/user-service/login.sh
 
     - name: Run user-service signout tests
       run: |
-        chmod +x init-scripts/test-scripts/user-service/signout.sh
-        ./init-scripts/test-scripts/user-service/signout.sh
-
-    - name: Dump logs on failure
-      if: failure()
-      run: docker compose logs
-
-    # - name: Run user-service update tests ---- not working in CI environment due to cookies being actually reliable for browsers and not CI
-    #   run: |
-    #     chmod +x init-scripts/test-scripts/user-service/update.sh
-    #     ./init-scripts/test-scripts/user-service/update.sh
-
-    - name: Run user-service signout tests
-      run: |
-        chmod +x init-scripts/test-scripts/user-service/signout.sh
-        ./init-scripts/test-scripts/user-service/signout.sh
+        chmod +x scripts/tests/user-service/signout.sh
+        ./scripts/tests/user-service/signout.sh
 
     - name: Dump logs on failure
       if: failure()

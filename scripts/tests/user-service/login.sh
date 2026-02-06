@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-API="https://localhost:3000/api/auth/login"
+API="https://localhost:8443/api/auth/login"
 
 assert_status () {
   payload=$1
@@ -27,3 +27,4 @@ assert_status '{"password":"1234"}' 400
 # Empty fields
 assert_status '{"username":"","password":"1234"}' 400
 assert_status '{"username":"test","password":""}' 400
+
