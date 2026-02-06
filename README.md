@@ -52,8 +52,8 @@ The application follows a microservices architecture with the following componen
              │   :3002     │  │   :3003     │  │             │  │             │  │    :3006    │
              └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘
                                   │     │             │                │                │
-                                  |     ┴─────────────┴───────┬────────┴────────────────┴   
-                                  ▼                           ▼ 
+                                  |     ┴─────────────┴───────┬────────┴────────────────┴
+                                  ▼                           ▼
                            ┌─────────────┐             ┌─────────────┐
                            │ PostgreSQL  │             │    Redis    │
                            │  (user_db)  │             │             │
@@ -640,13 +640,81 @@ Redis is used for ephemeral real-time data (not persisted):
 </details>
 
 <details>
-<summary><strong>8. Modules of Choice - Redis</strong> (2 pts)</summary>
+<summary><strong>8. Module of Choice — Redis Pub/Sub for Real-time Event Broadcasting</strong> (2 pts)</summary>
 
-**Justification:**
+#### Why We Chose This Module
 
-**Implementation:**
+Redis Pub/Sub was selected as a custom module to solve a critical architectural challenge in our microservices-based application: **real-time event propagation across independent services**.
 
-**Team Members:** Daiana
+#### Technical Challenges Addressed
+
+| Challenge | How Redis Pub/Sub Solves It |
+|-----------|----------------------------|
+| **Cross-service communication** | Services need to broadcast events (user online, friend request, game invite) to other services without tight coupling |
+| **Real-time updates at scale** | Multiple WebSocket connections across services need to receive the same event simultaneously |
+| **Service independence** | Services can publish events without knowing which services will consume them |
+| **Connection state sync** | When a user's presence changes, all connected clients (chat, game, notifications) must be updated instantly |
+
+#### How It Adds Value
+
+1. **Decoupled Architecture:** Services publish events to Redis channels without direct dependencies on other services
+2. **Instant Propagation:** Sub-millisecond event delivery across all subscribers
+3. **Scalability:** Multiple instances of the same service can subscribe to the same channel
+4. **Reliability:** Redis handles message distribution, reducing custom networking code
+
+#### Why It Deserves Major Status
+
+- **Technical Complexity:** Requires understanding of pub/sub patterns, message serialization, and distributed systems
+- **Integration Effort:** Implemented across multiple services (presence, user, notification, chat)
+- **Not Trivial:** Goes beyond simple Redis caching — involves event-driven architecture design
+- **Real Impact:** Critical for the real-time features that define the user experience
+
+#### Implementation Details
+
+**Architecture:**
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│  Presence   │     │    User     │     │    Chat     │     │ Notification│
+│  Service    │     │   Service   │     │   Service   │     │   Service   │
+└──────┬──────┘     └──────┬──────┘     └──────┬──────┘     └──────┬──────┘
+       │                   │                   │                   │
+       │ PUBLISH           │ PUBLISH           │ SUBSCRIBE         │ SUBSCRIBE
+       │ (presence)        │ (friends)         │                   │
+       └───────────────────┴───────────────────┴───────────────────┘
+                                       │
+                                ┌──────┴──────┐
+                                │    Redis    │
+                                │   Pub/Sub   │
+                                └─────────────┘
+```
+
+**Event Channels:**
+| Channel | Publisher | Subscribers | Event Type |
+|---------|-----------|-------------|------------|
+| `presence:status` | Presence Service | Chat, Notification | User online/offline/in-game |
+| `friends:request` | User Service | Notification | New friend request received |
+| `friends:accepted` | User Service | Presence, Notification | Friend request accepted |
+| `friends:deleted` | User Service | Notification | Friend removed |
+| `game:invite` | Game Service | Notification | Game invitation |
+
+**Code Pattern:**
+```javascript
+// Publisher (Presence Service)
+redis.publish('presence:status', JSON.stringify({
+  userId: user.id,
+  status: 'online',
+  timestamp: Date.now()
+}));
+
+// Subscriber (Notification Service)
+redis.subscribe('presence:status');
+redis.on('message', (channel, message) => {
+  const event = JSON.parse(message);
+  broadcastToConnectedClients(event);
+});
+```
+
+**Team Members:** Daiana, Natália
 </details>
 
 ### Minor Modules
