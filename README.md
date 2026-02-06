@@ -18,7 +18,7 @@ The goal of this project is to build a complete web application with the follwin
 | **User Profiles** | Customizable profiles with avatar upload, game statistics, and match history |
 | **Real-time Chat** | WebSocket-based chat system for instant messaging between users |
 | **Friends System** | Add, remove, and manage friends with real-time friend requests |
-| **Presence Tracking** | Real-time user status (online/offline/in-game) |
+| **Presence Tracking** | Real-time user status (online/offline) |
 | **Notifications** | Real-time notifications for friend requests, game invites, and more |
 | **Retro Design** | Modern UI with a nostalgic retro gaming aesthetic built with React and TailwindCSS |
 
@@ -29,34 +29,36 @@ The application follows a microservices architecture with the following componen
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                            NGINX                                    │
-│                    (Reverse Proxy + SSL)                           │
-│                      Port 8443 (HTTPS)                              │
+│                                NGINX                                │
+│                        (Reverse Proxy + SSL)                        │
+│                          Port 8443 (HTTPS)                          │
 └─────────────────────────────────────────────────────────────────────┘
-                                 │
-        ┌────────────────────────┼────────────────────────┐
-        │                        │                        │
-        ▼                        ▼                        ▼
-┌───────────────┐    ┌───────────────────┐    ┌──────────────────┐
-│   Frontend    │    │    API Gateway    │    │  WebSocket       │
-│   (React +    │    │    (Fastify)      │    │  Services        │
-│   TypeScript) │    │    Port 3000      │    │                  │
-└───────────────┘    └───────────────────┘    └──────────────────┘
-                              │                        │
-         ┌────────────────────┼────────────────────────┤
-         │                    │                        │
-         ▼                    ▼                        ▼
-┌─────────────┐    ┌─────────────┐    ┌─────────────────────────────┐
-│   User      │    │   Game      │    │  Chat / Presence /          │
-│   Service   │    │   Service   │    │  Notification Services      │
-│   :3003     │    │   :3002     │    │  :3004 / :3005 / :3006      │
-└─────────────┘    └─────────────┘    └─────────────────────────────┘
-       │                                         │
-       ▼                                         ▼
-┌─────────────┐                          ┌─────────────┐
-│ PostgreSQL  │                          │    Redis    │
-│  (user_db)  │                          │   (cache)   │
-└─────────────┘                          └─────────────┘
+                                   │
+                   ┌───────────────┴───────────────┐
+                   │                               │
+                   ▼                               ▼
+        ┌───────────────────┐           ┌───────────────────┐
+        │     Frontend      │           │   API Gateway     │
+        │  (React + TS)     │           │   (Fastify)       │
+        │                   │           │   Port 3000       │
+        └───────────────────┘           └───────────────────┘
+                                               │
+                     ┌───────────────┬─────────┴─────────┐
+                     │               │                   │
+                     ▼               ▼                   ▼
+             ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────────┐
+             │   Game      │  │   User      │  │  Chat / Presence /           │
+             │   Service   │  │   Service   │  │  Notification Services       │
+             │   :3002     │  │   :3003     │  │  :3004 / :3005 / :3006       │
+             └─────────────┘  └─────────────┘  └─────────────────────────────┘
+                                   │                   │
+                     ┌─────────────┴─────────────┐     │
+                     ▼                           ▼     ▼
+             ┌─────────────┐             ┌─────────────┐
+             │ PostgreSQL  │             │    Redis    │
+             │  (user_db)  │             │             │
+             └─────────────┘             └─────────────┘
+
 ```
 
 | Service | Technology | Description |
@@ -219,7 +221,7 @@ Once services are running:
 1. **Register an account** — Navigate to the registration page and create an account
 2. **Login** — Use your credentials to access the application
 3. **Customize your profile** — Upload an avatar and update your settings
-4. **Start playing** — Choose a game mode: Local, AI, or Online
+4. **Start playing** — Choose a game mode: Local, AI, or Remote
 5. **Connect with others** — Add friends and chat in real-time
 
 ### Troubleshooting
@@ -454,7 +456,7 @@ Stores user account information and profile data.
 | `email` | TEXT | UNIQUE, NOT NULL | User's email address |
 | `avatar` | TEXT | DEFAULT 'default.png' | Profile picture filename |
 | `bio` | VARCHAR(150) | DEFAULT 'Let's play!' | User biography/status message |
-| `state` | TEXT | DEFAULT 'offline' | Current user state (online/offline/in-game) |
+| `state` | TEXT | DEFAULT 'offline' | Current user state (online/offline) |
 | `created_at` | TIMESTAMP | DEFAULT NOW() | Account creation timestamp |
 
 ##### `friends` Table
@@ -495,8 +497,8 @@ Redis is used for ephemeral real-time data (not persisted):
 | **User Profiles** | Profile page displaying user information, avatar upload with image processing, editable bio, and account settings management |
 | **Friends System** | Send/accept/decline friend requests, view friends list, unfriend users, with real-time status updates |
 | **Real-time Chat** | WebSocket-based instant messaging system with chat widget, message history, and online user indicators |
-| **Presence System** | Real-time tracking of user status (online/offline/in-game) using Redis pub/sub for instant updates across all clients |
-| **Notifications** | Real-time push notifications for friend requests, game invitations, and system alerts via WebSocket |
+| **Presence System** | Real-time tracking of user status (online/offline) using Redis pub/sub for instant updates across all clients |
+| **Notifications** | Real-time push notifications for friend requests, game invitations via WebSocket |
 | **Pong Game** | Classic Pong with three modes: local multiplayer (two players, same device), AI opponent, and online multiplayer with WebSocket sync |
 | **Frontend UI/Design** | Retro-themed responsive interface with custom components, animations, and consistent design system |
 | **API Gateway** | Central routing layer handling authentication, request forwarding, and service orchestration |
@@ -608,7 +610,6 @@ Redis is used for ephemeral real-time data (not persisted):
 
 **Implementation:**
 - WebSocket-based game state synchronization
-- Server-authoritative game logic to prevent cheating
 - Latency compensation for smooth gameplay
 - Graceful disconnection handling with game pause
 - Reconnection logic allowing players to rejoin mid-game
@@ -758,7 +759,7 @@ Redis is used for ephemeral real-time data (not persisted):
 </details>
 
 <details>
-<summary><strong>Adèle (ademarti)</strong> — Developer</summary>
+<summary><strong>Adèle (ademarti)</strong> — Developer, Techn Lead</summary>
 
 #### Primary Contributions
 | Area | Details |
@@ -770,12 +771,12 @@ Redis is used for ephemeral real-time data (not persisted):
 
 #### Key Achievements
 - Implemented the complete Pong game engine with smooth 60fps rendering
-- Built real-time multiplayer with server-authoritative game state
+- Built real-time multiplayer with game state
 - Created the matchmaking system for pairing online players
 
 #### Challenges Overcome
 - **Challenge:** Synchronizing game state between two remote players with varying network latency
-- **Solution:** Implemented server-authoritative logic where the server owns the game state and broadcasts updates; added client-side interpolation for smooth visuals
+- **Solution:** Implemented server-authoritative logic where the server owns the game state and broadcasts updates
 
 </details>
 
