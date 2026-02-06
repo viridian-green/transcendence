@@ -11,8 +11,6 @@ export async function handleFriendRequested(event: {
     const recipientSockets = socketsByUserId.get(String(event.toUserId));
 
     if (!recipientSockets || recipientSockets.size === 0) {
-        console.log(`No active WebSocket connections for user ${event.toUserId}`);
-        console.log(`Tried to find: "${String(event.toUserId)}"`);
         return;
     }
 
@@ -26,7 +24,6 @@ export async function handleFriendRequested(event: {
     for (const socket of recipientSockets) {
         if (socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify(notification));
-            console.log(`Sent friend request notification to user ${event.toUserId}`);
         }
     }
 
@@ -52,7 +49,6 @@ export async function handleFriendAccepted(event: {
                     fromUsername: event.fromUsername,
                 })
             );
-            console.log(`Sent friend accepted notification to user ${event.toUserId}`);
         }
     }
 
@@ -92,7 +88,6 @@ export async function handleFriendRejected(event: {
                     fromUsername: event.fromUsername,
                 })
             );
-            console.log(`Sent friend rejected notification to user ${event.toUserId}`);
         }
     }
 }

@@ -9,7 +9,6 @@ const heartbeatIntervals = new Map();
 export function handlePresenceConnection(connection, request) {
   const user = extractUserFromJWT(request);
   if (!user) {
-    console.log('Extracted user from JWT: null');
     connection.send(
       JSON.stringify({ error: "Authentication required" })
     );
@@ -50,7 +49,6 @@ export function handlePresenceConnection(connection, request) {
 
       if (data.type === "pong") {
         // User responded to ping - still alive
-        console.log(`Heartbeat received from ${user.username}`);
       } else if (data.type === "state_change" && data.state) {
         // Manual state change (e.g., user sets status to "busy")
         await updateUserState(user.id, data.state);
@@ -72,7 +70,6 @@ export function handlePresenceConnection(connection, request) {
   });
   // Handle disconnection
   connection.on("close", async () => {
-    console.log(`User ${user.username} disconnected from presence service`);
 
     // Clear heartbeat interval
     const interval = heartbeatIntervals.get(user.id);
