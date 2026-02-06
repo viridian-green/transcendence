@@ -8,7 +8,11 @@ export const registerSchema = z.object ({
 
     username: z
         .string().nonempty("Username required")
-        .max(15, "Username must be at most 15 characters"),
+        .max(15, "Username must be at most 15 characters")
+		.regex(
+			/^[a-zA-Z0-9_]+$/,
+			'Username can only contain letters, numbers, and underscores',
+		),
 
     password: z
         .string().nonempty("Password required")
