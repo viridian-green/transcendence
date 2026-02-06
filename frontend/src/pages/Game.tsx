@@ -2,7 +2,6 @@ import Canvas from './Canvas';
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import type { GameState } from '@/shared.types';
-import GlobalAlert from '@/components/GlobalAlert';
 
 const Game = () => {
 	const navigate = useNavigate();
@@ -13,10 +12,9 @@ const Game = () => {
 	const side: 'left' | 'right' = state?.side ?? 'left';
 	const { gameId } = useParams<{ gameId: string }>();
 	const hasEndedRef = useRef(false);
+
 	const [gameState, setGameState] = useState<GameState | null>(null);
 	const wsRef = useRef<WebSocket | null>(null);
-	const [alertVisible, setAlertVisible] = useState(false);
-	const [alertMessage, setAlertMessage] = useState('');
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
@@ -45,8 +43,8 @@ const Game = () => {
 			if (msg.type === 'OPPONENT_LEFT') {
 				if (hasEndedRef.current) return;
 				hasEndedRef.current = true;
-				setAlertMessage('Opponent left the game.');
-				setAlertVisible(true);
+				alert('Opponent left the game.');
+				navigate('/remote');
 				return;
 			}
 		};
@@ -206,207 +204,196 @@ const Game = () => {
 	}, [gameState, navigate, leftPlayer, rightPlayer, mode]);
 
 	return (
-		<>
-			<div className='flex flex-1 flex-col items-center justify-center gap-6 p-4'>
-				<h1 className='text-accent-pink font-retro text-4xl font-bold'>Game Room</h1>
-				<div className='flex w-full max-w-[800px] justify-between px-2'>
-					<p>{leftPlayer}</p>
-					<p>{rightPlayer}</p>
+		<div className='flex flex-1 flex-col items-center justify-center gap-6 p-4'>
+			<h1 className='text-accent-pink font-retro text-4xl font-bold'>Game Room</h1>
+			<div className='flex w-full max-w-[800px] justify-between px-2'>
+				<p>{leftPlayer}</p>
+				<p>{rightPlayer}</p>
+			</div>
+
+			<div className='flex w-full max-w-[800px] justify-center'>
+				<Canvas gameState={gameState} />
+			</div>
+
+			{/* Mobile Controls */}
+			<div className='flex w-full max-w-[800px] justify-between px-4 xl:hidden'>
+				{/* Left Player Controls - Only show if not AI mode */}
+				<div className='flex touch-none flex-col gap-4'>
+					{(mode !== 'AI') && (mode !== 'remote' || side === 'left') && (
+						<>
+							<button
+								type='button'
+								className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
+								onContextMenu={(e) => e.preventDefault()}
+								onPointerDown={(e) => {
+									e.preventDefault();
+									if (wsRef.current?.readyState === WebSocket.OPEN) {
+										wsRef.current.send(
+											JSON.stringify({
+												type: 'MOVE_PADDLE',
+												payload: { playerIndex: 0, direction: 'up' },
+											}),
+										);
+									}
+								}}
+								onPointerUp={(e) => {
+									e.preventDefault();
+									if (wsRef.current?.readyState === WebSocket.OPEN) {
+										wsRef.current.send(
+											JSON.stringify({
+												type: 'STOP_PADDLE',
+												payload: { playerIndex: 0 },
+											}),
+										);
+									}
+								}}
+								onPointerLeave={(e) => {
+									e.preventDefault();
+									if (wsRef.current?.readyState === WebSocket.OPEN) {
+										wsRef.current.send(
+											JSON.stringify({
+												type: 'STOP_PADDLE',
+												payload: { playerIndex: 0 },
+											}),
+										);
+									}
+								}}
+							>
+								↑
+							</button>
+							<button
+								type='button'
+								className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
+								onContextMenu={(e) => e.preventDefault()}
+								onPointerDown={(e) => {
+									e.preventDefault();
+									if (wsRef.current?.readyState === WebSocket.OPEN) {
+										wsRef.current.send(
+											JSON.stringify({
+												type: 'MOVE_PADDLE',
+												payload: { playerIndex: 0, direction: 'down' },
+											}),
+										);
+									}
+								}}
+								onPointerUp={(e) => {
+									e.preventDefault();
+									if (wsRef.current?.readyState === WebSocket.OPEN) {
+										wsRef.current.send(
+											JSON.stringify({
+												type: 'STOP_PADDLE',
+												payload: { playerIndex: 0 },
+											}),
+										);
+									}
+								}}
+								onPointerLeave={(e) => {
+									e.preventDefault();
+									if (wsRef.current?.readyState === WebSocket.OPEN) {
+										wsRef.current.send(
+											JSON.stringify({
+												type: 'STOP_PADDLE',
+												payload: { playerIndex: 0 },
+											}),
+										);
+									}
+								}}
+							>
+								↓
+							</button>
+						</>
+					)}
 				</div>
 
-				<div className='flex w-full max-w-[800px] justify-center'>
-					<Canvas gameState={gameState} />
-				</div>
-
-				{/* Mobile Controls */}
-				<div className='flex w-full max-w-[800px] justify-between px-4 xl:hidden'>
-					{/* Left Player Controls - Only show if not AI mode */}
-					<div className='flex touch-none flex-col gap-4'>
-						{mode !== 'AI' && (mode !== 'remote' || side === 'left') && (
-							<>
-								<button
-									type='button'
-									className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
-									onContextMenu={(e) => e.preventDefault()}
-									onPointerDown={(e) => {
-										e.preventDefault();
-										if (wsRef.current?.readyState === WebSocket.OPEN) {
-											wsRef.current.send(
-												JSON.stringify({
-													type: 'MOVE_PADDLE',
-													payload: { playerIndex: 0, direction: 'up' },
-												}),
-											);
-										}
-									}}
-									onPointerUp={(e) => {
-										e.preventDefault();
-										if (wsRef.current?.readyState === WebSocket.OPEN) {
-											wsRef.current.send(
-												JSON.stringify({
-													type: 'STOP_PADDLE',
-													payload: { playerIndex: 0 },
-												}),
-											);
-										}
-									}}
-									onPointerLeave={(e) => {
-										e.preventDefault();
-										if (wsRef.current?.readyState === WebSocket.OPEN) {
-											wsRef.current.send(
-												JSON.stringify({
-													type: 'STOP_PADDLE',
-													payload: { playerIndex: 0 },
-												}),
-											);
-										}
-									}}
-								>
-									↑
-								</button>
-								<button
-									type='button'
-									className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
-									onContextMenu={(e) => e.preventDefault()}
-									onPointerDown={(e) => {
-										e.preventDefault();
-										if (wsRef.current?.readyState === WebSocket.OPEN) {
-											wsRef.current.send(
-												JSON.stringify({
-													type: 'MOVE_PADDLE',
-													payload: { playerIndex: 0, direction: 'down' },
-												}),
-											);
-										}
-									}}
-									onPointerUp={(e) => {
-										e.preventDefault();
-										if (wsRef.current?.readyState === WebSocket.OPEN) {
-											wsRef.current.send(
-												JSON.stringify({
-													type: 'STOP_PADDLE',
-													payload: { playerIndex: 0 },
-												}),
-											);
-										}
-									}}
-									onPointerLeave={(e) => {
-										e.preventDefault();
-										if (wsRef.current?.readyState === WebSocket.OPEN) {
-											wsRef.current.send(
-												JSON.stringify({
-													type: 'STOP_PADDLE',
-													payload: { playerIndex: 0 },
-												}),
-											);
-										}
-									}}
-								>
-									↓
-								</button>
-							</>
-						)}
-					</div>
-
-					{/* Right Player Controls */}
-					<div className='flex touch-none flex-col gap-4'>
-						{(mode !== 'remote' || side === 'right') && (
-							<>
-								<button
-									type='button'
-									className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
-									onContextMenu={(e) => e.preventDefault()}
-									onPointerDown={(e) => {
-										e.preventDefault();
-										if (wsRef.current?.readyState === WebSocket.OPEN) {
-											wsRef.current.send(
-												JSON.stringify({
-													type: 'MOVE_PADDLE',
-													payload: { playerIndex: 1, direction: 'up' },
-												}),
-											);
-										}
-									}}
-									onPointerUp={(e) => {
-										e.preventDefault();
-										if (wsRef.current?.readyState === WebSocket.OPEN) {
-											wsRef.current.send(
-												JSON.stringify({
-													type: 'STOP_PADDLE',
-													payload: { playerIndex: 1 },
-												}),
-											);
-										}
-									}}
-									onPointerLeave={(e) => {
-										e.preventDefault();
-										if (wsRef.current?.readyState === WebSocket.OPEN) {
-											wsRef.current.send(
-												JSON.stringify({
-													type: 'STOP_PADDLE',
-													payload: { playerIndex: 1 },
-												}),
-											);
-										}
-									}}
-								>
-									↑
-								</button>
-								<button
-									type='button'
-									className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
-									onContextMenu={(e) => e.preventDefault()}
-									onPointerDown={(e) => {
-										e.preventDefault();
-										if (wsRef.current?.readyState === WebSocket.OPEN) {
-											wsRef.current.send(
-												JSON.stringify({
-													type: 'MOVE_PADDLE',
-													payload: { playerIndex: 1, direction: 'down' },
-												}),
-											);
-										}
-									}}
-									onPointerUp={(e) => {
-										e.preventDefault();
-										if (wsRef.current?.readyState === WebSocket.OPEN) {
-											wsRef.current.send(
-												JSON.stringify({
-													type: 'STOP_PADDLE',
-													payload: { playerIndex: 1 },
-												}),
-											);
-										}
-									}}
-									onPointerLeave={(e) => {
-										e.preventDefault();
-										if (wsRef.current?.readyState === WebSocket.OPEN) {
-											wsRef.current.send(
-												JSON.stringify({
-													type: 'STOP_PADDLE',
-													payload: { playerIndex: 1 },
-												}),
-											);
-										}
-									}}
-								>
-									↓
-								</button>
-							</>
-						)}
-					</div>
+				{/* Right Player Controls */}
+				<div className='flex touch-none flex-col gap-4'>
+					{(mode !== 'remote' || side === 'right') && (
+						<>
+							<button
+						type='button'
+						className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
+						onContextMenu={(e) => e.preventDefault()}
+						onPointerDown={(e) => {
+							e.preventDefault();
+							if (wsRef.current?.readyState === WebSocket.OPEN) {
+								wsRef.current.send(
+									JSON.stringify({
+										type: 'MOVE_PADDLE',
+										payload: { playerIndex: 1, direction: 'up' },
+									}),
+								);
+							}
+						}}
+						onPointerUp={(e) => {
+							e.preventDefault();
+							if (wsRef.current?.readyState === WebSocket.OPEN) {
+								wsRef.current.send(
+									JSON.stringify({
+										type: 'STOP_PADDLE',
+										payload: { playerIndex: 1 },
+									}),
+								);
+							}
+						}}
+						onPointerLeave={(e) => {
+							e.preventDefault();
+							if (wsRef.current?.readyState === WebSocket.OPEN) {
+								wsRef.current.send(
+									JSON.stringify({
+										type: 'STOP_PADDLE',
+										payload: { playerIndex: 1 },
+									}),
+								);
+							}
+						}}
+					>
+						↑
+					</button>
+						<button
+						type='button'
+						className='flex h-16 w-16 touch-none items-center justify-center rounded-full border border-white/20 bg-white/10 text-2xl text-white transition-colors select-none active:bg-white/20'
+						onContextMenu={(e) => e.preventDefault()}
+						onPointerDown={(e) => {
+							e.preventDefault();
+							if (wsRef.current?.readyState === WebSocket.OPEN) {
+								wsRef.current.send(
+									JSON.stringify({
+										type: 'MOVE_PADDLE',
+										payload: { playerIndex: 1, direction: 'down' },
+									}),
+								);
+							}
+						}}
+						onPointerUp={(e) => {
+							e.preventDefault();
+							if (wsRef.current?.readyState === WebSocket.OPEN) {
+								wsRef.current.send(
+									JSON.stringify({
+										type: 'STOP_PADDLE',
+										payload: { playerIndex: 1 },
+									}),
+								);
+							}
+						}}
+						onPointerLeave={(e) => {
+							e.preventDefault();
+							if (wsRef.current?.readyState === WebSocket.OPEN) {
+								wsRef.current.send(
+									JSON.stringify({
+										type: 'STOP_PADDLE',
+										payload: { playerIndex: 1 },
+									}),
+								);
+							}
+						}}
+					>
+						↓
+					</button>
+						</>
+					)}
 				</div>
 			</div>
-			<GlobalAlert
-				visible={alertVisible}
-				message={alertMessage}
-				closeText='Back to remote page'
-				onClose={() => {
-					setAlertVisible(false);
-					navigate('/remote');
-				}}
-			/>
-		</>
+		</div>
 	);
 };
 
