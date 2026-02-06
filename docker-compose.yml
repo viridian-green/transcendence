@@ -38,8 +38,6 @@ services:
       - ./services/game-service/ssl:/app/ssl:ro
     env_file:
       - ./services/game-service/.env
-    ports:
-      - "3002:3002"
     networks:
       - transcendence-network
 
@@ -100,9 +98,6 @@ services:
       retries: 3
       start_period: 30s
 
-    ports:
-      - "3003:3003"
-
     networks:
       - transcendence-network
 
@@ -119,8 +114,6 @@ services:
       - jwt_secret
     volumes:
       - ./services/chat-service/ssl:/app/ssl:ro
-    ports:
-      - "3004:3004"
     networks:
       - transcendence-network
 
@@ -140,8 +133,6 @@ services:
     depends_on:
       redis:
         condition: service_started
-    ports:
-      - "3005:3005"
     networks:
       - transcendence-network
 
@@ -158,8 +149,6 @@ services:
     - jwt_secret
     volumes:
       - ./services/notification-service/ssl:/app/ssl:ro
-    ports:
-      - "3006:3006"
     networks:
       - transcendence-network
 
@@ -174,8 +163,6 @@ services:
       NODE_TLS_REJECT_UNAUTHORIZED: 0
     secrets:
     - jwt_secret
-    ports:
-      - "3000:3000"
     volumes:
       - ./api-gateway/ssl:/app/ssl:ro
     networks:
@@ -193,8 +180,6 @@ services:
   redis:
     image: redis:7-alpine
     container_name: redis
-    ports:
-      - "6378:6379"
     networks:
       - transcendence-network
 
