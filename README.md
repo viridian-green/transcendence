@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by [nleite-s](https://github.com/schardot), [pebencze](https://github.com/pebencze), [vados-sa](https://github.com/vados-sa), [ademarti](https://github.com/viridian-green), [darotche](https://github.com/ProjectDaiana).*
+*This project has been created as part of the 42 curriculum by [nleite-s](https://github.com/schardot), [pbencze](https://github.com/pebencze), [vados-sa](https://github.com/vados-sa), [ademarti](https://github.com/viridian-green), [darotche](https://github.com/ProjectDaiana).*
 
 # Retroscendence
 
@@ -46,18 +46,18 @@ The application follows a microservices architecture with the following componen
                      ┌───────────────┬─────────┴─────────┐
                      │               │                   │
                      ▼               ▼                   ▼
-             ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────────┐
-             │   Game      │  │   User      │  │  Chat / Presence /           │
-             │   Service   │  │   Service   │  │  Notification Services       │
-             │   :3002     │  │   :3003     │  │  :3004 / :3005 / :3006       │
-             └─────────────┘  └─────────────┘  └─────────────────────────────┘
-                                   │                   │
-                     ┌─────────────┴─────────────┐     │
-                     ▼                           ▼     ▼
-             ┌─────────────┐             ┌─────────────┐
-             │ PostgreSQL  │             │    Redis    │
-             │  (user_db)  │             │             │
-             └─────────────┘             └─────────────┘
+             ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+             │   Game      │  │   User      │  │    Chat     │  │  Presence   │  │ Notification│
+             │   Service   │  │   Service   │  │   :3004     │  │   :3005     │  │   Services  │
+             │   :3002     │  │   :3003     │  │             │  │             │  │    :3006    │
+             └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘
+                                  │     │             │                │                │
+                                  |     ┴─────────────┴───────┬────────┴────────────────┴   
+                                  ▼                           ▼ 
+                           ┌─────────────┐             ┌─────────────┐
+                           │ PostgreSQL  │             │    Redis    │
+                           │  (user_db)  │             │             │
+                           └─────────────┘             └─────────────┘
 
 ```
 
@@ -328,7 +328,7 @@ AI tools (including GitHub Copilot and Claude) were used as development aids in 
 | **Vanessa** | vados-sa | Project Manager, Developer | Coordinates team activities, tracks progress, manages timelines, and contributes to codebase |
 | **Adèle** | ademarti | Tech Lead, Developer | Guides technical architecture, ensures code quality, resolves blockers, and leads core implementation |
 | **Natália** | nleite-s | Developer | Backend development, feature implementation, and code maintenance |
-| **Petra** | pebencze | Developer | Frontend development, feature implementation, and code maintenance |
+| **Petra** | pbencze | Developer | Frontend development, feature implementation, and code maintenance |
 
 ---
 
@@ -738,7 +738,7 @@ Redis is used for ephemeral real-time data (not persisted):
 </details>
 
 <details>
-<summary><strong>Petra (pebencze)</strong> — Developer</summary>
+<summary><strong>Petra (pbencze)</strong> — Developer</summary>
 
 #### Primary Contributions
 | Area | Details |
