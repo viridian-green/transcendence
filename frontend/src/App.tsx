@@ -29,6 +29,7 @@ import OthersProfile from './pages/profile/OthersProfile';
 function App() {
 	const { isLoggedIn, isLoading } = useAuth();
 	const location = useLocation();
+	const notificationsEnabled = location.pathname.startsWith('/home');
 
 	if (isLoading) {
 		return <Loading />;
@@ -164,7 +165,7 @@ function App() {
 				</Suspense>
 			</main>
 			{!isPublicRoute(location.pathname) && <ChatWidget />}
-			{isLoggedIn && <NotificationManager />}
+			{isLoggedIn && notificationsEnabled && <NotificationManager />}
 			<footer className='border-border bg-surface text-text-muted flex h-16 items-center justify-center gap-2 border-t px-6 text-center text-sm'>
 				<Link to='/privacy-policy' className='hover:text-text-secondary'>
 					Privacy Policy
