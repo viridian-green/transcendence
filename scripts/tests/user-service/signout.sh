@@ -66,3 +66,4 @@ assert_status POST "$API_URL/signout" 200
 # assert_status GET "$API_URL/me" 401 //not ready yet!
 
 #echo "✅ Signout route tests passed"
+

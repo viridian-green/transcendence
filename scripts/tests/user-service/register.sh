@@ -70,3 +70,4 @@ assert_status "{
 }" 201
 
 #echo "✅ Register route tests passed"
+

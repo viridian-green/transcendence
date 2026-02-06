@@ -25,7 +25,7 @@ ws.on('message', (msg) => {
   if (data.type === 'STATE') {
     stateReceived = true;
     const currentBallX = data.payload.ball.x;
-    
+
     // Check if ball position changes (game loop running)
     if (lastBallX !== null && currentBallX !== lastBallX) {
       gameLoopRunning = true;
@@ -50,3 +50,4 @@ setTimeout(() => {
 " || exit 1
 
 echo "✓ Game running test passed"
+

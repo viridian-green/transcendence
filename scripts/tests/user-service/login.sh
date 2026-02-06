@@ -27,3 +27,4 @@ assert_status '{"password":"1234"}' 400
 # Empty fields
 assert_status '{"username":"","password":"1234"}' 400
 assert_status '{"username":"test","password":""}' 400
+

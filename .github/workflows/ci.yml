@@ -61,32 +61,18 @@ jobs:
 
     - name: Run user-service register tests
       run: |
-        chmod +x init-scripts/test-scripts/user-service/register.sh
-        ./init-scripts/test-scripts/user-service/register.sh
+        chmod +x scripts/tests/user-service/register.sh
+        ./scripts/tests/user-service/register.sh
 
     - name: Run user-service login tests
       run: |
-        chmod +x init-scripts/test-scripts/user-service/login.sh
-        ./init-scripts/test-scripts/user-service/login.sh
+        chmod +x scripts/tests/user-service/login.sh
+        ./scripts/tests/user-service/login.sh
 
     - name: Run user-service signout tests
       run: |
-        chmod +x init-scripts/test-scripts/user-service/signout.sh
-        ./init-scripts/test-scripts/user-service/signout.sh
-
-    - name: Dump logs on failure
-      if: failure()
-      run: docker compose logs
-
-    # - name: Run user-service update tests ---- not working in CI environment due to cookies being actually reliable for browsers and not CI
-    #   run: |
-    #     chmod +x init-scripts/test-scripts/user-service/update.sh
-    #     ./init-scripts/test-scripts/user-service/update.sh
-
-    - name: Run user-service signout tests
-      run: |
-        chmod +x init-scripts/test-scripts/user-service/signout.sh
-        ./init-scripts/test-scripts/user-service/signout.sh
+        chmod +x scripts/tests/user-service/signout.sh
+        ./scripts/tests/user-service/signout.sh
 
     - name: Dump logs on failure
       if: failure()
