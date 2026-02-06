@@ -1,38 +1,4 @@
-import { redisClient } from "../redis.js";
-
-const ALLOWED_STATES = ["online", "busy", "offline"];
-
-async function checkIfStateIsValid(state) {
-  if (!ALLOWED_STATES.includes(state)) {
-    const err = new Error(
-      `Invalid state. Allowed states: ${ALLOWED_STATES.join(", ")}`
-    );
-    err.statusCode = 400;
-    throw err;
-  }
-}
-
-async function getUserState(id) {
-  try {
-    const state = await redisClient.get(`user:state:${id}`);
-    return state || "offline";
-  } catch (err) {
-    const error = new Error("Failed to get user state from Redis");
-    error.statusCode = 500;
-    throw error;
-  }
-}
-
-async function getOnlineUsers() {
-  const keys = await redisClient.keys("user:state:*");
-  if (!keys.length) return [];
-  const states = await redisClient.mget(...keys);
-  return keys
-    .map((key, i) =>
-      states[i] === "online" ? key.replace("user:state:", "") : null
-    )
-    .filter((id) => !!id);
-}
+import { updateUserState, getUserState, getOnlineUsers } from "../presenceService.js";
 
 export default async function stateRoutes(app) {
   app.patch("/state", async (req, reply) => {
@@ -42,7 +8,6 @@ export default async function stateRoutes(app) {
       return;
     }
 
-    await checkIfStateIsValid(state);
     await updateUserState(id, state);
     return reply
       .code(200)

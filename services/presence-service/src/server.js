@@ -1,4 +1,7 @@
 import app from "./app.js";
+import { startPresenceStateSubscriber } from "./handlers/presenceSubscriber.js";
+// Start Redis subscriber for presence:state
+startPresenceStateSubscriber();
 
 if (!process.env.PRESENCE_PORT) {
   console.error('ERROR: PRESENCE_PORT environment variable is required');

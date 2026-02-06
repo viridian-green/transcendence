@@ -34,17 +34,17 @@ export default async function gameWebsocket(fastify) {
 
     room.clients.add(ws);
 
-    // Set user as busy in presence service
-    if (req.user && req.user.id) {
-      publishPresenceState(req.user.id, 'busy');
-    }
-
+    
     ws.send(JSON.stringify({ type: 'STATE', payload: buildStateSnapshot(room.state) }));
-
+    
     startRoomLoop(room);
-
+    
     ws.on('message', (msg) => {
       try {
+        // Set user as busy in presence service
+        if (req.user && req.user.id) {
+          publishPresenceState(req.user.id, 'busy');
+        }
         const message = JSON.parse(msg.toString());
         handleWebSocketMessage(message, room.state);
       } catch (err) {
