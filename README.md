@@ -1,3 +1,10 @@
+> **ℹ️ The app is deployed at [https://retroscendence.app](https://retroscendence.app)**
+>
+> **You can log in with the test user:**  
+> **Email:** test@example.com  
+> **Password:** test123  
+> **Or register with any fake email and password.**
+
 *This project has been created as part of the 42 curriculum by [nleite-s](https://github.com/schardot), [pbencze](https://github.com/pebencze), [vados-sa](https://github.com/vados-sa), [ademarti](https://github.com/viridian-green), [darotche](https://github.com/ProjectDaiana).*
 
 # Retroscendence
